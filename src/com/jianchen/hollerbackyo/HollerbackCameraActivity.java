@@ -1,27 +1,28 @@
 package com.jianchen.hollerbackyo;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Calendar;
+import java.net.URL;
+import java.util.Date;
+
+import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.media.MediaScannerConnection;
-import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -32,10 +33,16 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
+import com.jianchen.hollerbackyo.rest.TestHttpClient;
+import com.jianchen.hollerbackyo.util.AppEnvironment;
 import com.jianchen.hollerbackyo.util.FileUtil;
 
-public class HollerbackCameraActivity extends Activity implements
-		OnClickListener {
+public class HollerbackCameraActivity extends Activity {
 
 	private SurfaceView preview = null;
 	private static SurfaceHolder previewHolder = null;
@@ -55,13 +62,20 @@ public class HollerbackCameraActivity extends Activity implements
 
 	View mTopView, mBottomView;
 
+	private String mFileDataPath;
+	private String mFileDataName;
+
 	public static String TAG = "VideoApp";
 
-	Button mRecordButton;
+	Button mRecordButton, mSendButton;
 
 	private boolean isRecording = false;
 
 	static MediaRecorder recorder;
+
+	private AmazonS3Client s3Client = new AmazonS3Client(
+			new BasicAWSCredentials(AppEnvironment.ACCESS_KEY_ID,
+					AppEnvironment.SECRET_KEY));
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +87,7 @@ public class HollerbackCameraActivity extends Activity implements
 
 		mTopView = findViewById(R.id.top_bar);
 		mBottomView = findViewById(R.id.bottom_bar);
+		mSendButton = (Button) findViewById(R.id.send_button);
 
 		preview = (SurfaceView) findViewById(R.id.surface);
 
@@ -100,6 +115,16 @@ public class HollerbackCameraActivity extends Activity implements
 
 		mRecordButton = (Button) findViewById(R.id.record_button);
 
+		mSendButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				new S3PutObjectTask().execute(mFileDataPath);
+
+			}
+		});
+
 		mRecordButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -114,7 +139,15 @@ public class HollerbackCameraActivity extends Activity implements
 					// inform the user that recording has stopped
 					mRecordButton.setText("Capture");
 					isRecording = false;
+					Toast.makeText(getApplicationContext(),
+							"Saved to: " + mFileDataPath, 5000).show();
+
+					if (mFileDataPath != null) {
+						mSendButton.setVisibility(View.VISIBLE);
+					}
 				} else {
+					mSendButton.setVisibility(View.GONE);
+
 					// initialize video camera
 					if (prepareVideoRecorder()) {
 						// Camera is available and unlocked, MediaRecorder is
@@ -125,6 +158,7 @@ public class HollerbackCameraActivity extends Activity implements
 						// inform the user that recording has started
 						mRecordButton.setText("Stop");
 						isRecording = true;
+
 					} else {
 						// prepare didn't work, release the camera
 						releaseMediaRecorder();
@@ -155,6 +189,18 @@ public class HollerbackCameraActivity extends Activity implements
 		super.onPause();
 	}
 
+	private String getNewFileName() {
+		mFileDataPath = FileUtil.getOutputMediaFile(FileUtil.MEDIA_TYPE_VIDEO)
+				.toString();
+		String[] temp = mFileDataPath.split("/");
+
+		mFileDataName = temp[temp.length - 1];
+
+		Toast.makeText(this, mFileDataName, 3000).show();
+
+		return mFileDataPath;
+	}
+
 	private Camera.Size getBestPreviewSize(int width, int height,
 			Camera.Parameters parameters) {
 		Camera.Size result = null;
@@ -172,50 +218,9 @@ public class HollerbackCameraActivity extends Activity implements
 			}
 
 		}
-		Toast.makeText(this, result.width + " x " + result.height, 3000).show();
+		// Toast.makeText(this, result.width + " x " + result.height,
+		// 3000).show();
 		return (result);
-	}
-
-	private static void initializeCamera() {
-
-	}
-
-	private static String getVideoFolder() {
-		return "somepath";
-	}
-
-	private static String getRandomString() {
-		return Double.toString((Math.random() * 1444));
-	}
-
-	private static void startRecording() {
-
-		recorder = new MediaRecorder();
-		recorder.setCamera(camera);
-		recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-		recorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
-		recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-		recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-		recorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
-		recorder.setOutputFile(getVideoFolder() + getRandomString() + ".mp4");
-		recorder.setPreviewDisplay(previewHolder.getSurface());
-		// Tags the video with a 90¡ angle in order to tell the phone how to
-		// display it
-
-		// TODO: This doesn't work on 2.2
-		// recorder.setOrientationHint(90);
-
-		if (recorder != null) {
-			try {
-				recorder.prepare();
-			} catch (IllegalStateException e) {
-				Log.e("IllegalStateException", e.toString());
-			} catch (IOException e) {
-				Log.e("IOException", e.toString());
-			}
-		}
-
-		recorder.start();
 	}
 
 	private boolean prepareVideoRecorder() {
@@ -234,8 +239,7 @@ public class HollerbackCameraActivity extends Activity implements
 		recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_480P));
 
 		// Step 4: Set output file
-		recorder.setOutputFile(FileUtil.getOutputMediaFile(
-				FileUtil.MEDIA_TYPE_VIDEO).toString());
+		recorder.setOutputFile(getNewFileName());
 
 		// Step 5: Set the preview output
 		recorder.setPreviewDisplay(preview.getHolder().getSurface());
@@ -302,111 +306,192 @@ public class HollerbackCameraActivity extends Activity implements
 		}
 	};
 
-	Camera.PictureCallback photoCallback = new Camera.PictureCallback() {
-		public void onPictureTaken(final byte[] data, final Camera camera) {
-			dialog = ProgressDialog.show(HollerbackCameraActivity.this, "",
-					"Saving Photo");
-			new Thread() {
-				public void run() {
-					try {
-						Thread.sleep(1000);
-					} catch (Exception ex) {
-					}
-					onPictureTake(data, camera);
-				}
-			}.start();
+	private class S3PutObjectTask extends AsyncTask<String, Void, S3TaskResult> {
+
+		ProgressDialog dialog;
+
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(HollerbackCameraActivity.this);
+			dialog.setMessage("Uploading");
+			dialog.setCancelable(false);
+			dialog.show();
 		}
-	};
 
-	public void onPictureTake(byte[] data, Camera camera) {
+		protected S3TaskResult doInBackground(String... paths) {
 
-		bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-		mutableBitmap = bmp.copy(Bitmap.Config.ARGB_8888, true);
-		savePhoto(mutableBitmap);
-		dialog.dismiss();
-	}
-
-	class SavePhotoTask extends AsyncTask<byte[], String, String> {
-		@Override
-		protected String doInBackground(byte[]... jpeg) {
-			File photo = new File(Environment.getExternalStorageDirectory(),
-					"photo.jpg");
-			if (photo.exists()) {
-				photo.delete();
+			if (paths == null || paths.length != 1) {
+				return null;
 			}
+
+			S3TaskResult result = new S3TaskResult();
+
+			// Put the image data into S3.
 			try {
-				FileOutputStream fos = new FileOutputStream(photo.getPath());
-				fos.write(jpeg[0]);
-				fos.close();
-			} catch (java.io.IOException e) {
-				Log.e("PictureDemo", "Exception in photoCallback", e);
+				s3Client.createBucket(AppEnvironment.getPictureBucket());
+
+				// Content type is determined by file extension.
+				PutObjectRequest por = new PutObjectRequest(
+						AppEnvironment.getPictureBucket(), mFileDataName,
+						new java.io.File(paths[0]));
+				s3Client.putObject(por);
+			} catch (Exception exception) {
+
+				result.setErrorMessage(exception.getMessage());
 			}
-			return (null);
+
+			return result;
+		}
+
+		protected void onPostExecute(S3TaskResult result) {
+
+			dialog.dismiss();
+
+			if (result.getErrorMessage() != null) {
+
+				displayErrorAlert("Upload Failure", result.getErrorMessage());
+			}
+
+			if (result != null && result.getUri() != null) {
+
+				Toast.makeText(getApplicationContext(),
+						"Uploaded to: " + result.getUri().toString(),
+						Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(),
+						"Uploaded to: " + result.getUri().getPath(),
+						Toast.LENGTH_LONG).show();
+
+			}
+
+			new S3GeneratePresignedUrlTask().execute();
 		}
 	}
 
-	public void savePhoto(Bitmap bmp) {
-		imageFileFolder = new File(Environment.getExternalStorageDirectory(),
-				"Rotate");
-		imageFileFolder.mkdir();
-		FileOutputStream out = null;
-		Calendar c = Calendar.getInstance();
-		String date = fromInt(c.get(Calendar.MONTH))
-				+ fromInt(c.get(Calendar.DAY_OF_MONTH))
-				+ fromInt(c.get(Calendar.YEAR))
-				+ fromInt(c.get(Calendar.HOUR_OF_DAY))
-				+ fromInt(c.get(Calendar.MINUTE))
-				+ fromInt(c.get(Calendar.SECOND));
-		imageFileName = new File(imageFileFolder, date.toString() + ".jpg");
-		try {
-			out = new FileOutputStream(imageFileName);
-			bmp.compress(Bitmap.CompressFormat.JPEG, 100, out);
-			out.flush();
-			out.close();
-			scanPhoto(imageFileName.toString());
-			out = null;
-		} catch (Exception e) {
-			e.printStackTrace();
+	private class S3GeneratePresignedUrlTask extends
+			AsyncTask<Void, Void, S3TaskResult> {
+
+		protected S3TaskResult doInBackground(Void... voids) {
+
+			S3TaskResult result = new S3TaskResult();
+
+			try {
+				// Ensure that the image will be treated as such.
+				ResponseHeaderOverrides override = new ResponseHeaderOverrides();
+				override.setContentType("image/jpeg");
+
+				// Generate the presigned URL.
+
+				// Added an hour's worth of milliseconds to the current time.
+				Date expirationDate = new Date(
+						System.currentTimeMillis() + 3600000);
+				GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(
+						AppEnvironment.getPictureBucket(), mFileDataName);
+				urlRequest.setExpiration(expirationDate);
+				urlRequest.setResponseHeaders(override);
+
+				URL url = s3Client.generatePresignedUrl(urlRequest);
+
+				result.setUri(Uri.parse(url.toURI().toString()));
+
+			} catch (Exception exception) {
+
+				result.setErrorMessage(exception.getMessage());
+			}
+
+			return result;
+		}
+
+		protected void onPostExecute(S3TaskResult result) {
+
+			if (result.getErrorMessage() != null) {
+
+				displayErrorAlert("There was a failure",
+						result.getErrorMessage());
+			} else if (result.getUri() != null) {
+
+				// Display in Browser.
+				// startActivity(new Intent(Intent.ACTION_VIEW,
+				// result.getUri()));
+
+				Log.i("Upload", "Uploaded to: " + result.getUri().toString());
+				Toast.makeText(getApplicationContext(),
+						"Uploaded successfully", 2000).show();
+
+				TestPostTask task = new TestPostTask();
+				task.execute(new String[] { result.getUri().toString() });
+			}
 		}
 	}
 
-	public String fromInt(int val) {
-		return String.valueOf(val);
-	}
+	private class S3TaskResult {
+		String errorMessage = null;
+		Uri uri = null;
 
-	public void scanPhoto(final String imageFileName) {
-		msConn = new MediaScannerConnection(HollerbackCameraActivity.this,
-				new MediaScannerConnectionClient() {
-					public void onMediaScannerConnected() {
-						msConn.scanFile(imageFileName, null);
-						Log.i("msClient obj  in Photo Utility",
-								"connection established");
-					}
-
-					public void onScanCompleted(String path, Uri uri) {
-						msConn.disconnect();
-						Log.i("msClient obj in Photo Utility", "scan completed");
-					}
-				});
-		msConn.connect();
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0) {
-			// onBack();
+		public String getErrorMessage() {
+			return errorMessage;
 		}
-		return super.onKeyDown(keyCode, event);
+
+		public void setErrorMessage(String errorMessage) {
+			this.errorMessage = errorMessage;
+		}
+
+		public Uri getUri() {
+			return uri;
+		}
+
+		public void setUri(Uri uri) {
+			this.uri = uri;
+		}
 	}
 
-	public void onBack() {
-		Log.e("onBack :", "yes");
-		camera.takePicture(null, null, photoCallback);
-		inPreview = false;
+	// Display an Alert message for an error or failure.
+	protected void displayAlert(String title, String message) {
+
+		AlertDialog.Builder confirm = new AlertDialog.Builder(this);
+		confirm.setTitle(title);
+		confirm.setMessage(message);
+
+		confirm.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int which) {
+
+				dialog.dismiss();
+			}
+		});
+
+		confirm.show().show();
 	}
 
-	@Override
-	public void onClick(View v) {
+	protected void displayErrorAlert(String title, String message) {
 
+		AlertDialog.Builder confirm = new AlertDialog.Builder(this);
+		confirm.setTitle(title);
+		confirm.setMessage(message);
+
+		confirm.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int which) {
+
+				HollerbackCameraActivity.this.finish();
+			}
+		});
+
+		confirm.show().show();
+	}
+
+	private class TestPostTask extends AsyncTask<String, Void, String> {
+		@Override
+		protected String doInBackground(String... params) {
+
+			String response = TestHttpClient.postData(params[0], null);
+
+			return response;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result != null) {
+				Toast.makeText(getApplicationContext(), result, 5000).show();
+			}
+		}
 	}
 }
