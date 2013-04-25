@@ -21,6 +21,8 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
@@ -30,7 +32,9 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -59,6 +63,12 @@ public class HollerbackCameraActivity extends Activity {
 	Display d;
 	int screenhgt, screenwdh;
 	ProgressDialog dialog;
+	TextView mTimer;
+	Handler handler;
+	
+	int VIDEO_SENT = 4;
+
+	int secondsPassed;
 
 	View mTopView, mBottomView;
 
@@ -67,7 +77,7 @@ public class HollerbackCameraActivity extends Activity {
 
 	public static String TAG = "VideoApp";
 
-	Button mRecordButton, mSendButton;
+	ImageButton mRecordButton, mSendButton;
 
 	private boolean isRecording = false;
 
@@ -85,9 +95,11 @@ public class HollerbackCameraActivity extends Activity {
 
 		setContentView(R.layout.custom_camera);
 
+		handler = new Handler();
+
 		mTopView = findViewById(R.id.top_bar);
 		mBottomView = findViewById(R.id.bottom_bar);
-		mSendButton = (Button) findViewById(R.id.send_button);
+		mSendButton = (ImageButton) findViewById(R.id.send_button);
 
 		preview = (SurfaceView) findViewById(R.id.surface);
 
@@ -113,7 +125,7 @@ public class HollerbackCameraActivity extends Activity {
 				.getWindowManager().getDefaultDisplay().getWidth()) / 2;
 		mBottomView.setLayoutParams(bottomParams);
 
-		mRecordButton = (Button) findViewById(R.id.record_button);
+		mRecordButton = (ImageButton) findViewById(R.id.record_button);
 
 		mSendButton.setOnClickListener(new OnClickListener() {
 
@@ -121,7 +133,6 @@ public class HollerbackCameraActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				new S3PutObjectTask().execute(mFileDataPath);
-
 			}
 		});
 
@@ -137,28 +148,33 @@ public class HollerbackCameraActivity extends Activity {
 					camera.lock(); // take camera access back from MediaRecorder
 
 					// inform the user that recording has stopped
-					mRecordButton.setText("Capture");
+					mRecordButton.setImageResource(R.drawable.record_button);
 					isRecording = false;
 					Toast.makeText(getApplicationContext(),
 							"Saved to: " + mFileDataPath, 5000).show();
 
 					if (mFileDataPath != null) {
+						mRecordButton.setVisibility(View.GONE);
 						mSendButton.setVisibility(View.VISIBLE);
 					}
+					handler.removeCallbacks(timeTask);
+					secondsPassed = 0;
+
 				} else {
 					mSendButton.setVisibility(View.GONE);
 
 					// initialize video camera
 					if (prepareVideoRecorder()) {
+						mTimer.setText("00:00");
 						// Camera is available and unlocked, MediaRecorder is
 						// prepared,
 						// now you can start recording
 						recorder.start();
 
 						// inform the user that recording has started
-						mRecordButton.setText("Stop");
+						mRecordButton.setImageResource(R.drawable.stop_button);
 						isRecording = true;
-
+						handler.postDelayed(timeTask, 1000);
 					} else {
 						// prepare didn't work, release the camera
 						releaseMediaRecorder();
@@ -168,7 +184,22 @@ public class HollerbackCameraActivity extends Activity {
 			}
 		});
 
+		mTimer = (TextView) findViewById(R.id.timer);
 	}
+
+	Runnable timeTask = new Runnable() {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			secondsPassed += 1;
+			String seconds = secondsPassed < 10 ? "0"
+					+ Integer.toString(secondsPassed) : Integer
+					.toString(secondsPassed);
+			mTimer.setText("00:" + seconds);
+			handler.postDelayed(timeTask, 1000);
+		}
+	};
 
 	@Override
 	public void onResume() {
@@ -392,6 +423,8 @@ public class HollerbackCameraActivity extends Activity {
 
 				result.setUri(Uri.parse(url.toURI().toString()));
 
+				updateTextView.obtainMessage(VIDEO_SENT).sendToTarget();
+
 			} catch (Exception exception) {
 
 				result.setErrorMessage(exception.getMessage());
@@ -494,4 +527,14 @@ public class HollerbackCameraActivity extends Activity {
 			}
 		}
 	}
+
+	public final Handler updateTextView = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			if (msg.what == VIDEO_SENT) {
+				mRecordButton.setVisibility(View.VISIBLE);
+				mSendButton.setVisibility(View.GONE);
+			}
+		}
+	};
 }
