@@ -3,11 +3,7 @@ package com.jianchen.hollerbackyo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-
-import com.jianchen.hollerbackyo.util.FileUtil;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -30,8 +26,13 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.jianchen.hollerbackyo.util.FileUtil;
 
 public class HollerbackCameraActivity extends Activity implements
 		OnClickListener {
@@ -52,6 +53,8 @@ public class HollerbackCameraActivity extends Activity implements
 	int screenhgt, screenwdh;
 	ProgressDialog dialog;
 
+	View mTopView, mBottomView;
+
 	public static String TAG = "VideoApp";
 
 	Button mRecordButton;
@@ -63,7 +66,13 @@ public class HollerbackCameraActivity extends Activity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
 		setContentView(R.layout.custom_camera);
+
+		mTopView = findViewById(R.id.top_bar);
+		mBottomView = findViewById(R.id.bottom_bar);
 
 		preview = (SurfaceView) findViewById(R.id.surface);
 
@@ -72,8 +81,22 @@ public class HollerbackCameraActivity extends Activity implements
 		previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
 		previewHolder.setFixedSize(getWindow().getWindowManager()
-				.getDefaultDisplay().getWidth(), getWindow().getWindowManager()
-				.getDefaultDisplay().getWidth());
+				.getDefaultDisplay().getWidth(), (int) (getWindow()
+				.getWindowManager().getDefaultDisplay().getWidth() * 1.5));
+
+		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mTopView
+				.getLayoutParams();
+		params.height = (getWindow().getWindowManager().getDefaultDisplay()
+				.getHeight() - getWindow().getWindowManager()
+				.getDefaultDisplay().getWidth()) / 2;
+		mTopView.setLayoutParams(params);
+
+		RelativeLayout.LayoutParams bottomParams = (RelativeLayout.LayoutParams) mBottomView
+				.getLayoutParams();
+		bottomParams.height = (getWindow().getWindowManager()
+				.getDefaultDisplay().getHeight() - getWindow()
+				.getWindowManager().getDefaultDisplay().getWidth()) / 2;
+		mBottomView.setLayoutParams(bottomParams);
 
 		mRecordButton = (Button) findViewById(R.id.record_button);
 
@@ -117,6 +140,7 @@ public class HollerbackCameraActivity extends Activity implements
 	public void onResume() {
 		super.onResume();
 		camera = Camera.open();
+		previewHolder.addCallback(surfaceCallback);
 	}
 
 	@Override
@@ -148,6 +172,7 @@ public class HollerbackCameraActivity extends Activity implements
 			}
 
 		}
+		Toast.makeText(this, result.width + " x " + result.height, 3000).show();
 		return (result);
 	}
 
@@ -177,6 +202,7 @@ public class HollerbackCameraActivity extends Activity implements
 		// Tags the video with a 90¡ angle in order to tell the phone how to
 		// display it
 
+		// TODO: This doesn't work on 2.2
 		// recorder.setOrientationHint(90);
 
 		if (recorder != null) {
@@ -245,8 +271,7 @@ public class HollerbackCameraActivity extends Activity implements
 				m.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 				m.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 			} catch (Throwable t) {
-				Log.e("PreviewDemo-surfaceCallback",
-						"Exception in setPreviewDisplay()", t);
+				Log.e("SurfaceCallback", "Exception in setPreviewDisplay()", t);
 				Toast.makeText(HollerbackCameraActivity.this, t.getMessage(),
 						Toast.LENGTH_LONG).show();
 			}
@@ -260,6 +285,7 @@ public class HollerbackCameraActivity extends Activity implements
 			if (size != null) {
 				parameters.setPreviewSize(size.width, size.height);
 				camera.setParameters(parameters);
+				camera.setDisplayOrientation(90);
 				camera.startPreview();
 				inPreview = true;
 			}
@@ -368,7 +394,7 @@ public class HollerbackCameraActivity extends Activity implements
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0) {
-			onBack();
+			// onBack();
 		}
 		return super.onKeyDown(keyCode, event);
 	}

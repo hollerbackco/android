@@ -2,6 +2,7 @@ Step 1.
   Custom Camera
   - Across Devices
   - Save the video
+  - Crop source video to square
   - Save some flag for that file to uploaded
     - verify file size/lenght? maybe
   - File Size Smashing
@@ -19,6 +20,8 @@ Last Step.
 
 Production Steps:
 
+  allow front face and back facing camera option
+
   onAppStart/Background
   - checked if any queued video files to be sent
 
@@ -29,3 +32,6 @@ Production Steps:
     - That will take care of uploads/downloads w/out app being open
     - Last as long as until user kills it
 
+  Security
+    - Do not keep important keys / access_ids located on the client package
+      - Request these from an authenticated call ideally

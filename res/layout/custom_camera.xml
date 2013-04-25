@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_view"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
     <android.view.SurfaceView
         android:id="@+id/surface"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/record_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/surface"
-        android:layout_centerHorizontal="true"
-        android:text="Capture" />
+        android:layout_centerVertical="true" />
+
+    <RelativeLayout
+        android:id="@+id/top_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#131313" />
+
+    <RelativeLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#131313" >
+
+        <Button
+            android:id="@+id/record_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Capture" />
+    </RelativeLayout>
 
 </RelativeLayout>
