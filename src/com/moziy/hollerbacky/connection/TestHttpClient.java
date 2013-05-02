@@ -1,4 +1,4 @@
-package com.jianchen.hollerbackyo.rest;
+package com.moziy.hollerbacky.connection;
 
 import java.io.IOException;
 import java.util.ArrayList;

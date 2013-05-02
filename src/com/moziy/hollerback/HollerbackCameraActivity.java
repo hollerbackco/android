@@ -1,37 +1,29 @@
-package com.jianchen.hollerbackyo;
+package com.moziy.hollerback;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
-
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.PointF;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.media.MediaScannerConnection;
+import android.media.MediaRecorder.OutputFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -42,9 +34,9 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
-import com.jianchen.hollerbackyo.rest.TestHttpClient;
-import com.jianchen.hollerbackyo.util.AppEnvironment;
-import com.jianchen.hollerbackyo.util.FileUtil;
+import com.moziy.hollerback.util.AppEnvironment;
+import com.moziy.hollerback.util.FileUtil;
+import com.moziy.hollerbacky.connection.TestHttpClient;
 
 public class HollerbackCameraActivity extends Activity {
 
@@ -52,20 +44,10 @@ public class HollerbackCameraActivity extends Activity {
 	private static SurfaceHolder previewHolder = null;
 	private static Camera camera = null;
 	private boolean inPreview = false;
-	Bitmap bmp, itembmp;
-	static Bitmap mutableBitmap;
-	PointF start = new PointF();
-	PointF mid = new PointF();
-	float oldDist = 1f;
-	File imageFileName = null;
-	File imageFileFolder = null;
-	private MediaScannerConnection msConn;
-	Display d;
-	int screenhgt, screenwdh;
-	ProgressDialog dialog;
+
 	TextView mTimer;
 	Handler handler;
-	
+
 	int VIDEO_SENT = 4;
 
 	int secondsPassed;
@@ -266,7 +248,16 @@ public class HollerbackCameraActivity extends Activity {
 		recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 		recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
+		
+
+	    //recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+		
+		//recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+		
+		
+		
 		// Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
+		
 		recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_480P));
 
 		// Step 4: Set output file
@@ -294,6 +285,11 @@ public class HollerbackCameraActivity extends Activity {
 
 	private void releaseMediaRecorder() {
 
+		if (recorder != null) {
+            //recorder.reset(); // clear configuration (optional here)
+            recorder.release();
+            //recorder = null;
+        }
 	}
 
 	SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {

@@ -1,4 +1,4 @@
-package com.jianchen.hollerbackyo.util;
+package com.moziy.hollerback.util;
 
 import java.util.Locale;
 
