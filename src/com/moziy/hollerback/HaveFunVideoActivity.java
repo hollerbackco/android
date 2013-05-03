@@ -32,6 +32,9 @@ public class HaveFunVideoActivity extends Activity implements
 	// private Button stopRecording = null;
 	File video;
 	private Camera mCamera;
+	boolean inPreview;
+
+	boolean isPrepared;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -85,7 +88,6 @@ public class HaveFunVideoActivity extends Activity implements
 		switch (item.getItemId()) {
 		case 0:
 			try {
-				prepareForRecording();
 				startRecording();
 			} catch (Exception e) {
 				String message = e.getMessage();
@@ -106,8 +108,9 @@ public class HaveFunVideoActivity extends Activity implements
 		return super.onOptionsItemSelected(item);
 	}
 
-	protected void prepareForRecording() throws IOException {
-		mrec = mrec = new MediaRecorder(); // Works well
+	protected void startRecording() throws IOException {
+
+		mrec = new MediaRecorder(); // Works well
 		mCamera.unlock();
 
 		mrec.setCamera(mCamera);
@@ -123,10 +126,6 @@ public class HaveFunVideoActivity extends Activity implements
 		// Supported Profiles
 
 		mrec.setPreviewDisplay(surfaceHolder.getSurface());
-
-	}
-
-	protected void startRecording() throws IOException {
 		mrec.setOutputFile("/sdcard/z0042.3gp");
 
 		mrec.prepare();
@@ -159,6 +158,8 @@ public class HaveFunVideoActivity extends Activity implements
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
+		initPreview(0, 0);
+		startPreview();
 	}
 
 	@Override
@@ -179,5 +180,24 @@ public class HaveFunVideoActivity extends Activity implements
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		mCamera.stopPreview();
 		mCamera.release();
+	}
+
+	private void initPreview(int width, int height) {
+		if (mCamera != null && surfaceHolder.getSurface() != null) {
+			try {
+				mCamera.setPreviewDisplay(surfaceHolder);
+			} catch (Throwable t) {
+				Log.e("PreviewDemo-surfaceCallback",
+						"Exception in setPreviewDisplay()", t);
+			}
+
+		}
+	}
+
+	private void startPreview() {
+		if (mCamera != null) {
+			mCamera.startPreview();
+			inPreview = true;
+		}
 	}
 }

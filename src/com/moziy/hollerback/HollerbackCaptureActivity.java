@@ -54,7 +54,7 @@ public class HollerbackCaptureActivity extends Activity {
 		mPreview = new CameraPreview(this, mCamera);
 		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
 		preview.addView(mPreview);
-		
+
 	}
 
 	/** A safe way to get an instance of the Camera object. */
