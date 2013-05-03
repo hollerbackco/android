@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OutputFormat;
@@ -186,7 +187,17 @@ public class HollerbackCameraActivity extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		camera = Camera.open();
+		try {
+			camera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
+			Log.e("Hollerback", "Camera successfully opened");
+		} catch (RuntimeException e) {
+			Log.e("Hollerback",
+					"Camera failed to open: " + e.getLocalizedMessage());
+		}
+
+		if (camera == null) {
+			camera = Camera.open();
+		}
 		previewHolder.addCallback(surfaceCallback);
 	}
 
@@ -248,18 +259,16 @@ public class HollerbackCameraActivity extends Activity {
 		recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 		recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-		
+		// recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
-	    //recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-		
-		//recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-		
-		
-		
+		// recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+
 		// Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-		
-		recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_480P));
 
+		recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
+
+		recorder.setOrientationHint(90);
+		
 		// Step 4: Set output file
 		recorder.setOutputFile(getNewFileName());
 
@@ -286,10 +295,10 @@ public class HollerbackCameraActivity extends Activity {
 	private void releaseMediaRecorder() {
 
 		if (recorder != null) {
-            //recorder.reset(); // clear configuration (optional here)
-            recorder.release();
-            //recorder = null;
-        }
+			// recorder.reset(); // clear configuration (optional here)
+			recorder.release();
+			// recorder = null;
+		}
 	}
 
 	SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {

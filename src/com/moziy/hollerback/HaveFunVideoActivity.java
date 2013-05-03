@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.moziy.hollerback.debug.LogUtil;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
@@ -32,29 +33,13 @@ public class HaveFunVideoActivity extends Activity implements
 	File video;
 	private Camera mCamera;
 
+	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.camera_surface);
 		Log.i(null, "Video starting");
 		startRecording = (Button) findViewById(R.id.buttonstart);
-
-		// int cameraCount = 0;
-		// Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-		// cameraCount = Camera.getNumberOfCameras();
-		// for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
-		// Camera.getCameraInfo(camIdx, cameraInfo);
-		// if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-		// try {
-		// mCamera = Camera.open(camIdx);
-		// Log.e("Hollerback",
-		// "Camera successfully opened");
-		// } catch (RuntimeException e) {
-		// Log.e("Hollerback",
-		// "Camera failed to open: " + e.getLocalizedMessage());
-		// }
-		// }
-		// }
 
 		try {
 			mCamera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
@@ -68,6 +53,8 @@ public class HaveFunVideoActivity extends Activity implements
 			mCamera = Camera.open();
 		}
 
+		mCamera.getParameters().setRecordingHint(true);
+
 		List<Size> tmpList = mCamera.getParameters().getSupportedPreviewSizes();
 
 		for (Size size : tmpList) {
@@ -78,7 +65,12 @@ public class HaveFunVideoActivity extends Activity implements
 		surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.addCallback(this);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-		mrec.setPreviewDisplay(surfaceHolder.getSurface());
+		// try {
+		// prepareForRecording();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 
 	@Override
@@ -93,6 +85,7 @@ public class HaveFunVideoActivity extends Activity implements
 		switch (item.getItemId()) {
 		case 0:
 			try {
+				prepareForRecording();
 				startRecording();
 			} catch (Exception e) {
 				String message = e.getMessage();
@@ -113,8 +106,8 @@ public class HaveFunVideoActivity extends Activity implements
 		return super.onOptionsItemSelected(item);
 	}
 
-	protected void startRecording() throws IOException {
-		mrec = new MediaRecorder(); // Works well
+	protected void prepareForRecording() throws IOException {
+		mrec = mrec = new MediaRecorder(); // Works well
 		mCamera.unlock();
 
 		mrec.setCamera(mCamera);
@@ -123,14 +116,17 @@ public class HaveFunVideoActivity extends Activity implements
 		mrec.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 		mrec.setAudioSource(MediaRecorder.AudioSource.MIC);
 
-		
 		mrec.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
-		
+
 		mrec.setOrientationHint(90);
 
 		// Supported Profiles
 
 		mrec.setPreviewDisplay(surfaceHolder.getSurface());
+
+	}
+
+	protected void startRecording() throws IOException {
 		mrec.setOutputFile("/sdcard/z0042.3gp");
 
 		mrec.prepare();
@@ -170,6 +166,7 @@ public class HaveFunVideoActivity extends Activity implements
 		if (mCamera != null) {
 			Parameters params = mCamera.getParameters();
 			mCamera.setParameters(params);
+
 			mCamera.setDisplayOrientation(90);
 		} else {
 			Toast.makeText(getApplicationContext(), "Camera not available!",
