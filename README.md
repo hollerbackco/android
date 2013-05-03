@@ -1,3 +1,14 @@
+Dependencies:
+
+ActionBarSherlock
+http://actionbarsherlock.com/
+
+SlidingMenu
+https://github.com/jfeinstein10/SlidingMenu
+
+Android Async Http
+http://loopj.com/android-async-http/
+
 Step 1.
   Custom Camera
   - Across Devices

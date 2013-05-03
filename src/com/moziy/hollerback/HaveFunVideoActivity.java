@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.util.HollerbackAppState;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -44,6 +45,8 @@ public class HaveFunVideoActivity extends Activity implements
 		Log.i(null, "Video starting");
 		startRecording = (Button) findViewById(R.id.buttonstart);
 
+		
+		
 		try {
 			mCamera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
 			Log.e("Hollerback", "Camera successfully opened");
@@ -160,6 +163,7 @@ public class HaveFunVideoActivity extends Activity implements
 			int height) {
 		initPreview(0, 0);
 		startPreview();
+		Toast.makeText(this, "Camera Ready!", 1000).show();
 	}
 
 	@Override
