@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.moziy.hollerback.debug.LogUtil;
-import com.moziy.hollerback.util.HollerbackAppState;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.hardware.Camera;

@@ -4,10 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <FrameLayout
-        android:id="@+id/fragment_holder"
+    <ListView
+        android:id="@+id/message_listview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-    </FrameLayout>
+        android:layout_height="fill_parent"
+        android:cacheColorHint="#00000000" />
 
 </RelativeLayout>

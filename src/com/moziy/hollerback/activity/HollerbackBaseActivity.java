@@ -1,11 +1,14 @@
 package com.moziy.hollerback.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.fragment.MessageListFragment;
 
 public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 
@@ -20,6 +23,7 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
 		setContentView(R.layout.hollerback_main);
+		initFragment();
 	}
 
 	@Override
@@ -54,4 +58,12 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	public void initFragment() {
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		MessageListFragment fragment = new MessageListFragment();
+		fragmentTransaction.add(R.id.fragment_holder, fragment);
+		fragmentTransaction.commit();
+	}
 }
