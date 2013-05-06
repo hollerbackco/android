@@ -8,4 +8,11 @@
     <string name="signin">Log In</string>
     <string name="signup">Sign Up</string>
 
+    <!-- Sign In/Sign Up -->
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="number">Number</string>
+    <string name="hint_country_code_phone">Country Code and Phone Number</string>
+
 </resources>
