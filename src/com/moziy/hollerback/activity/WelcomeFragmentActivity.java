@@ -1,5 +1,7 @@
 package com.moziy.hollerback.activity;
 
+import com.moziy.hollerback.R;
+
 import android.os.Bundle;
 
 public class WelcomeFragmentActivity extends HollerbackBaseFragmentActivity {
@@ -11,9 +13,10 @@ public class WelcomeFragmentActivity extends HollerbackBaseFragmentActivity {
 	}
 
 	@Override
-	protected void onCreate(Bundle arg0) {
+	protected void onCreate(Bundle bundle) {
 		// TODO Auto-generated method stub
-		super.onCreate(arg0);
+		super.onCreate(bundle);
+		setContentView(R.layout.welcome_fragment_activity);
 	}
 
 	@Override

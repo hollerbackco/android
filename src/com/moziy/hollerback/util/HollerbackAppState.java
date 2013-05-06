@@ -20,4 +20,17 @@ public class HollerbackAppState {
 		return null;
 	}
 
+	public static boolean isValidSession() {
+		if (PreferenceManagerUtil.getPreferenceValue(
+				HollerbackPreferences.ACCESS_TOKEN, null) != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public static void logOut() {
+		PreferenceManagerUtil.setPreferenceValue(
+				HollerbackPreferences.ACCESS_TOKEN, null);
+	}
+
 }

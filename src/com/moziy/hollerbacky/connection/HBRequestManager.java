@@ -10,10 +10,14 @@ import org.json.JSONObject;
  */
 public class HBRequestManager {
 
-	public static boolean postVideo(JSONObject jsonObject, String filePath) {
+	static boolean isS3Upload;
+
+	public static boolean postVideo(JSONObject jsonObject, String filePath,
+			String fileName) {
+		if (isS3Upload) {
+
+		}
 		return true;
 	}
-	
-	
 
 }

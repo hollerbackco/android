@@ -3,23 +3,18 @@ package com.moziy.hollerback.helper;
 import java.net.URL;
 import java.util.Date;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
-import com.moziy.hollerback.HollerbackCameraActivity;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.video.S3UploadParams;
-import com.moziy.hollerbacky.connection.TestHttpClient;
 
 //TODO: Abstract the upload methods, verification and buckets
 
