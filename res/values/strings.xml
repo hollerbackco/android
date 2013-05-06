@@ -4,4 +4,8 @@
     <string name="app_name">HollerbackYo</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Button Strings -->
+    <string name="signin">Log In</string>
+    <string name="signup">Sign Up</string>
+
 </resources>
