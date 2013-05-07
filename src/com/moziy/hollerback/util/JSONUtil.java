@@ -3,9 +3,12 @@ package com.moziy.hollerback.util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.widget.Toast;
 
 import com.moziy.hollerback.HollerbackApplication;
+import com.moziy.hollerback.communication.IABIntent;
+import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 
 public class JSONUtil {
@@ -27,6 +30,10 @@ public class JSONUtil {
 
 		Toast.makeText(HollerbackApplication.getInstance(), "DONE",
 				Toast.LENGTH_LONG).show();
+
+		Intent intent = new Intent(IABIntent.INTENT_SESSION_REQUEST);
+		intent.putExtra(IABIntent.PARAM_AUTHENTICATED, IABIntent.VALUE_TRUE);
+		IABroadcastManager.sendLocalBroadcast(intent);
 
 	}
 

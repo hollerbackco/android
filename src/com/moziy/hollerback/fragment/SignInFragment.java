@@ -1,9 +1,16 @@
 package com.moziy.hollerback.fragment;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.activity.HollerbackBaseActivity;
+import com.moziy.hollerback.activity.SplashScreenActivity;
+import com.moziy.hollerback.communication.IABIntent;
+import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class SignInFragment extends BaseFragment implements OnClickListener {
 
@@ -32,12 +40,15 @@ public class SignInFragment extends BaseFragment implements OnClickListener {
 	public void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
+		IABroadcastManager.unregisterLocalReceiver(receiver);
 	}
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		IABroadcastManager.registerForLocalBroadcast(receiver,
+				IABIntent.INTENT_SESSION_REQUEST);
 	}
 
 	@Override
@@ -60,7 +71,7 @@ public class SignInFragment extends BaseFragment implements OnClickListener {
 
 	}
 
-	public void processLogin() {
+	private void processLogin() {
 		LogUtil.i("Logging in with: " + mTextFieldEmail.getText().toString()
 				+ " " + mTextFieldPassword.getText().toString());
 
@@ -68,5 +79,29 @@ public class SignInFragment extends BaseFragment implements OnClickListener {
 				mTextFieldPassword.getText().toString());
 
 	}
+
+	private void loginUser() {
+		Toast.makeText(getActivity(), "Logged In!", Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent(getActivity(), HollerbackBaseActivity.class);
+		getActivity().startActivity(intent);
+		getActivity().finish();
+	}
+
+	BroadcastReceiver receiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			if (IABIntent.isIntent(intent, IABIntent.INTENT_SESSION_REQUEST)) {
+				if (intent
+						.getBooleanExtra(IABIntent.PARAM_AUTHENTICATED, false)) {
+					loginUser();
+				} else {
+					Toast.makeText(getActivity(), "Login Error!", Toast.LENGTH_SHORT).show();
+
+				}
+			}
+		}
+	};
 
 }

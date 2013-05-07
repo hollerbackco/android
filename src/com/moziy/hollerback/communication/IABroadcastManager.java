@@ -9,18 +9,18 @@ import android.support.v4.content.LocalBroadcastManager;
 
 public class IABroadcastManager {
 
-	public void sendLocalBroadcast(Intent intent) {
+	public static void sendLocalBroadcast(Intent intent) {
 		LocalBroadcastManager.getInstance(HollerbackApplication.getInstance())
 				.sendBroadcast(intent);
 	}
 
-	public void registerForLocalBroadcast(BroadcastReceiver receiver,
+	public static void registerForLocalBroadcast(BroadcastReceiver receiver,
 			String intent) {
 		LocalBroadcastManager.getInstance(HollerbackApplication.getInstance())
 				.registerReceiver(receiver, new IntentFilter(intent));
 	}
 
-	public void unregisterLocalReceiver(BroadcastReceiver receiver) {
+	public static void unregisterLocalReceiver(BroadcastReceiver receiver) {
 		LocalBroadcastManager.getInstance(HollerbackApplication.getInstance())
 				.unregisterReceiver(receiver);
 	}
