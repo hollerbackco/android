@@ -11,6 +11,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.moziy.hollerback.util.AppEnvironment;
+import com.moziy.hollerback.util.HollerbackAPI;
 
 public class HollerbackAsyncClient {
 
@@ -29,18 +30,18 @@ public class HollerbackAsyncClient {
 		return sInstance;
 	}
 
-	public static void get(String url, RequestParams params,
+	public void get(String url, RequestParams params,
 			JsonHttpResponseHandler responseHandler) {
 		client.get(getAbsoluteUrl(url), params, responseHandler);
 	}
 
-	public static void post(String url, RequestParams params,
+	public void post(String url, RequestParams params,
 			JsonHttpResponseHandler responseHandler) {
 		client.post(getAbsoluteUrl(url), params, responseHandler);
 	}
 
-	public static void post(String url, JSONObject object,
-			RequestParams params, JsonHttpResponseHandler responseHandler) {
+	public void post(String url, JSONObject object, RequestParams params,
+			JsonHttpResponseHandler responseHandler) {
 		// params is a JSONObject
 		StringEntity se = null;
 		try {
@@ -55,11 +56,11 @@ public class HollerbackAsyncClient {
 	}
 
 	private static String getAbsoluteUrl(String relativeUrl) {
-		return AppEnvironment.BASE_URL + relativeUrl;
+		return HollerbackAPI.BASE_URL + HollerbackAPI.API_SUFFIX + relativeUrl;
 	}
 
 	private static void setHeaders() {
-		client.addHeader("X-PLATFORM", "ANDROID");
+		// client.addHeader("X-PLATFORM", "ANDROID");
 	}
 
 }

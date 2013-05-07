@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class LogUtil {
 
-	static boolean logsOn;
+	static boolean logsOn = true;
 
 	static final String APP_NAME = "Hollerback";
 

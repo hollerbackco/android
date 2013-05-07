@@ -1,12 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
+    <EditText
+        android:id="@+id/textfield_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sign Inning" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#fff"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:padding="10dp" />
 
-</LinearLayout>
+    <EditText
+        android:id="@+id/textfield_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textfield_email"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#fff"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/submit_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textfield_password"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:text="@string/signin" />
+
+</RelativeLayout>

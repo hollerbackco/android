@@ -7,6 +7,9 @@ public class AppEnvironment {
 	// NEED NOT RESET //
 
 	public static final String APP_PREF = "HollerbackAppPrefs";
+	
+	//DEV
+	//http://lit-sea-1934.herokuapp.com/
 
 	// NEED NOT RESET //
 
@@ -19,8 +22,6 @@ public class AppEnvironment {
 
 	public static final int ENV_PRODUCTION = 0x9999;
 	public static final int ENV_DEVELOPMENT = 0x1234;
-
-	public static final String BASE_URL = "https://www.realtechcompany.com/wow";
 
 	public static final int ENV = ENV_PRODUCTION;
 

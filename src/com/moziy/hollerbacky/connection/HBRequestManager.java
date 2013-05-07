@@ -1,6 +1,13 @@
 package com.moziy.hollerbacky.connection;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.util.HollerbackAPI;
+import com.moziy.hollerback.util.JSONUtil;
 
 /**
  * Manage all Requests here so other classes can make request agnostically
@@ -20,4 +27,42 @@ public class HBRequestManager {
 		return true;
 	}
 
+	public static void postLogin(String email, String password) {
+
+		RequestParams params = null;
+
+		if (!email.isEmpty() && !password.isEmpty()) {
+			params = new RequestParams();
+			params.put(HollerbackAPI.PARAM_EMAIL, email);
+			params.put(HollerbackAPI.PARAM_PASSWORD, password);
+		}
+
+		HollerbackAsyncClient.getInstance().post(HollerbackAPI.API_SESSION,
+				params, new JsonHttpResponseHandler() {
+
+					@Override
+					protected Object parseResponse(String arg0)
+							throws JSONException {
+						LogUtil.i(arg0);
+						return super.parseResponse(arg0);
+
+					}
+
+					@Override
+					public void onFailure(Throwable arg0, JSONObject arg1) {
+						// TODO Auto-generated method stub
+						super.onFailure(arg0, arg1);
+						LogUtil.i("LOGIN FAILURE");
+					}
+
+					@Override
+					public void onSuccess(int arg0, JSONObject arg1) {
+						// TODO Auto-generated method stub
+						super.onSuccess(arg0, arg1);
+						JSONUtil.processSignIn(arg1);
+					}
+
+				});
+
+	}
 }

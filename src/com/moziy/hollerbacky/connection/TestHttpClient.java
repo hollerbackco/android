@@ -23,6 +23,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.moziy.hollerback.util.HollerbackAPI;
+
 import android.util.Log;
 
 public class TestHttpClient {
@@ -31,7 +33,7 @@ public class TestHttpClient {
 		// Create a new HttpClient and Post Header
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(
-				"http://hollerbackjian.herokuapp.com/video?filename=" + filename);
+				HollerbackAPI.BASE_URL + "/session?email=quantumsix492@gmail.com&password=hollerback");
 		httppost.setHeader("Content-Type", "application/json");
 		try {
 			if (obj != null) {
