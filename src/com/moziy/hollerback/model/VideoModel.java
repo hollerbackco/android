@@ -6,6 +6,15 @@ public class VideoModel extends BaseModel {
 	private boolean isRead;
 	private int id;
 	private String fileUrl;
+	private String thumbUrl;
+
+	public String getThumbUrl() {
+		return thumbUrl;
+	}
+
+	public void setThumbUrl(String thumbUrl) {
+		this.thumbUrl = thumbUrl;
+	}
 
 	public String getFileUrl() {
 		return fileUrl;

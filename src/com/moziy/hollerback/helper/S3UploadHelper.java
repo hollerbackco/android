@@ -1,6 +1,7 @@
 package com.moziy.hollerback.helper;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.ProgressDialog;
@@ -13,6 +14,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.video.S3UploadParams;
 
@@ -80,7 +82,8 @@ public class S3UploadHelper {
 
 			if (result.getErrorMessage() != null) {
 
-				//displayErrorAlert("Upload Failure", result.getErrorMessage());
+				// displayErrorAlert("Upload Failure",
+				// result.getErrorMessage());
 			}
 
 			if (result != null && result.getUri() != null) {
@@ -137,6 +140,88 @@ public class S3UploadHelper {
 			} catch (Exception exception) {
 
 				result.setErrorMessage(exception.getMessage());
+			}
+
+			return result;
+		}
+
+		protected void onPostExecute(S3TaskResult result) {
+
+			if (result.getErrorMessage() != null) {
+
+				// displayErrorAlert("There was a failure",
+				// result.getErrorMessage());
+			} else if (result.getUri() != null) {
+
+				// Display in Browser.
+				// startActivity(new Intent(Intent.ACTION_VIEW,
+				// result.getUri()));
+
+				Log.i("Upload", "Uploaded to: " + result.getUri().toString());
+				// Toast.makeText(getApplicationContext(),
+				// "Uploaded successfully", 2000).show();
+
+				// TestPostTask task = new TestPostTask();
+				// task.execute(new String[] { result.getUri().toString() });
+			}
+		}
+	}
+
+	public void doSomeS3Stuff(ArrayList<S3UploadParams> videos) {
+		S3UploadParams[] videosArray = videos.toArray(new S3UploadParams[videos
+				.size()]);
+		new S3UploadHelper.S3GenerateUrlTask().execute(videosArray);
+	}
+
+	public class S3GenerateUrlTask extends
+			AsyncTask<S3UploadParams, Void, S3TaskResult> {
+
+		protected S3TaskResult doInBackground(S3UploadParams... videos) {
+
+			S3TaskResult result = new S3TaskResult();
+			for (S3UploadParams uploadParams : videos) {
+				try {
+					LogUtil.i("S3GenTask for " + uploadParams.getFileName());
+					// Ensure that the image will be treated as such.
+					ResponseHeaderOverrides override = new ResponseHeaderOverrides();
+					override.setContentType("image/jpeg");
+					Date expirationDate = new Date(
+							System.currentTimeMillis() + 3600000);
+
+					GeneratePresignedUrlRequest urlVideoRequest = new GeneratePresignedUrlRequest(
+							AppEnvironment.getPictureBucket(),
+							uploadParams.getFileName());
+					urlVideoRequest.setExpiration(expirationDate);
+					urlVideoRequest.setResponseHeaders(override);
+
+					GeneratePresignedUrlRequest urlImageRequest = new GeneratePresignedUrlRequest(
+							AppEnvironment.getPictureBucket(),
+							uploadParams.getJPEGName());
+					urlImageRequest.setExpiration(expirationDate);
+					urlImageRequest.setResponseHeaders(override);
+
+					LogUtil.i("Creating Request: " + uploadParams.getFileName());
+
+					
+					URL videoUrl = s3Client
+							.generatePresignedUrl(urlVideoRequest);
+					URL imageUrl = s3Client
+							.generatePresignedUrl(urlImageRequest);
+
+					LogUtil.i("Calling URLS " + uploadParams.getFileName());
+
+					
+					result.setUri(Uri.parse(videoUrl.toURI().toString()));
+
+					LogUtil.i("VID: " + videoUrl.toURI().toString());
+					LogUtil.i("IMG: " + imageUrl.toURI().toString());
+
+					// updateTextView.obtainMessage(VIDEO_SENT).sendToTarget();
+
+				} catch (Exception exception) {
+
+					LogUtil.e(exception.getMessage());
+				}
 			}
 
 			return result;

@@ -17,14 +17,20 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.WelcomeFragmentActivity;
 import com.moziy.hollerback.adapter.ConversationListAdapter;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
+import com.moziy.hollerback.helper.S3UploadHelper;
 import com.moziy.hollerback.model.ConversationModel;
+import com.moziy.hollerback.model.VideoModel;
+import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.HollerbackAppState;
+import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class ConversationListFragment extends BaseFragment {
@@ -32,6 +38,9 @@ public class ConversationListFragment extends BaseFragment {
 	ListView mConversationList;
 	ConversationListAdapter mConversationListAdapter;
 	Button mLogoutBtn;
+
+	AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(
+			AppEnvironment.ACCESS_KEY_ID, AppEnvironment.SECRET_KEY));
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,6 +134,22 @@ public class ConversationListFragment extends BaseFragment {
 		return f;
 	}
 
+	// TODO: Move out of here
+	private ArrayList<S3UploadParams> generateUploadParams() {
+
+		ArrayList<S3UploadParams> mGetUrls = new ArrayList<S3UploadParams>();
+		for (VideoModel video : TempMemoryStore.conversations.get(0)
+				.getVideos()) {
+			S3UploadParams param = new S3UploadParams();
+			param.setFileName(video.getFileName());
+			param.setOnS3UploadListener(null);
+			param.mVideo = video;
+			mGetUrls.add(param);
+		}
+
+		return mGetUrls;
+	}
+
 	BroadcastReceiver receiver = new BroadcastReceiver() {
 
 		@Override
@@ -132,6 +157,12 @@ public class ConversationListFragment extends BaseFragment {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_CONVERSATIONS)) {
 				mConversationListAdapter
 						.setConversations(TempMemoryStore.conversations);
+
+				ArrayList<S3UploadParams> videos = generateUploadParams();
+
+				S3UploadHelper helper = new S3UploadHelper();
+				helper.doSomeS3Stuff(generateUploadParams());
+
 			}
 
 		}

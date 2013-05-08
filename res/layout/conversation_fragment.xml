@@ -10,4 +10,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/btn_video_reply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:padding="15dp"
+        android:text="Hollerback" />
+
+    <RelativeLayout
+        android:id="@+id/rr_video_playback_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btn_video_reply"
+        android:layout_below="@+id/hlz_video_gallery"
+        android:background="#656565" >
+
+        <VideoView
+            android:id="@+id/vv_conversation_playback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
 </RelativeLayout>

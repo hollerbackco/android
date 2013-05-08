@@ -1,6 +1,5 @@
 package com.moziy.hollerback.util;
 
-
 public class AppEnvironment {
 
 	// NEED NOT RESET //
@@ -17,7 +16,7 @@ public class AppEnvironment {
 
 	// public static final String PICTURE_NAME = null;
 
-	public static final String PICTURE_BUCKET = "hollerback-jian";
+	public static final String PICTURE_BUCKET = "hollerback-app-dev";
 
 	public static final int ENV_PRODUCTION = 0x9999;
 	public static final int ENV_DEVELOPMENT = 0x1234;
@@ -28,6 +27,7 @@ public class AppEnvironment {
 		return PICTURE_BUCKET;
 	}
 
+	// TODO: Setup Environments
 	public void setEnvironment() {
 		switch (ENV) {
 		case ENV_DEVELOPMENT:

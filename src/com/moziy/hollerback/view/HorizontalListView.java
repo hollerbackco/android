@@ -11,9 +11,11 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.Scroller;
+import android.widget.AbsListView.OnScrollListener;
 
 public class HorizontalListView extends AdapterView<ListAdapter> {
 
@@ -32,6 +34,11 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 	private OnItemClickListener mOnItemClicked;
 	private OnItemLongClickListener mOnItemLongClicked;
 	private boolean mDataChanged = false;
+
+	/**
+	 * Optional callback to notify client when scroll position has changed
+	 */
+	private OnScrollListener mOnScrollListener;
 
 	public HorizontalListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -291,6 +298,17 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 		return true;
 	}
 
+	/**
+	 * Set the listener that will receive notifications every time the list
+	 * scrolls.
+	 * 
+	 * @param l
+	 *            the scroll listener
+	 */
+	public void setOnScrollListener(AbsListView.OnScrollListener l) {
+		mOnScrollListener = l;
+	}
+
 	private OnGestureListener mOnGesture = new GestureDetector.SimpleOnGestureListener() {
 
 		@Override
@@ -301,6 +319,10 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 				float velocityY) {
+			if (mOnScrollListener != null) {
+				mOnScrollListener.onScrollStateChanged(null,
+						AbsListView.OnScrollListener.SCROLL_STATE_FLING);
+			}
 			return HorizontalListView.this
 					.onFling(e1, e2, velocityX, velocityY);
 		}
@@ -311,6 +333,10 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 
 			synchronized (HorizontalListView.this) {
 				mNextX += (int) distanceX;
+				if (mOnScrollListener != null) {
+					mOnScrollListener.onScrollStateChanged(null,
+							AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL);
+				}
 			}
 			requestLayout();
 
