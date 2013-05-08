@@ -38,7 +38,7 @@ public class ConversationModel extends BaseModel {
 		this.conversation_name = conversation_name;
 	}
 
-	public int getConversation_unread_count() {
+	public int getConversationUnreadCount() {
 		return conversation_unread_count;
 	}
 

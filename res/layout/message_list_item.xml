@@ -5,12 +5,22 @@
     android:orientation="vertical"
     android:padding="10dp" >
 
-    <TextView
-        android:id="@+id/tv_convoname"
+    <ImageView
+        android:id="@+id/iv_green_dot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:paddingRight="2dp"
+        android:src="@drawable/green_dot"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/tv_convoname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/iv_green_dot"
         android:textSize="18sp" />
 
 </RelativeLayout>

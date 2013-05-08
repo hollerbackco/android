@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ConversationListAdapter extends BaseAdapter {
@@ -67,23 +68,31 @@ public class ConversationListAdapter extends BaseAdapter {
 			convertView = inflater.inflate(R.layout.message_list_item, null);
 			viewHolder.conversationName = (TextView) convertView
 					.findViewById(R.id.tv_convoname);
+			viewHolder.newMessagesIndicator = (ImageView) convertView
+					.findViewById(R.id.iv_green_dot);
 			convertView.setTag(viewHolder);
 
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
+		if (mConversations.get(position).getConversationUnreadCount() > 0) {
+			viewHolder.newMessagesIndicator.setVisibility(View.VISIBLE);
+		} else {
+			viewHolder.newMessagesIndicator.setVisibility(View.INVISIBLE);
+		}
+
 		viewHolder.conversationName.setText(mConversations.get(position)
 				.getConversationName());
 
-		LogUtil.i("Conv " + mConversations.get(position)
-				.getConversationName());
+		LogUtil.i("Conv " + mConversations.get(position).getConversationName());
 
 		return convertView;
 	}
 
 	static class ViewHolder {
 		TextView conversationName;
+		ImageView newMessagesIndicator;
 	}
 
 }
