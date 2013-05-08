@@ -6,6 +6,7 @@ public class IABIntent {
 
 	public static final String INTENT_SESSION_REQUEST = "SessionRequest";
 	public static final String INTENT_REGISTER_REQUEST = "RegisterRequest";
+	public static final String INTENT_GET_CONVERSATIONS = "GetConvo";
 
 	public static final String PARAM_SUCCESS = "200";
 	public static final String PARAM_FAILURE = "500";

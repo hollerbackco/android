@@ -28,6 +28,11 @@ public class HollerbackAppState {
 		return false;
 	}
 
+	public static String getValidToken() {
+		return PreferenceManagerUtil.getPreferenceValue(
+				HollerbackPreferences.ACCESS_TOKEN, null);
+	}
+
 	public static void logOut() {
 		PreferenceManagerUtil.setPreferenceValue(
 				HollerbackPreferences.ACCESS_TOKEN, null);

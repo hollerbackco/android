@@ -8,7 +8,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.moziy.hollerback.R;
-import com.moziy.hollerback.fragment.MessageListFragment;
+import com.moziy.hollerback.fragment.ConversationListFragment;
 
 /**
  * Main Activity that gets initiated when user is signed in
@@ -39,6 +39,8 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		
 
 //		SubMenu subMenu1 = menu.addSubMenu("Action Item");
 //		subMenu1.add("Appearance");
@@ -67,7 +69,7 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();
-		MessageListFragment fragment = new MessageListFragment();
+		ConversationListFragment fragment = new ConversationListFragment();
 		fragmentTransaction.add(R.id.fragment_holder, fragment);
 		fragmentTransaction.commit();
 	}

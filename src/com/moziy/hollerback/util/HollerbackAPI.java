@@ -3,7 +3,7 @@ package com.moziy.hollerback.util;
 public class HollerbackAPI {
 
 	public static final String BASE_URL = "https://calm-peak-4397.herokuapp.com";
-	
+
 	public static final String API_SUFFIX = "/api";
 
 	public static final String API_ME = "/me"; // get, post
@@ -27,5 +27,7 @@ public class HollerbackAPI {
 	public static final String PARAM_EMAIL = "email";
 
 	public static final String PARAM_PASSWORD = "password";
+
+	public static final String PARAM_ACCESS_TOKEN = "access_token";
 
 }
