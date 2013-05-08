@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <ImageView
+    <com.moziy.hollerback.view.RecyclingImageView
         android:id="@+id/iv_video_thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

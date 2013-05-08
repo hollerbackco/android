@@ -202,7 +202,6 @@ public class S3UploadHelper {
 
 					LogUtil.i("Creating Request: " + uploadParams.getFileName());
 
-					
 					URL videoUrl = s3Client
 							.generatePresignedUrl(urlVideoRequest);
 					URL imageUrl = s3Client
@@ -210,8 +209,11 @@ public class S3UploadHelper {
 
 					LogUtil.i("Calling URLS " + uploadParams.getFileName());
 
-					
 					result.setUri(Uri.parse(videoUrl.toURI().toString()));
+
+					uploadParams.mVideo.setFileUrl(videoUrl.toURI().toString());
+					uploadParams.mVideo
+							.setThumbUrl(imageUrl.toURI().toString());
 
 					LogUtil.i("VID: " + videoUrl.toURI().toString());
 					LogUtil.i("IMG: " + imageUrl.toURI().toString());

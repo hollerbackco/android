@@ -3,8 +3,6 @@ package com.moziy.hollerback.adapter;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore.Video.Thumbnails;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.bitmap.ImageFetcher;
 import com.moziy.hollerback.model.VideoModel;
 
 public class VideoGalleryAdapter extends BaseAdapter {
@@ -19,7 +18,10 @@ public class VideoGalleryAdapter extends BaseAdapter {
 	ArrayList<VideoModel> mVideos;
 	LayoutInflater inflater;
 
-	public VideoGalleryAdapter(Context context) {
+	ImageFetcher mImageFetcher;
+
+	public VideoGalleryAdapter(ImageFetcher imageFetcher, Context context) {
+		mImageFetcher = imageFetcher;
 		inflater = LayoutInflater.from(context);
 		mVideos = new ArrayList<VideoModel>();
 	}
@@ -66,16 +68,17 @@ public class VideoGalleryAdapter extends BaseAdapter {
 			convertView = inflater.inflate(R.layout.video_gallery_item, null);
 			viewHolder.videoThumbnail = (ImageView) convertView
 					.findViewById(R.id.iv_video_thumbnail);
+			viewHolder.videoThumbnail
+					.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		if (mVideos.get(position).getFileUrl() != null
-				&& !mVideos.get(position).getFileUrl().isEmpty()) {
-			viewHolder.videoThumbnail.setImageBitmap(ThumbnailUtils
-					.createVideoThumbnail(mVideos.get(position).getURLPath(),
-							Thumbnails.MINI_KIND));
+		if (mVideos.get(position).getThumbUrl() != null && mImageFetcher!=null) {
+			
+			mImageFetcher.loadImage(mVideos.get(position).getThumbUrl(),
+					viewHolder.videoThumbnail);
 		}
 
 		return convertView;

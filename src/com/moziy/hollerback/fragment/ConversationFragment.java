@@ -42,7 +42,6 @@ public class ConversationFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		View fragmentView = inflater.inflate(R.layout.conversation_fragment,
 				null);
-		initializeView(fragmentView);
 
 		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(
 				getActivity(), IMAGE_CACHE_DIR);
@@ -51,6 +50,7 @@ public class ConversationFragment extends BaseFragment {
 		mImageFetcher.setLoadingImage(R.drawable.test_thumb);
 		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(),
 				cacheParams);
+		initializeView(fragmentView);
 
 		return fragmentView;
 	}
@@ -91,7 +91,7 @@ public class ConversationFragment extends BaseFragment {
 	protected void initializeView(View view) {
 		mVideoGallery = (HorizontalListView) view
 				.findViewById(R.id.hlz_video_gallery);
-		mVideoGalleryAdapter = new VideoGalleryAdapter(getActivity());
+		mVideoGalleryAdapter = new VideoGalleryAdapter(mImageFetcher, getActivity());
 		mVideoGallery.setAdapter(mVideoGalleryAdapter);
 		// mVideoGallery.setOnScrollListener(mOnScrollListener);
 	}
@@ -112,16 +112,19 @@ public class ConversationFragment extends BaseFragment {
 	}
 
 	// TODO: Move out of here
-	private void generateUploadParams() {
+	private ArrayList<S3UploadParams> generateUploadParams() {
 
 		ArrayList<S3UploadParams> mGetUrls = new ArrayList<S3UploadParams>();
-		for (VideoModel video : mVideoGalleryAdapter.getVideos()) {
+		for (VideoModel video : TempMemoryStore.conversations.get(0)
+				.getVideos()) {
 			S3UploadParams param = new S3UploadParams();
 			param.setFileName(video.getFileName());
 			param.setOnS3UploadListener(null);
 			param.mVideo = video;
 			mGetUrls.add(param);
 		}
+
+		return mGetUrls;
 	}
 
 }
