@@ -69,9 +69,12 @@ public class VideoGalleryAdapter extends BaseAdapter {
 
 		if (mVideos.get(position).getFileUrl() != null
 				&& !mVideos.get(position).getFileUrl().isEmpty()) {
-			viewHolder.videoThumbnail.setImageBitmap(ThumbnailUtils
-					.createVideoThumbnail(mVideos.get(position).getURLPath(),
-							Thumbnails.MINI_KIND));
+			viewHolder.videoThumbnail
+					.setImageBitmap(ThumbnailUtils
+							.createVideoThumbnail(
+									"https://s3.amazonaws.com/media.jianchen.com/VID_20130425_095031.mp4",
+									Thumbnails.MINI_KIND));
+			
 		}
 
 		return convertView;
