@@ -1,11 +1,8 @@
 package com.moziy.hollerback.fragment;
 
-import java.util.ArrayList;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +26,6 @@ import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.FileUtil;
-import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerback.view.HorizontalListView;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 
@@ -167,8 +163,7 @@ public class ConversationFragment extends BaseFragment {
 			// mVideoView.requestFocus();
 			// mVideoView.start();
 
-			S3RequestHelper helper = new S3RequestHelper();
-			helper.downloadS3(AppEnvironment.PICTURE_BUCKET,
+			mS3RequestHelper.downloadS3(AppEnvironment.PICTURE_BUCKET,
 					model.getFileName());
 
 			mProgressText.setVisibility(View.VISIBLE);
@@ -196,9 +191,9 @@ public class ConversationFragment extends BaseFragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_REQUEST_VIDEO)) {
-				LogUtil.i("Received ID: "  + IABIntent.PARAM_ID);
+				LogUtil.i("Received ID: " + IABIntent.PARAM_ID);
 				playVideo(intent.getStringExtra(IABIntent.PARAM_ID));
-				
+
 			}
 		}
 	};

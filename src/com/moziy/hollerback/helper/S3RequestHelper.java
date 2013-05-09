@@ -276,11 +276,20 @@ public class S3RequestHelper {
 		}
 	}
 
+	// TODO: Abstract this crappy piece of shit way of video cancelling
+	S3DownloadTask downloadTask;
+
 	public void downloadS3(String bucketName, String pictureId) {
 		// S3Object object = s3Client.getObject(bucketName, pictureId);
 		// object.getObjectContent();
 
-		S3DownloadTask downloadTask = new S3DownloadTask();
+		if (downloadTask != null) {
+			LogUtil.e("Attempting to cancel task");
+			downloadTask.cancel(true);
+			downloadTask = null;
+		}
+
+		downloadTask = new S3DownloadTask();
 		downloadTask.execute(new GetObjectRequest(bucketName, pictureId));
 
 	}
@@ -289,6 +298,8 @@ public class S3RequestHelper {
 
 	private class S3DownloadTask extends
 			AsyncTask<GetObjectRequest, Long, Long> {
+
+
 
 		// From AsyncTask, run on UI thread before execution
 		protected void onPreExecute() {
@@ -321,7 +332,7 @@ public class S3RequestHelper {
 				while ((bytesRead > 0) && (!this.isCancelled())) {
 					bytesRead = is.read(buffer);
 					if (buffer.length > 0 && bytesRead > 0) {
-						LogUtil.d("QUIT WRITE");
+						//LogUtil.d("QUIT WRITE");
 						outputStream.write(buffer, 0, bytesRead);
 					}
 					totalRead += bytesRead;
@@ -336,18 +347,21 @@ public class S3RequestHelper {
 				// close our stream
 				outputStream.close();
 				is.close();
-				
-				Intent intent = new Intent(IABIntent.INTENT_REQUEST_VIDEO);
-				intent.putExtra(IABIntent.PARAM_ID, reqs[0].getKey());
-				IABroadcastManager.sendLocalBroadcast(intent);
-				LogUtil.i("broadcast Sent");
 
+				if (!this.isCancelled()) {
+
+					Intent intent = new Intent(IABIntent.INTENT_REQUEST_VIDEO);
+					intent.putExtra(IABIntent.PARAM_ID, reqs[0].getKey());
+					IABroadcastManager.sendLocalBroadcast(intent);
+					LogUtil.i("broadcast Sent");
+				} else {
+					LogUtil.e("Task Cancelled");
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
 				return 0L;
 			}
-
 
 			return totalRead;
 		}
@@ -365,7 +379,7 @@ public class S3RequestHelper {
 				mOnProgressListener.onProgress(progress[0], contentLength);
 			}
 
-			LogUtil.i("Progress: " + (progress[0] * 100 / contentLength) + "%");
+			//LogUtil.i("Progress: " + (progress[0] * 100 / contentLength) + "%");
 
 		}
 
