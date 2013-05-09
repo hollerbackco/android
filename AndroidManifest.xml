@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.moziy.hollerback.HaveFunVideoActivity"
+            android:name="com.moziy.hollerback.activity.HaveFunVideoActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>

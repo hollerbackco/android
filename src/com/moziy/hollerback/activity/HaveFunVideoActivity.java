@@ -1,8 +1,9 @@
-package com.moziy.hollerback;
+package com.moziy.hollerback.activity;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -14,20 +15,21 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Button;
 import android.widget.Toast;
+
+import com.moziy.hollerback.R;
+import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.util.FileUtil;
 
 public class HaveFunVideoActivity extends Activity implements
 		SurfaceHolder.Callback {
 	private SurfaceHolder surfaceHolder;
 	private SurfaceView surfaceView;
 	public MediaRecorder mrec = new MediaRecorder();
-	private Button startRecording = null;
-	// private Button stopRecording = null;
+
 	File video;
 	private Camera mCamera;
 	boolean inPreview;
@@ -39,17 +41,13 @@ public class HaveFunVideoActivity extends Activity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.camera_surface);
-		Log.i(null, "Video starting");
-		startRecording = (Button) findViewById(R.id.buttonstart);
+		LogUtil.i("Video starting");
 
-		
-		
 		try {
 			mCamera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
-			Log.e("Hollerback", "Camera successfully opened");
+			LogUtil.e("Camera successfully opened");
 		} catch (RuntimeException e) {
-			Log.e("Hollerback",
-					"Camera failed to open: " + e.getLocalizedMessage());
+			LogUtil.e("Camera failed to open: " + e.getLocalizedMessage());
 		}
 
 		if (mCamera == null) {
@@ -61,26 +59,14 @@ public class HaveFunVideoActivity extends Activity implements
 		List<Size> tmpList = mCamera.getParameters().getSupportedPreviewSizes();
 
 		for (Size size : tmpList) {
-			Log.i("Sizes ", size.width + " x " + size.height);
+			LogUtil.i("Sizes ", size.width + " x " + size.height);
 		}
 
 		surfaceView = (SurfaceView) findViewById(R.id.surface_camera);
 		surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.addCallback(this);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-		// try {
-		// prepareForRecording();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 0, 0, "StartRecording");
-		menu.add(0, 1, 0, "StopRecording");
-		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -97,9 +83,7 @@ public class HaveFunVideoActivity extends Activity implements
 			break;
 
 		case 1: // GoToAllNotes
-			mrec.stop();
-			mrec.release();
-			mrec = null;
+			stopRecording();
 			break;
 
 		default:
@@ -126,7 +110,8 @@ public class HaveFunVideoActivity extends Activity implements
 		// Supported Profiles
 
 		mrec.setPreviewDisplay(surfaceHolder.getSurface());
-		mrec.setOutputFile("/sdcard/z0042.3gp");
+
+		mrec.setOutputFile(FileUtil.generateRandomFileName() + ".extension");
 
 		mrec.prepare();
 		mrec.start();

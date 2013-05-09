@@ -14,7 +14,7 @@ public class S3UploadParams {
 	private String mFileName;
 	private String mFileType;
 	public VideoModel mVideo;
-	
+
 	public String getFileType() {
 		return mFileType;
 	}
@@ -59,8 +59,8 @@ public class S3UploadParams {
 	}
 
 	public String getVideoName() {
-		return mFileName.split("\\.")[0] + VID_MP4;
-		
+		return mFileName;
+
 	}
 
 	public String getJPEGName() {

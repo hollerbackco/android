@@ -1,6 +1,7 @@
 package com.moziy.hollerback.fragment;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,10 +26,12 @@ import com.moziy.hollerback.adapter.ConversationListAdapter;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
+import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.util.HollerbackAppState;
 import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerbacky.connection.HBRequestManager;
@@ -105,6 +108,7 @@ public class ConversationListFragment extends BaseFragment {
 
 			}
 		});
+
 	}
 
 	public void startConversationFragment(int index) {

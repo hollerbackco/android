@@ -6,15 +6,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.activity.HaveFunVideoActivity;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
 import com.moziy.hollerback.bitmap.ImageCache;
 import com.moziy.hollerback.bitmap.ImageFetcher;
@@ -34,10 +37,6 @@ public class ConversationFragment extends BaseFragment {
 	private HorizontalListView mVideoGallery;
 	private VideoGalleryAdapter mVideoGalleryAdapter;
 
-	private AmazonS3Client s3Client = new AmazonS3Client(
-			new BasicAWSCredentials(AppEnvironment.ACCESS_KEY_ID,
-					AppEnvironment.SECRET_KEY));
-
 	// Image Loading
 	private ImageFetcher mImageFetcher;
 	private int mImageThumbSize;
@@ -52,6 +51,11 @@ public class ConversationFragment extends BaseFragment {
 	private TextView mProgressText;
 
 	private S3RequestHelper mS3RequestHelper;
+
+	// Reply stuff
+	private Button mReplyBtn;
+
+	public int TAKE_VIDEO = 0x683;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,6 +129,18 @@ public class ConversationFragment extends BaseFragment {
 		mVideoGallery.setOnItemClickListener(mListener);
 		// mVideoGallery.setOnScrollListener(mOnScrollListener);
 		mProgressText = (TextView) view.findViewById(R.id.tv_progress);
+
+		mReplyBtn = (Button) view.findViewById(R.id.btn_video_reply);
+
+		mReplyBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(),
+						HaveFunVideoActivity.class);
+				startActivityForResult(intent, TAKE_VIDEO);
+			}
+		});
 	}
 
 	OnItemClickListener mListener = new OnItemClickListener() {
@@ -134,38 +150,8 @@ public class ConversationFragment extends BaseFragment {
 				long id) {
 			LogUtil.i("Clicked ON: " + position);
 			VideoModel model = mVideoGalleryAdapter.getVideos().get(position);
-			// LogUtil.i("URL: " + model.getFileUrl());
-			// LogUtil.i("FILENAME: " + model.getFileName());
-			//
-			// mVideoView.setOnPreparedListener(new OnPreparedListener() {
-			//
-			// @Override
-			// public void onPrepared(MediaPlayer mp) {
-			// mp.start();
-			// }
-			// });
-			//
-			//
-			//
-			//
-			// mVideoView.setOnCompletionListener(new OnCompletionListener() {
-			//
-			// @Override
-			// public void onCompletion(MediaPlayer mp) {
-			// mp.reset();
-			// }
-			// });
-			// String UrlPath = "android.resource://com.moziy.hollerback/"
-			// + R.raw.test_video;
-			// mVideoView.setVideoURI(Uri.parse(UrlPath));
-			// // mVideoView.setVideoURI(Uri.parse(UrlPath));
-			//
-			// mVideoView.requestFocus();
-			// mVideoView.start();
-
 			mS3RequestHelper.downloadS3(AppEnvironment.PICTURE_BUCKET,
 					model.getFileName());
-
 			mProgressText.setVisibility(View.VISIBLE);
 
 		}
@@ -221,5 +207,11 @@ public class ConversationFragment extends BaseFragment {
 
 		}
 	};
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
 }

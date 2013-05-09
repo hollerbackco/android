@@ -3,6 +3,9 @@ package com.moziy.hollerback.util;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 
 import com.moziy.hollerback.debug.LogUtil;
@@ -117,5 +120,14 @@ public class FileUtil {
 
 	public static String getLocalFile(String fileKey) {
 		return getFilePath() + "/" + fileKey;
+	}
+
+	public static String generateRandomHexName() {
+		Random m = new Random();
+		return Integer.toHexString(m.nextInt(256)).toUpperCase(Locale.US);
+	}
+
+	public static String generateRandomFileName() {
+		return generateRandomHexName() + "/" + UUID.randomUUID();
 	}
 }
