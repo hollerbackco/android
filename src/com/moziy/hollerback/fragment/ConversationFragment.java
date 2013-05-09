@@ -14,8 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.HaveFunVideoActivity;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
@@ -82,7 +80,6 @@ public class ConversationFragment extends BaseFragment {
 
 	@Override
 	public void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		mImageFetcher.setPauseWork(false);
 		mImageFetcher.setExitTasksEarly(true);
@@ -92,7 +89,6 @@ public class ConversationFragment extends BaseFragment {
 
 	@Override
 	public void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		mImageFetcher.closeCache();
 		IABroadcastManager.unregisterLocalReceiver(receiver);
@@ -101,7 +97,6 @@ public class ConversationFragment extends BaseFragment {
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		initializeArgs();
 		mImageFetcher.setExitTasksEarly(false);
@@ -210,7 +205,6 @@ public class ConversationFragment extends BaseFragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 

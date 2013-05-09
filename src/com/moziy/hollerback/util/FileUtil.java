@@ -127,6 +127,10 @@ public class FileUtil {
 		return Integer.toHexString(m.nextInt(256)).toUpperCase(Locale.US);
 	}
 
+	/**
+	 * Generates a EF/dasdfadsfafafdsfafas extensionless name
+	 * @return
+	 */
 	public static String generateRandomFileName() {
 		return generateRandomHexName() + "/" + UUID.randomUUID();
 	}

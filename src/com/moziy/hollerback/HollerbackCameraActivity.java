@@ -35,6 +35,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerbacky.connection.TestHttpClient;
@@ -70,6 +71,9 @@ public class HollerbackCameraActivity extends Activity {
 			new BasicAWSCredentials(AppEnvironment.ACCESS_KEY_ID,
 					AppEnvironment.SECRET_KEY));
 
+	float targetPreviewWidth;
+	float targetPreviewHeight;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,23 +94,35 @@ public class HollerbackCameraActivity extends Activity {
 		previewHolder.addCallback(surfaceCallback);
 		previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-		previewHolder.setFixedSize(getWindow().getWindowManager()
-				.getDefaultDisplay().getWidth(), (int) (getWindow()
-				.getWindowManager().getDefaultDisplay().getWidth() * 1.5));
+		CamcorderProfile prof = CamcorderProfile
+				.get(CamcorderProfile.QUALITY_LOW);
+		
+		targetPreviewWidth = prof.videoFrameWidth;
+		targetPreviewHeight = prof.videoFrameHeight;
 
-		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mTopView
-				.getLayoutParams();
-		params.height = (getWindow().getWindowManager().getDefaultDisplay()
-				.getHeight() - getWindow().getWindowManager()
-				.getDefaultDisplay().getWidth()) / 2;
-		mTopView.setLayoutParams(params);
+		// this 1.5 i guess assumes 640 x 480
+		previewHolder
+				.setFixedSize(
+						getWindow().getWindowManager().getDefaultDisplay()
+								.getWidth(),
+						(int) (getWindow().getWindowManager()
+								.getDefaultDisplay().getWidth() * (targetPreviewWidth / targetPreviewHeight)));
 
-		RelativeLayout.LayoutParams bottomParams = (RelativeLayout.LayoutParams) mBottomView
-				.getLayoutParams();
-		bottomParams.height = (getWindow().getWindowManager()
-				.getDefaultDisplay().getHeight() - getWindow()
-				.getWindowManager().getDefaultDisplay().getWidth()) / 2;
-		mBottomView.setLayoutParams(bottomParams);
+		// RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
+		// mTopView
+		// .getLayoutParams();
+		// params.height = (getWindow().getWindowManager().getDefaultDisplay()
+		// .getHeight() - getWindow().getWindowManager()
+		// .getDefaultDisplay().getWidth()) / 2;
+		// mTopView.setLayoutParams(params);
+		//
+		// RelativeLayout.LayoutParams bottomParams =
+		// (RelativeLayout.LayoutParams) mBottomView
+		// .getLayoutParams();
+		// bottomParams.height = (getWindow().getWindowManager()
+		// .getDefaultDisplay().getHeight() - getWindow()
+		// .getWindowManager().getDefaultDisplay().getWidth()) / 2;
+		// mBottomView.setLayoutParams(bottomParams);
 
 		mRecordButton = (ImageButton) findViewById(R.id.record_button);
 
@@ -115,7 +131,6 @@ public class HollerbackCameraActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				new S3PutObjectTask().execute(mFileDataPath);
 			}
 		});
 
@@ -229,6 +244,7 @@ public class HollerbackCameraActivity extends Activity {
 			Camera.Parameters parameters) {
 		Camera.Size result = null;
 		for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
+			LogUtil.i("Preview: w:" + size.width + " h:" + size.height);
 			if (size.width <= width && size.height <= height) {
 				if (result == null) {
 					result = size;
@@ -267,8 +283,14 @@ public class HollerbackCameraActivity extends Activity {
 
 		recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
 
+		CamcorderProfile prof = CamcorderProfile
+				.get(CamcorderProfile.QUALITY_LOW);
+
+		LogUtil.i("Record size: " + prof.videoFrameWidth + " "
+				+ prof.videoFrameHeight);
+
 		recorder.setOrientationHint(90);
-		
+
 		// Step 4: Set output file
 		recorder.setOutputFile(getNewFileName());
 
@@ -320,7 +342,8 @@ public class HollerbackCameraActivity extends Activity {
 		public void surfaceChanged(SurfaceHolder holder, int format, int width,
 				int height) {
 			Camera.Parameters parameters = camera.getParameters();
-			Camera.Size size = getBestPreviewSize(width, height, parameters);
+			Camera.Size size = getBestPreviewSize((int)targetPreviewWidth, (int) targetPreviewHeight, parameters);
+			LogUtil.i("Best size: " + size.width + " " + size.height);
 
 			if (size != null) {
 				parameters.setPreviewSize(size.width, size.height);
@@ -332,206 +355,9 @@ public class HollerbackCameraActivity extends Activity {
 		}
 
 		public void surfaceDestroyed(SurfaceHolder holder) {
-			// no-op
-			// if (camera != null) {
-			// camera.stopPreview();
-			// camera.setPreviewCallback(null);
-			// camera.release();
-			// camera = null;
-			// }
+
 		}
 	};
-
-	private class S3PutObjectTask extends AsyncTask<String, Void, S3TaskResult> {
-
-		ProgressDialog dialog;
-
-		protected void onPreExecute() {
-			dialog = new ProgressDialog(HollerbackCameraActivity.this);
-			dialog.setMessage("Uploading");
-			dialog.setCancelable(false);
-			dialog.show();
-		}
-
-		protected S3TaskResult doInBackground(String... paths) {
-
-			if (paths == null || paths.length != 1) {
-				return null;
-			}
-
-			S3TaskResult result = new S3TaskResult();
-
-			// Put the image data into S3.
-			try {
-				s3Client.createBucket(AppEnvironment.getPictureBucket());
-
-				// Content type is determined by file extension.
-				PutObjectRequest por = new PutObjectRequest(
-						AppEnvironment.getPictureBucket(), mFileDataName,
-						new java.io.File(paths[0]));
-				s3Client.putObject(por);
-			} catch (Exception exception) {
-
-				result.setErrorMessage(exception.getMessage());
-			}
-
-			return result;
-		}
-
-		protected void onPostExecute(S3TaskResult result) {
-
-			dialog.dismiss();
-
-			if (result.getErrorMessage() != null) {
-
-				displayErrorAlert("Upload Failure", result.getErrorMessage());
-			}
-
-			if (result != null && result.getUri() != null) {
-
-				Toast.makeText(getApplicationContext(),
-						"Uploaded to: " + result.getUri().toString(),
-						Toast.LENGTH_LONG).show();
-				Toast.makeText(getApplicationContext(),
-						"Uploaded to: " + result.getUri().getPath(),
-						Toast.LENGTH_LONG).show();
-
-			}
-
-			new S3GeneratePresignedUrlTask().execute();
-		}
-	}
-
-	private class S3GeneratePresignedUrlTask extends
-			AsyncTask<Void, Void, S3TaskResult> {
-
-		protected S3TaskResult doInBackground(Void... voids) {
-
-			S3TaskResult result = new S3TaskResult();
-
-			try {
-				// Ensure that the image will be treated as such.
-				ResponseHeaderOverrides override = new ResponseHeaderOverrides();
-				override.setContentType("image/jpeg");
-
-				// Generate the presigned URL.
-
-				// Added an hour's worth of milliseconds to the current time.
-				Date expirationDate = new Date(
-						System.currentTimeMillis() + 3600000);
-				GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(
-						AppEnvironment.getPictureBucket(), mFileDataName);
-				urlRequest.setExpiration(expirationDate);
-				urlRequest.setResponseHeaders(override);
-
-				URL url = s3Client.generatePresignedUrl(urlRequest);
-
-				result.setUri(Uri.parse(url.toURI().toString()));
-
-				updateTextView.obtainMessage(VIDEO_SENT).sendToTarget();
-
-			} catch (Exception exception) {
-
-				result.setErrorMessage(exception.getMessage());
-			}
-
-			return result;
-		}
-
-		protected void onPostExecute(S3TaskResult result) {
-
-			if (result.getErrorMessage() != null) {
-
-				displayErrorAlert("There was a failure",
-						result.getErrorMessage());
-			} else if (result.getUri() != null) {
-
-				// Display in Browser.
-				// startActivity(new Intent(Intent.ACTION_VIEW,
-				// result.getUri()));
-
-				Log.i("Upload", "Uploaded to: " + result.getUri().toString());
-				Toast.makeText(getApplicationContext(),
-						"Uploaded successfully", 2000).show();
-
-				TestPostTask task = new TestPostTask();
-				task.execute(new String[] { result.getUri().toString() });
-			}
-		}
-	}
-
-	private class S3TaskResult {
-		String errorMessage = null;
-		Uri uri = null;
-
-		public String getErrorMessage() {
-			return errorMessage;
-		}
-
-		public void setErrorMessage(String errorMessage) {
-			this.errorMessage = errorMessage;
-		}
-
-		public Uri getUri() {
-			return uri;
-		}
-
-		public void setUri(Uri uri) {
-			this.uri = uri;
-		}
-	}
-
-	// Display an Alert message for an error or failure.
-	protected void displayAlert(String title, String message) {
-
-		AlertDialog.Builder confirm = new AlertDialog.Builder(this);
-		confirm.setTitle(title);
-		confirm.setMessage(message);
-
-		confirm.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-
-			public void onClick(DialogInterface dialog, int which) {
-
-				dialog.dismiss();
-			}
-		});
-
-		confirm.show().show();
-	}
-
-	protected void displayErrorAlert(String title, String message) {
-
-		AlertDialog.Builder confirm = new AlertDialog.Builder(this);
-		confirm.setTitle(title);
-		confirm.setMessage(message);
-
-		confirm.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-
-			public void onClick(DialogInterface dialog, int which) {
-
-				HollerbackCameraActivity.this.finish();
-			}
-		});
-
-		confirm.show().show();
-	}
-
-	private class TestPostTask extends AsyncTask<String, Void, String> {
-		@Override
-		protected String doInBackground(String... params) {
-
-			String response = TestHttpClient.postData(params[0], null);
-
-			return response;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			if (result != null) {
-				Toast.makeText(getApplicationContext(), result, 5000).show();
-			}
-		}
-	}
 
 	public final Handler updateTextView = new Handler() {
 		@Override

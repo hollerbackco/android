@@ -14,10 +14,17 @@ import android.hardware.Camera.Size;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager.LayoutParams;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.moziy.hollerback.R;
@@ -36,11 +43,31 @@ public class HaveFunVideoActivity extends Activity implements
 
 	boolean isPrepared;
 
+	// All view crap
+
+	TextView mTimer;
+	Handler handler;
+
+	int secondsPassed;
+
+	View mTopView, mBottomView;
+
+	ImageButton mRecordButton, mSendButton;
+
+	private boolean isRecording = false;
+
+	// All view crap
+
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		handler = new Handler();
+
 		setContentView(R.layout.camera_surface);
+
 		LogUtil.i("Video starting");
 
 		try {
@@ -66,6 +93,36 @@ public class HaveFunVideoActivity extends Activity implements
 		surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.addCallback(this);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+	}
+
+	public void initializeView() {
+		mTopView = findViewById(R.id.top_bar);
+		mBottomView = findViewById(R.id.bottom_bar);
+		mSendButton = (ImageButton) findViewById(R.id.send_button);
+
+		// this 1.5 i guess assumes 640 x 480
+		surfaceHolder.setFixedSize(getWindow().getWindowManager()
+				.getDefaultDisplay().getWidth(), (int) (getWindow()
+				.getWindowManager().getDefaultDisplay().getWidth() * 1.5));
+
+		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mTopView
+				.getLayoutParams();
+		params.height = (getWindow().getWindowManager().getDefaultDisplay()
+				.getHeight() - getWindow().getWindowManager()
+				.getDefaultDisplay().getWidth()) / 2;
+		mTopView.setLayoutParams(params);
+
+		RelativeLayout.LayoutParams bottomParams = (RelativeLayout.LayoutParams) mBottomView
+				.getLayoutParams();
+		bottomParams.height = (getWindow().getWindowManager()
+				.getDefaultDisplay().getHeight() - getWindow()
+				.getWindowManager().getDefaultDisplay().getWidth()) / 2;
+		mBottomView.setLayoutParams(bottomParams);
+
+		mRecordButton = (ImageButton) findViewById(R.id.record_button);
+
+		mTimer = (TextView) findViewById(R.id.timer);
 
 	}
 
@@ -154,7 +211,6 @@ public class HaveFunVideoActivity extends Activity implements
 			Parameters params = mCamera.getParameters();
 			mCamera.setParameters(params);
 
-			mCamera.setDisplayOrientation(90);
 		} else {
 			Toast.makeText(getApplicationContext(), "Camera not available!",
 					Toast.LENGTH_LONG).show();
