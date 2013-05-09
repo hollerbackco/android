@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -21,18 +22,23 @@ import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.moziy.hollerback.HollerbackApplication;
+import com.moziy.hollerback.communication.IABIntent;
+import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.video.S3UploadParams;
+import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 
 //TODO: Abstract the upload methods, verification and buckets
 
-public class S3UploadHelper {
+public class S3RequestHelper {
 
 	private static AmazonS3Client s3Client;
 
-	public S3UploadHelper() {
+	private static OnProgressListener mOnProgressListener;
+
+	public S3RequestHelper() {
 		if (s3Client == null) {
 			s3Client = new AmazonS3Client(new BasicAWSCredentials(
 					AppEnvironment.ACCESS_KEY_ID, AppEnvironment.SECRET_KEY));
@@ -42,6 +48,14 @@ public class S3UploadHelper {
 
 	public String uploadFile(S3UploadParams params, String filePath) {
 		return null;
+	}
+
+	public void registerOnProgressListener(OnProgressListener onProgressListener) {
+		mOnProgressListener = onProgressListener;
+	}
+
+	public void clearOnProgressListener() {
+		mOnProgressListener = null;
 	}
 
 	private class S3PutObjectTask extends
@@ -178,7 +192,7 @@ public class S3UploadHelper {
 	public void doSomeS3Stuff(ArrayList<S3UploadParams> videos) {
 		S3UploadParams[] videosArray = videos.toArray(new S3UploadParams[videos
 				.size()]);
-		new S3UploadHelper.S3GenerateUrlTask().execute(videosArray);
+		new S3RequestHelper.S3GenerateUrlTask().execute(videosArray);
 	}
 
 	public class S3GenerateUrlTask extends
@@ -306,9 +320,11 @@ public class S3UploadHelper {
 			try {
 				while ((bytesRead > 0) && (!this.isCancelled())) {
 					bytesRead = is.read(buffer);
+					if (buffer.length > 0 && bytesRead > 0) {
+						LogUtil.d("QUIT WRITE");
+						outputStream.write(buffer, 0, bytesRead);
+					}
 					totalRead += bytesRead;
-					outputStream.write(buffer, 0, bytesRead);
-
 					publishProgress(totalRead);
 				}
 
@@ -320,9 +336,19 @@ public class S3UploadHelper {
 				// close our stream
 				outputStream.close();
 				is.close();
+				
+				Intent intent = new Intent(IABIntent.INTENT_REQUEST_VIDEO);
+				intent.putExtra(IABIntent.PARAM_ID, reqs[0].getKey());
+				IABroadcastManager.sendLocalBroadcast(intent);
+				LogUtil.i("broadcast Sent");
+
+
 			} catch (Exception e) {
+				e.printStackTrace();
 				return 0L;
 			}
+
+
 			return totalRead;
 		}
 
@@ -335,6 +361,10 @@ public class S3UploadHelper {
 			// LogUtil.i("Progress: " + progress[0].toString() + " / "
 			// + contentLength);
 
+			if (mOnProgressListener != null) {
+				mOnProgressListener.onProgress(progress[0], contentLength);
+			}
+
 			LogUtil.i("Progress: " + (progress[0] * 100 / contentLength) + "%");
 
 		}
@@ -345,6 +375,9 @@ public class S3UploadHelper {
 			// downloadAmount.setText("DONE! " + result);
 			// stopDownButton.setClickable(false);
 			// startDownButton.setClickable(true);
+			if (mOnProgressListener != null) {
+				mOnProgressListener.onComplete();
+			}
 		}
 
 		// From AsyncTask, runs on UI thread called when task is canceled from

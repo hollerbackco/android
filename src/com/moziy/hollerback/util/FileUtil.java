@@ -109,4 +109,13 @@ public class FileUtil {
 
 		return mediaFile;
 	}
+
+	public static String getFilePath() {
+		return Environment.getExternalStorageDirectory().getAbsolutePath()
+				+ "/" + DIRECTORY_NAME;
+	}
+
+	public static String getLocalFile(String fileKey) {
+		return getFilePath() + "/" + fileKey;
+	}
 }

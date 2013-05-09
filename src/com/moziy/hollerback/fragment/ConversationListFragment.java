@@ -25,7 +25,7 @@ import com.moziy.hollerback.adapter.ConversationListAdapter;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
-import com.moziy.hollerback.helper.S3UploadHelper;
+import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
@@ -160,7 +160,7 @@ public class ConversationListFragment extends BaseFragment {
 
 				ArrayList<S3UploadParams> videos = generateUploadParams();
 
-				S3UploadHelper helper = new S3UploadHelper();
+				S3RequestHelper helper = new S3RequestHelper();
 				helper.doSomeS3Stuff(generateUploadParams());
 
 			}

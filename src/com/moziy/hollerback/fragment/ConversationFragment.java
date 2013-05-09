@@ -2,9 +2,9 @@ package com.moziy.hollerback.fragment;
 
 import java.util.ArrayList;
 
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnPreparedListener;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,23 +12,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.MediaController;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
 import com.moziy.hollerback.bitmap.ImageCache;
 import com.moziy.hollerback.bitmap.ImageFetcher;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
+import com.moziy.hollerback.communication.IABIntent;
+import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
-import com.moziy.hollerback.helper.S3UploadHelper;
+import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
+import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerback.view.HorizontalListView;
+import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 
 public class ConversationFragment extends BaseFragment {
 
@@ -50,6 +53,9 @@ public class ConversationFragment extends BaseFragment {
 
 	// Video Playback Stuff
 	private VideoView mVideoView;
+	private TextView mProgressText;
+
+	private S3RequestHelper mS3RequestHelper;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +70,11 @@ public class ConversationFragment extends BaseFragment {
 		mImageFetcher.setLoadingImage(R.drawable.test_thumb);
 		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(),
 				cacheParams);
+
+		mS3RequestHelper = new S3RequestHelper();
+
+		mS3RequestHelper.registerOnProgressListener(mOnProgressListener);
+
 		initializeView(fragmentView);
 
 		return fragmentView;
@@ -76,6 +87,7 @@ public class ConversationFragment extends BaseFragment {
 		mImageFetcher.setPauseWork(false);
 		mImageFetcher.setExitTasksEarly(true);
 		mImageFetcher.flushCache();
+
 	}
 
 	@Override
@@ -83,6 +95,8 @@ public class ConversationFragment extends BaseFragment {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		mImageFetcher.closeCache();
+		IABroadcastManager.unregisterLocalReceiver(receiver);
+		mS3RequestHelper.clearOnProgressListener();
 	}
 
 	@Override
@@ -92,15 +106,8 @@ public class ConversationFragment extends BaseFragment {
 		initializeArgs();
 		mImageFetcher.setExitTasksEarly(false);
 		mVideoGalleryAdapter.notifyDataSetChanged();
-
-		// String UrlPath = "android.resource://com.moziy.hollerback/"
-		// + R.raw.test_video;
-		// mVideoView.setVideoURI(Uri.parse(UrlPath));
-		// MediaController mc = new MediaController(getActivity());
-		// mVideoView.setMediaController(mc);
-		// mVideoView.requestFocus();
-		// mVideoView.start();
-		// mc.show();
+		IABroadcastManager.registerForLocalBroadcast(receiver,
+				IABIntent.INTENT_REQUEST_VIDEO);
 	}
 
 	public void initializeArgs() {
@@ -121,6 +128,7 @@ public class ConversationFragment extends BaseFragment {
 				.findViewById(R.id.vv_conversation_playback);
 		mVideoGallery.setOnItemClickListener(mListener);
 		// mVideoGallery.setOnScrollListener(mOnScrollListener);
+		mProgressText = (TextView) view.findViewById(R.id.tv_progress);
 	}
 
 	OnItemClickListener mListener = new OnItemClickListener() {
@@ -159,9 +167,11 @@ public class ConversationFragment extends BaseFragment {
 			// mVideoView.requestFocus();
 			// mVideoView.start();
 
-			S3UploadHelper helper = new S3UploadHelper();
+			S3RequestHelper helper = new S3RequestHelper();
 			helper.downloadS3(AppEnvironment.PICTURE_BUCKET,
 					model.getFileName());
+
+			mProgressText.setVisibility(View.VISIBLE);
 
 		}
 	};
@@ -181,20 +191,40 @@ public class ConversationFragment extends BaseFragment {
 		return f;
 	}
 
-	// TODO: Move out of here
-	private ArrayList<S3UploadParams> generateUploadParams() {
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
 
-		ArrayList<S3UploadParams> mGetUrls = new ArrayList<S3UploadParams>();
-		for (VideoModel video : TempMemoryStore.conversations.get(0)
-				.getVideos()) {
-			S3UploadParams param = new S3UploadParams();
-			param.setFileName(video.getFileName());
-			param.setOnS3UploadListener(null);
-			param.mVideo = video;
-			mGetUrls.add(param);
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (IABIntent.isIntent(intent, IABIntent.INTENT_REQUEST_VIDEO)) {
+				LogUtil.i("Received ID: "  + IABIntent.PARAM_ID);
+				playVideo(intent.getStringExtra(IABIntent.PARAM_ID));
+				
+			}
+		}
+	};
+
+	private void playVideo(String fileKey) {
+		mVideoView.setVideoPath(FileUtil.getLocalFile(fileKey));
+		mVideoView.requestFocus();
+		mVideoView.start();
+	}
+
+	private OnProgressListener mOnProgressListener = new OnProgressListener() {
+
+		@Override
+		public void onProgress(long amount, long total) {
+			String percent = Long.toString((amount * 100 / total)) + "%";
+			if (!percent.equals(mProgressText.getText().toString())) {
+				mProgressText.setText(percent);
+			}
 		}
 
-		return mGetUrls;
-	}
+		@Override
+		public void onComplete() {
+			mProgressText.setText("");
+			mProgressText.setVisibility(View.GONE);
+
+		}
+	};
 
 }
