@@ -1,5 +1,7 @@
 package com.moziy.hollerback.helper;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,14 +10,20 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.AppEnvironment;
+import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.video.S3UploadParams;
 
 //TODO: Abstract the upload methods, verification and buckets
@@ -184,7 +192,8 @@ public class S3UploadHelper {
 					LogUtil.i("S3GenTask for " + uploadParams.getFileName());
 					// Ensure that the image will be treated as such.
 					ResponseHeaderOverrides override = new ResponseHeaderOverrides();
-					override.setContentType("image/jpeg");
+
+					override.setContentType("video/mp4");
 					Date expirationDate = new Date(
 							System.currentTimeMillis() + 3600000);
 
@@ -194,6 +203,10 @@ public class S3UploadHelper {
 					urlVideoRequest.setExpiration(expirationDate);
 					urlVideoRequest.setResponseHeaders(override);
 
+					URL videoUrl = s3Client
+							.generatePresignedUrl(urlVideoRequest);
+
+					override.setContentType("image/jpeg");
 					GeneratePresignedUrlRequest urlImageRequest = new GeneratePresignedUrlRequest(
 							AppEnvironment.getPictureBucket(),
 							uploadParams.getJPEGName());
@@ -202,8 +215,6 @@ public class S3UploadHelper {
 
 					LogUtil.i("Creating Request: " + uploadParams.getFileName());
 
-					URL videoUrl = s3Client
-							.generatePresignedUrl(urlVideoRequest);
 					URL imageUrl = s3Client
 							.generatePresignedUrl(urlImageRequest);
 
@@ -248,6 +259,99 @@ public class S3UploadHelper {
 				// TestPostTask task = new TestPostTask();
 				// task.execute(new String[] { result.getUri().toString() });
 			}
+		}
+	}
+
+	public void downloadS3(String bucketName, String pictureId) {
+		// S3Object object = s3Client.getObject(bucketName, pictureId);
+		// object.getObjectContent();
+
+		S3DownloadTask downloadTask = new S3DownloadTask();
+		downloadTask.execute(new GetObjectRequest(bucketName, pictureId));
+
+	}
+
+	Long contentLength = 0L;
+
+	private class S3DownloadTask extends
+			AsyncTask<GetObjectRequest, Long, Long> {
+
+		// From AsyncTask, run on UI thread before execution
+		protected void onPreExecute() {
+			// stopDownButton.setClickable(true);
+			// startDownButton.setClickable(false);
+		}
+
+		// From AsyncTask
+		protected Long doInBackground(GetObjectRequest... reqs) {
+			byte buffer[] = new byte[1024];
+			S3ObjectInputStream is;
+			// write the inputStream to a FileOutputStream
+			FileOutputStream outputStream;
+
+			try {
+				contentLength = s3Client.getObject(reqs[0]).getObjectMetadata()
+						.getContentLength();
+				is = s3Client.getObject(reqs[0]).getObjectContent();
+
+				outputStream = new FileOutputStream(
+						FileUtil.getOutputVideoFile(reqs[0].getKey()));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0L;
+			}
+			Long totalRead = 0L;
+			int bytesRead = 1;
+			try {
+				while ((bytesRead > 0) && (!this.isCancelled())) {
+					bytesRead = is.read(buffer);
+					totalRead += bytesRead;
+					outputStream.write(buffer, 0, bytesRead);
+
+					publishProgress(totalRead);
+				}
+
+				// abort the get object request
+				if (this.isCancelled()) {
+					is.abort();
+				}
+
+				// close our stream
+				outputStream.close();
+				is.close();
+			} catch (Exception e) {
+				return 0L;
+			}
+			return totalRead;
+		}
+
+		// From AsyncTask, runs on UI thread when background calls
+		// publishProgress
+		protected void onProgressUpdate(Long... progress) {
+			// Toast.makeText(HollerbackApplication.getInstance(),
+			// progress[0].toString(), 700).show();
+
+			// LogUtil.i("Progress: " + progress[0].toString() + " / "
+			// + contentLength);
+
+			LogUtil.i("Progress: " + (progress[0] * 100 / contentLength) + "%");
+
+		}
+
+		// From AsyncTask, runs on UI thread when background calls
+		// publishProgress
+		protected void onPostExecute(Long result) {
+			// downloadAmount.setText("DONE! " + result);
+			// stopDownButton.setClickable(false);
+			// startDownButton.setClickable(true);
+		}
+
+		// From AsyncTask, runs on UI thread called when task is canceled from
+		// any other thread
+		protected void onCancelled() {
+			// stopDownButton.setClickable(false);
+			// startDownButton.setClickable(true);
 		}
 	}
 

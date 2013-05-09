@@ -3,6 +3,9 @@ package com.moziy.hollerback.util;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+
+import com.moziy.hollerback.debug.LogUtil;
 
 import android.net.Uri;
 import android.os.Environment;
@@ -59,4 +62,51 @@ public class FileUtil {
 		return mediaFile;
 	}
 
+	/** Create a File for saving an image or video */
+	public static File getOutputVideoFile(String filename) {
+		// To be safe, you should check that the SDCard is mounted
+		// using Environment.getExternalStorageState() before doing this.
+
+		// File mediaStorageDir = new File(Environment
+		// .getExternalStorageDirectory().getAbsolutePath()
+		// + "/"
+		// + DIRECTORY_NAME);
+		//
+		// // This location works best if you want the created images to be
+		// shared
+		// // between applications and persist after your app has been
+		// uninstalled.
+		//
+		// // Create the storage directory if it does not exist
+		// if (!mediaStorageDir.exists()) {
+		// if (!mediaStorageDir.mkdirs()) {
+		// Log.d(TAG, "failed to create directory");
+		// return null;
+		// }
+		// }
+
+		String[] fileParts = filename.split(Matcher.quoteReplacement(System
+				.getProperty("file.separator")));
+		LogUtil.i("File: " + fileParts[0]);
+		LogUtil.i("File: " + fileParts[1]);
+
+		File mediaStorageDir = new File(Environment
+				.getExternalStorageDirectory().getAbsolutePath()
+				+ "/"
+				+ DIRECTORY_NAME + "/" + fileParts[0]);
+		// Create the storage directory if it does not exist
+		if (!mediaStorageDir.exists()) {
+			if (!mediaStorageDir.mkdirs()) {
+				Log.d(TAG, "failed to create directory");
+				return null;
+			}
+		}
+		// Create a media file name
+
+		File mediaFile;
+
+		mediaFile = new File(mediaStorageDir.getPath() + "/" + fileParts[1]);
+
+		return mediaFile;
+	}
 }

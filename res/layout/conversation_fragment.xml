@@ -8,7 +8,8 @@
     <com.moziy.hollerback.view.HorizontalListView
         android:id="@+id/hlz_video_gallery"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true" />
 
     <Button
         android:id="@+id/btn_video_reply"
@@ -25,7 +26,7 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/btn_video_reply"
         android:layout_below="@+id/hlz_video_gallery"
-        android:background="#656565" >
+        android:background="#696969" >
 
         <VideoView
             android:id="@+id/vv_conversation_playback"
