@@ -73,6 +73,7 @@ public class HollerbackCameraActivity extends Activity {
 
 	float targetPreviewWidth;
 	float targetPreviewHeight;
+	String targetExtension;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,9 +97,10 @@ public class HollerbackCameraActivity extends Activity {
 
 		CamcorderProfile prof = CamcorderProfile
 				.get(CamcorderProfile.QUALITY_LOW);
-		
+
 		targetPreviewWidth = prof.videoFrameWidth;
 		targetPreviewHeight = prof.videoFrameHeight;
+		targetExtension = FileUtil.getFileFormat(prof.fileFormat);
 
 		// this 1.5 i guess assumes 640 x 480
 		previewHolder
@@ -218,23 +220,21 @@ public class HollerbackCameraActivity extends Activity {
 
 	@Override
 	public void onPause() {
-		if (inPreview) {
-			camera.stopPreview();
-		}
-
-		camera.release();
-		camera = null;
-		inPreview = false;
+		// if (inPreview) {
+		// camera.stopPreview();
+		// }
+		//
+		// camera.release();
+		// camera = null;
+		// inPreview = false;
 		super.onPause();
 	}
 
 	private String getNewFileName() {
-		mFileDataPath = FileUtil.getOutputMediaFile(FileUtil.MEDIA_TYPE_VIDEO)
-				.toString();
-		String[] temp = mFileDataPath.split("/");
 
-		mFileDataName = temp[temp.length - 1];
-
+		mFileDataName = FileUtil.generateRandomFileName() + "."
+				+ targetExtension;
+		mFileDataPath = FileUtil.getOutputVideoFile(mFileDataName).toString();
 		Toast.makeText(this, mFileDataName, 3000).show();
 
 		return mFileDataPath;
@@ -289,7 +289,7 @@ public class HollerbackCameraActivity extends Activity {
 		LogUtil.i("Record size: " + prof.videoFrameWidth + " "
 				+ prof.videoFrameHeight);
 
-		recorder.setOrientationHint(90);
+		recorder.setOrientationHint(270);
 
 		// Step 4: Set output file
 		recorder.setOutputFile(getNewFileName());
@@ -342,7 +342,8 @@ public class HollerbackCameraActivity extends Activity {
 		public void surfaceChanged(SurfaceHolder holder, int format, int width,
 				int height) {
 			Camera.Parameters parameters = camera.getParameters();
-			Camera.Size size = getBestPreviewSize((int)targetPreviewWidth, (int) targetPreviewHeight, parameters);
+			Camera.Size size = getBestPreviewSize((int) targetPreviewWidth,
+					(int) targetPreviewHeight, parameters);
 			LogUtil.i("Best size: " + size.width + " " + size.height);
 
 			if (size != null) {

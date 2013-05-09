@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 
 import com.moziy.hollerback.debug.LogUtil;
 
+import android.media.MediaRecorder.OutputFormat;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -129,9 +130,25 @@ public class FileUtil {
 
 	/**
 	 * Generates a EF/dasdfadsfafafdsfafas extensionless name
+	 * 
 	 * @return
 	 */
 	public static String generateRandomFileName() {
 		return generateRandomHexName() + "/" + UUID.randomUUID();
+	}
+
+	public static String getFileFormat(int fileFormat) {
+		switch (fileFormat) {
+		case OutputFormat.MPEG_4:
+			return "mp4";
+		case OutputFormat.RAW_AMR:
+			return "RAW_AMR";
+		case OutputFormat.THREE_GPP:
+			return "3gp";
+		case OutputFormat.DEFAULT:
+			return "DEFAULT";
+		default:
+			return "unknown";
+		}
 	}
 }
