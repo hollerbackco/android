@@ -1,23 +1,14 @@
 package com.moziy.hollerback.activity;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
-import android.media.MediaRecorder.AudioEncoder;
-import android.media.MediaRecorder.OutputFormat;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,25 +20,17 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.moziy.hollerback.R;
-import com.moziy.hollerback.R.drawable;
-import com.moziy.hollerback.R.id;
-import com.moziy.hollerback.R.layout;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
-import com.moziy.hollerbacky.connection.TestHttpClient;
 
 public class HollerbackCameraActivity extends Activity {
 
@@ -259,13 +242,15 @@ public class HollerbackCameraActivity extends Activity {
 	}
 
 	public void displayPreview() {
+		
+		preview.setVisibility(View.INVISIBLE);
+		
 		mPreviewParentView.setVisibility(View.VISIBLE);
 		mPreviewVideoView.setVisibility(View.VISIBLE);
 		mPreviewPlayBtn.setVisibility(View.VISIBLE);
-		preview.setVisibility(View.GONE);
 		mPreviewDeleteBtn.setVisibility(View.VISIBLE);
-		
-		mPreviewVideoView.setOnCompletionListener(new OnCompletionListener(){
+
+		mPreviewVideoView.setOnCompletionListener(new OnCompletionListener() {
 
 			@Override
 			public void onCompletion(MediaPlayer mp) {
@@ -294,15 +279,20 @@ public class HollerbackCameraActivity extends Activity {
 	}
 
 	public void hidePreview() {
+		
+		preview.setVisibility(View.VISIBLE);
+
 		mPreviewParentView.setVisibility(View.GONE);
 		mPreviewVideoView.setVisibility(View.GONE);
 		mPreviewPlayBtn.setVisibility(View.GONE);
-		preview.setVisibility(View.VISIBLE);
 		mPreviewDeleteBtn.setVisibility(View.GONE);
 
 		mPreviewDeleteBtn.setOnClickListener(null);
 
 		mPreviewPlayBtn.setOnClickListener(null);
+
+		mRecordButton.setVisibility(View.VISIBLE);
+		mSendButton.setVisibility(View.GONE);
 	}
 
 	private String getNewFileName() {
