@@ -3,6 +3,8 @@ package com.moziy.hollerback.activity;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
@@ -10,9 +12,11 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder.OutputFormat;
 import android.media.MediaRecorder;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore.Video.Thumbnails;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -21,6 +25,8 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -72,6 +78,7 @@ public class HollerbackCameraActivity extends Activity {
 	private View mPreviewParentView;
 	private VideoView mPreviewVideoView;
 	private ImageButton mPreviewPlayBtn, mPreviewDeleteBtn;
+	private ImageView mImagePreview;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,6 +98,7 @@ public class HollerbackCameraActivity extends Activity {
 		mPreviewVideoView = (VideoView) findViewById(R.id.vv_video_preview);
 		mPreviewPlayBtn = (ImageButton) findViewById(R.id.ib_play_btn);
 		mPreviewDeleteBtn = (ImageButton) findViewById(R.id.ib_delete_btn);
+		mImagePreview = (ImageView) findViewById(R.id.iv_video_preview);
 
 		preview = (SurfaceView) findViewById(R.id.surface);
 
@@ -111,6 +119,13 @@ public class HollerbackCameraActivity extends Activity {
 								.getWidth(),
 						(int) (getWindow().getWindowManager()
 								.getDefaultDisplay().getWidth() * (targetPreviewWidth / targetPreviewHeight)));
+
+		RelativeLayout.LayoutParams mImagePreviewParams = (RelativeLayout.LayoutParams) mImagePreview
+				.getLayoutParams();
+		mImagePreviewParams.height = (int) (getWindow().getWindowManager()
+				.getDefaultDisplay().getWidth() * (targetPreviewWidth / targetPreviewHeight));
+
+		mImagePreview.setLayoutParams(mImagePreviewParams);
 
 		// RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
 		// mTopView
@@ -173,6 +188,7 @@ public class HollerbackCameraActivity extends Activity {
 		super.onResume();
 		try {
 			camera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
+
 			Log.e("Hollerback", "Camera successfully opened");
 		} catch (RuntimeException e) {
 			Log.e("Hollerback",
@@ -247,6 +263,8 @@ public class HollerbackCameraActivity extends Activity {
 		if (inPreview) {
 			camera.stopPreview();
 		}
+		
+		mImagePreview.setVisibility(View.VISIBLE);
 
 		preview.setVisibility(View.GONE);
 
@@ -256,6 +274,11 @@ public class HollerbackCameraActivity extends Activity {
 		mPreviewVideoView.setVisibility(View.VISIBLE);
 		mPreviewPlayBtn.setVisibility(View.VISIBLE);
 		mPreviewDeleteBtn.setVisibility(View.VISIBLE);
+
+		Bitmap bmThumbnail = ThumbnailUtils.createVideoThumbnail(
+				FileUtil.getLocalFile(mFileDataName),
+				Thumbnails.FULL_SCREEN_KIND);
+		mImagePreview.setBackgroundDrawable(new BitmapDrawable(bmThumbnail));
 
 		mPreviewVideoView.setOnCompletionListener(new OnCompletionListener() {
 
@@ -314,7 +337,11 @@ public class HollerbackCameraActivity extends Activity {
 	}
 
 	private void playVideo(String fileKey) {
+		
+		mImagePreview.setVisibility(View.GONE);
+		
 		mPreviewVideoView.setVideoPath(FileUtil.getLocalFile(fileKey));
+
 		mPreviewVideoView.requestFocus();
 		mPreviewVideoView.start();
 		LogUtil.i("vid size: " + mPreviewVideoView.getHeight()
@@ -343,7 +370,6 @@ public class HollerbackCameraActivity extends Activity {
 
 		targetExtension = FileUtil.getFileFormat(OutputFormat.MPEG_4);
 
-		
 		CamcorderProfile prof = CamcorderProfile
 				.get(CamcorderProfile.QUALITY_LOW);
 

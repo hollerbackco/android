@@ -1,13 +1,18 @@
 package com.moziy.hollerback.util;
 
 import android.hardware.Camera;
-import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.media.MediaRecorder.OutputFormat;
 
 import com.moziy.hollerback.debug.LogUtil;
 
 public class CameraUtil {
+
+	public static final int AUDIO_SAMPLE_RATE = 32000;
+	public static final int AUDIO_ENCODING_BIT_RATE = 128000;
+	public static final int AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC;
+	public static final int VIDEO_ENCODING_RATE = 3000000;
+	public static final int VIDEO_OUTPUT_FORMAT = MediaRecorder.OutputFormat.MPEG_4;
+	public static final int VIDEO_OUTPUT_ENCODER = MediaRecorder.VideoEncoder.MPEG_4_SP;
 
 	public static Camera.Size getBestPreviewSize(int width, int height,
 			Camera.Parameters parameters) {
@@ -31,12 +36,12 @@ public class CameraUtil {
 	}
 
 	public static void setFrontFacingParams(MediaRecorder recorder) {
-	    recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-	    recorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
-		recorder.setAudioSamplingRate(16000);
-		recorder.setAudioEncodingBitRate(64000);
-		recorder.setVideoEncodingBitRate(512000);
-	    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+		recorder.setOutputFormat(VIDEO_OUTPUT_FORMAT);
+		recorder.setVideoEncoder(VIDEO_OUTPUT_ENCODER);
+		recorder.setAudioSamplingRate(AUDIO_SAMPLE_RATE);
+		recorder.setAudioEncodingBitRate(AUDIO_ENCODING_BIT_RATE);
+		recorder.setVideoEncodingBitRate(VIDEO_ENCODING_RATE);
+		recorder.setAudioEncoder(AUDIO_ENCODER);
 		recorder.setVideoSize(480, 320);
 	}
 
