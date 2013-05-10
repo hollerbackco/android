@@ -22,6 +22,8 @@ public class AppEnvironment {
 	public static final int ENV_DEVELOPMENT = 0x1234;
 
 	public static final int ENV = ENV_PRODUCTION;
+	
+	public static final String IMAGE_THUMB_SUFFIX = "-thumb.png";
 
 	public static String getPictureBucket() {
 		return PICTURE_BUCKET;

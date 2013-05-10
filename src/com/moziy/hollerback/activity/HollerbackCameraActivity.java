@@ -35,6 +35,7 @@ import com.moziy.hollerback.R;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
+import com.moziy.hollerback.util.ImageUtil;
 
 public class HollerbackCameraActivity extends Activity {
 
@@ -246,6 +247,8 @@ public class HollerbackCameraActivity extends Activity {
 		secondsPassed = 0;
 
 		displayPreview();
+		ImageUtil.generateThumbnail(mFileDataName);
+
 	}
 
 	public void displayPreview() {
@@ -253,7 +256,7 @@ public class HollerbackCameraActivity extends Activity {
 		if (inPreview) {
 			camera.stopPreview();
 		}
-		
+
 		mImagePreview.setVisibility(View.VISIBLE);
 
 		preview.setVisibility(View.GONE);
@@ -327,9 +330,9 @@ public class HollerbackCameraActivity extends Activity {
 	}
 
 	private void playVideo(String fileKey) {
-		
+
 		mImagePreview.setVisibility(View.GONE);
-		
+
 		mPreviewVideoView.setVideoPath(FileUtil.getLocalFile(fileKey));
 
 		mPreviewVideoView.requestFocus();

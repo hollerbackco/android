@@ -115,18 +115,18 @@ public class FileUtil {
 	}
 
 	public static String getFilePath() {
-		
-		String filePath = Environment.getExternalStorageDirectory().getAbsolutePath()
-				+ "/" + DIRECTORY_NAME;
-		
-		//LogUtil.i("DIR: " + filePath);
-		
+
+		String filePath = Environment.getExternalStorageDirectory()
+				.getAbsolutePath() + "/" + DIRECTORY_NAME;
+
+		// LogUtil.i("DIR: " + filePath);
+
 		return filePath;
 	}
 
 	public static String getLocalFile(String fileKey) {
 		String path = (getFilePath() + "/" + fileKey);
-		//LogUtil.i("Local File: " + path);
+		// LogUtil.i("Local File: " + path);
 		return path;
 	}
 
@@ -157,5 +157,9 @@ public class FileUtil {
 		default:
 			return "unknown";
 		}
+	}
+
+	public static String getImageUploadName(String filename) {
+		return filename.split("\\.")[0] + "-thumb.png";
 	}
 }
