@@ -1,5 +1,7 @@
 package com.moziy.hollerback.fragment;
 
+import java.io.File;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -172,7 +174,7 @@ public class ConversationFragment extends BaseFragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_REQUEST_VIDEO)) {
-				LogUtil.i("Received ID: " + IABIntent.PARAM_ID);
+				LogUtil.i("Received ID: " + intent.getStringExtra(IABIntent.PARAM_ID));
 				playVideo(intent.getStringExtra(IABIntent.PARAM_ID));
 
 			}
@@ -180,8 +182,13 @@ public class ConversationFragment extends BaseFragment {
 	};
 
 	private void playVideo(String fileKey) {
-		mVideoView.setVideoPath(FileUtil.getLocalFile(fileKey));
+		String path = FileUtil.getLocalFile(fileKey);
+		
+		LogUtil.i("Play video: " + path);
+		
+		mVideoView.setVideoPath(path);
 		mVideoView.requestFocus();
+		mVideoView.bringToFront();
 		mVideoView.start();
 	}
 

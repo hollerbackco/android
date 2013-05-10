@@ -10,8 +10,8 @@ import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaRecorder.OutputFormat;
 import android.media.MediaRecorder;
+import android.media.MediaRecorder.OutputFormat;
 import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,11 +31,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.debug.LogUtil;
-import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
 
@@ -65,10 +62,6 @@ public class HollerbackCameraActivity extends Activity {
 	private boolean isRecording = false;
 
 	static MediaRecorder recorder;
-
-	private AmazonS3Client s3Client = new AmazonS3Client(
-			new BasicAWSCredentials(AppEnvironment.ACCESS_KEY_ID,
-					AppEnvironment.SECRET_KEY));
 
 	float targetPreviewWidth;
 	float targetPreviewHeight;
@@ -105,9 +98,6 @@ public class HollerbackCameraActivity extends Activity {
 		previewHolder = preview.getHolder();
 		previewHolder.addCallback(surfaceCallback);
 		previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-		CamcorderProfile prof = CamcorderProfile
-				.get(CamcorderProfile.QUALITY_LOW);
 
 		targetPreviewWidth = 480;
 		targetPreviewHeight = 320;

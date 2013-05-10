@@ -58,6 +58,77 @@ public class S3RequestHelper {
 		mOnProgressListener = null;
 	}
 
+	public void startUpload(S3UploadParams param) {
+		S3VideoUploadTask uploadTask = new S3VideoUploadTask();
+		uploadTask.execute(param);
+	}
+
+	private class S3VideoUploadTask extends
+			AsyncTask<S3UploadParams, Void, S3TaskResult> {
+
+		ProgressDialog dialog;
+
+		protected void onPreExecute() {
+			// dialog = new ProgressDialog(HollerbackCameraActivity.this);
+			// dialog.setMessage("Uploading");
+			// dialog.setCancelable(false);
+			// dialog.show();
+		}
+
+		protected S3TaskResult doInBackground(S3UploadParams... videos) {
+
+			if (videos == null || videos.length != 1) {
+				return null;
+			}
+
+			S3UploadParams requestParam = videos[0];
+
+			S3TaskResult result = new S3TaskResult();
+
+			// Put the image data into S3.
+			try {
+				s3Client.createBucket(AppEnvironment.getPictureBucket());
+
+				// Content type is determined by file extension.
+				PutObjectRequest por = new PutObjectRequest(
+						AppEnvironment.getPictureBucket(),
+						requestParam.getFileName(), new java.io.File(
+								requestParam.getFilePath()));
+				s3Client.putObject(por);
+			} catch (Exception exception) {
+
+				result.setErrorMessage(exception.getMessage());
+			}
+
+			return result;
+		}
+
+		protected void onPostExecute(S3TaskResult result) {
+
+			dialog.dismiss();
+
+			if (result.getErrorMessage() != null) {
+
+				// displayErrorAlert("Upload Failure",
+				// result.getErrorMessage());
+			}
+
+			if (result != null && result.getUri() != null) {
+
+				// Toast.makeText(getApplicationContext(),
+				// "Uploaded to: " + result.getUri().toString(),
+				// Toast.LENGTH_LONG).show();
+				// Toast.makeText(getApplicationContext(),
+				// "Uploaded to: " + result.getUri().getPath(),
+				// Toast.LENGTH_LONG).show();
+
+			}
+
+			new S3GeneratePresignedUrlTask()
+					.execute(new S3UploadParams[] { result.getS3UploadParams() });
+		}
+	}
+
 	private class S3PutObjectTask extends
 			AsyncTask<S3UploadParams, Void, S3TaskResult> {
 
@@ -299,8 +370,6 @@ public class S3RequestHelper {
 	private class S3DownloadTask extends
 			AsyncTask<GetObjectRequest, Long, Long> {
 
-
-
 		// From AsyncTask, run on UI thread before execution
 		protected void onPreExecute() {
 			// stopDownButton.setClickable(true);
@@ -314,9 +383,12 @@ public class S3RequestHelper {
 			// write the inputStream to a FileOutputStream
 			FileOutputStream outputStream;
 
+			String request = reqs[0].getKey();
+			
 			try {
 				contentLength = s3Client.getObject(reqs[0]).getObjectMetadata()
 						.getContentLength();
+				LogUtil.i("Content Length: " + contentLength + " Request: " + request);
 				is = s3Client.getObject(reqs[0]).getObjectContent();
 
 				outputStream = new FileOutputStream(
@@ -332,7 +404,7 @@ public class S3RequestHelper {
 				while ((bytesRead > 0) && (!this.isCancelled())) {
 					bytesRead = is.read(buffer);
 					if (buffer.length > 0 && bytesRead > 0) {
-						//LogUtil.d("QUIT WRITE");
+						 LogUtil.d("QUIT WRITE");
 						outputStream.write(buffer, 0, bytesRead);
 					}
 					totalRead += bytesRead;
@@ -351,7 +423,7 @@ public class S3RequestHelper {
 				if (!this.isCancelled()) {
 
 					Intent intent = new Intent(IABIntent.INTENT_REQUEST_VIDEO);
-					intent.putExtra(IABIntent.PARAM_ID, reqs[0].getKey());
+					intent.putExtra(IABIntent.PARAM_ID, request);
 					IABroadcastManager.sendLocalBroadcast(intent);
 					LogUtil.i("broadcast Sent");
 				} else {
@@ -372,14 +444,15 @@ public class S3RequestHelper {
 			// Toast.makeText(HollerbackApplication.getInstance(),
 			// progress[0].toString(), 700).show();
 
-			// LogUtil.i("Progress: " + progress[0].toString() + " / "
-			// + contentLength);
+			 LogUtil.i("Progress: " + progress[0].toString() + " / "
+			 + contentLength);
 
 			if (mOnProgressListener != null) {
 				mOnProgressListener.onProgress(progress[0], contentLength);
 			}
 
-			//LogUtil.i("Progress: " + (progress[0] * 100 / contentLength) + "%");
+			// LogUtil.i("Progress: " + (progress[0] * 100 / contentLength) +
+			// "%");
 
 		}
 

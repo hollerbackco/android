@@ -115,12 +115,19 @@ public class FileUtil {
 	}
 
 	public static String getFilePath() {
-		return Environment.getExternalStorageDirectory().getAbsolutePath()
+		
+		String filePath = Environment.getExternalStorageDirectory().getAbsolutePath()
 				+ "/" + DIRECTORY_NAME;
+		
+		//LogUtil.i("DIR: " + filePath);
+		
+		return filePath;
 	}
 
 	public static String getLocalFile(String fileKey) {
-		return getFilePath() + "/" + fileKey;
+		String path = (getFilePath() + "/" + fileKey);
+		//LogUtil.i("Local File: " + path);
+		return path;
 	}
 
 	public static String generateRandomHexName() {
