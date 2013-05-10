@@ -206,6 +206,7 @@ public class HollerbackCameraActivity extends Activity {
 			// Camera is available and unlocked, MediaRecorder is
 			// prepared,
 			// now you can start recording
+
 			recorder.start();
 
 			// inform the user that recording has started
@@ -242,9 +243,15 @@ public class HollerbackCameraActivity extends Activity {
 	}
 
 	public void displayPreview() {
-		
-		preview.setVisibility(View.INVISIBLE);
-		
+
+		if (inPreview) {
+			camera.stopPreview();
+		}
+
+		preview.setVisibility(View.GONE);
+
+		inPreview = false;
+
 		mPreviewParentView.setVisibility(View.VISIBLE);
 		mPreviewVideoView.setVisibility(View.VISIBLE);
 		mPreviewPlayBtn.setVisibility(View.VISIBLE);
@@ -279,8 +286,9 @@ public class HollerbackCameraActivity extends Activity {
 	}
 
 	public void hidePreview() {
-		
+
 		preview.setVisibility(View.VISIBLE);
+		previewHolder.addCallback(surfaceCallback);
 
 		mPreviewParentView.setVisibility(View.GONE);
 		mPreviewVideoView.setVisibility(View.GONE);
