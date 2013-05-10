@@ -8,6 +8,7 @@ import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaRecorder.OutputFormat;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -100,9 +101,8 @@ public class HollerbackCameraActivity extends Activity {
 		CamcorderProfile prof = CamcorderProfile
 				.get(CamcorderProfile.QUALITY_LOW);
 
-		targetPreviewWidth = prof.videoFrameWidth;
-		targetPreviewHeight = prof.videoFrameHeight;
-		targetExtension = FileUtil.getFileFormat(prof.fileFormat);
+		targetPreviewWidth = 480;
+		targetPreviewHeight = 320;
 
 		// this 1.5 i guess assumes 640 x 480
 		previewHolder
@@ -317,6 +317,8 @@ public class HollerbackCameraActivity extends Activity {
 		mPreviewVideoView.setVideoPath(FileUtil.getLocalFile(fileKey));
 		mPreviewVideoView.requestFocus();
 		mPreviewVideoView.start();
+		LogUtil.i("vid size: " + mPreviewVideoView.getHeight()
+				+ mPreviewVideoView.getWidth());
 	}
 
 	private boolean prepareVideoRecorder() {
@@ -339,6 +341,9 @@ public class HollerbackCameraActivity extends Activity {
 
 		CameraUtil.setFrontFacingParams(recorder);
 
+		targetExtension = FileUtil.getFileFormat(OutputFormat.MPEG_4);
+
+		
 		CamcorderProfile prof = CamcorderProfile
 				.get(CamcorderProfile.QUALITY_LOW);
 

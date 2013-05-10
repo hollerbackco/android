@@ -3,6 +3,7 @@ package com.moziy.hollerback.util;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.media.MediaRecorder.OutputFormat;
 
 import com.moziy.hollerback.debug.LogUtil;
 
@@ -30,10 +31,12 @@ public class CameraUtil {
 	}
 
 	public static void setFrontFacingParams(MediaRecorder recorder) {
-		recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
+	    recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+	    recorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
 		recorder.setAudioSamplingRate(16000);
 		recorder.setAudioEncodingBitRate(64000);
 		recorder.setVideoEncodingBitRate(512000);
+	    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 		recorder.setVideoSize(480, 320);
 	}
 
