@@ -1,6 +1,5 @@
 package com.moziy.hollerback.helper;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -19,9 +17,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
-import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
@@ -56,77 +52,6 @@ public class S3RequestHelper {
 
 	public void clearOnProgressListener() {
 		mOnProgressListener = null;
-	}
-
-	public void startUpload(S3UploadParams param) {
-		S3VideoUploadTask uploadTask = new S3VideoUploadTask();
-		uploadTask.execute(param);
-	}
-
-	private class S3VideoUploadTask extends
-			AsyncTask<S3UploadParams, Void, S3TaskResult> {
-
-		ProgressDialog dialog;
-
-		protected void onPreExecute() {
-			// dialog = new ProgressDialog(HollerbackCameraActivity.this);
-			// dialog.setMessage("Uploading");
-			// dialog.setCancelable(false);
-			// dialog.show();
-		}
-
-		protected S3TaskResult doInBackground(S3UploadParams... videos) {
-
-			if (videos == null || videos.length != 1) {
-				return null;
-			}
-
-			S3UploadParams requestParam = videos[0];
-
-			S3TaskResult result = new S3TaskResult();
-
-			// Put the image data into S3.
-			try {
-				s3Client.createBucket(AppEnvironment.getPictureBucket());
-
-				// Content type is determined by file extension.
-				PutObjectRequest por = new PutObjectRequest(
-						AppEnvironment.getPictureBucket(),
-						requestParam.getFileName(), new java.io.File(
-								requestParam.getFilePath()));
-				s3Client.putObject(por);
-			} catch (Exception exception) {
-
-				result.setErrorMessage(exception.getMessage());
-			}
-
-			return result;
-		}
-
-		protected void onPostExecute(S3TaskResult result) {
-
-			dialog.dismiss();
-
-			if (result.getErrorMessage() != null) {
-
-				// displayErrorAlert("Upload Failure",
-				// result.getErrorMessage());
-			}
-
-			if (result != null && result.getUri() != null) {
-
-				// Toast.makeText(getApplicationContext(),
-				// "Uploaded to: " + result.getUri().toString(),
-				// Toast.LENGTH_LONG).show();
-				// Toast.makeText(getApplicationContext(),
-				// "Uploaded to: " + result.getUri().getPath(),
-				// Toast.LENGTH_LONG).show();
-
-			}
-
-			new S3GeneratePresignedUrlTask()
-					.execute(new S3UploadParams[] { result.getS3UploadParams() });
-		}
 	}
 
 	private class S3PutObjectTask extends

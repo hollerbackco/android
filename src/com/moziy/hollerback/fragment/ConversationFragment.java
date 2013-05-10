@@ -34,6 +34,9 @@ import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 
 public class ConversationFragment extends BaseFragment {
 
+	/**
+	 * This piece of shit takes up 100% height unless you restrict it
+	 */
 	private HorizontalListView mVideoGallery;
 	private VideoGalleryAdapter mVideoGalleryAdapter;
 
@@ -188,7 +191,6 @@ public class ConversationFragment extends BaseFragment {
 		
 		mVideoView.setVideoPath(path);
 		mVideoView.requestFocus();
-		mVideoView.bringToFront();
 		mVideoView.start();
 	}
 
