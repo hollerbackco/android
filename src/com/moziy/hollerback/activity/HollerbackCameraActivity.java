@@ -1,4 +1,4 @@
-package com.moziy.hollerback;
+package com.moziy.hollerback.activity;
 
 import java.io.IOException;
 import java.net.URL;
@@ -11,7 +11,10 @@ import android.content.DialogInterface;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
+import android.media.MediaRecorder.AudioEncoder;
 import android.media.MediaRecorder.OutputFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -29,14 +32,20 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
+import com.moziy.hollerback.R;
+import com.moziy.hollerback.R.drawable;
+import com.moziy.hollerback.R.id;
+import com.moziy.hollerback.R.layout;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.AppEnvironment;
+import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerbacky.connection.TestHttpClient;
 
@@ -75,6 +84,11 @@ public class HollerbackCameraActivity extends Activity {
 	float targetPreviewHeight;
 	String targetExtension;
 
+	// Preview shit
+	private View mPreviewParentView;
+	private VideoView mPreviewVideoView;
+	private ImageButton mPreviewPlayBtn, mPreviewDeleteBtn;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -88,6 +102,11 @@ public class HollerbackCameraActivity extends Activity {
 		mTopView = findViewById(R.id.top_bar);
 		mBottomView = findViewById(R.id.bottom_bar);
 		mSendButton = (ImageButton) findViewById(R.id.send_button);
+
+		mPreviewParentView = findViewById(R.id.rl_video_preview);
+		mPreviewVideoView = (VideoView) findViewById(R.id.vv_video_preview);
+		mPreviewPlayBtn = (ImageButton) findViewById(R.id.ib_play_btn);
+		mPreviewDeleteBtn = (ImageButton) findViewById(R.id.ib_delete_btn);
 
 		preview = (SurfaceView) findViewById(R.id.surface);
 
@@ -142,44 +161,9 @@ public class HollerbackCameraActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (isRecording) {
-					// stop recording and release camera
-					recorder.stop(); // stop the recording
-					releaseMediaRecorder(); // release the MediaRecorder object
-					camera.lock(); // take camera access back from MediaRecorder
-
-					// inform the user that recording has stopped
-					mRecordButton.setImageResource(R.drawable.record_button);
-					isRecording = false;
-					Toast.makeText(getApplicationContext(),
-							"Saved to: " + mFileDataPath, 5000).show();
-
-					if (mFileDataPath != null) {
-						mRecordButton.setVisibility(View.GONE);
-						mSendButton.setVisibility(View.VISIBLE);
-					}
-					handler.removeCallbacks(timeTask);
-					secondsPassed = 0;
-
+					stopRecording();
 				} else {
-					mSendButton.setVisibility(View.GONE);
-
-					// initialize video camera
-					if (prepareVideoRecorder()) {
-						mTimer.setText("00:00");
-						// Camera is available and unlocked, MediaRecorder is
-						// prepared,
-						// now you can start recording
-						recorder.start();
-
-						// inform the user that recording has started
-						mRecordButton.setImageResource(R.drawable.stop_button);
-						isRecording = true;
-						handler.postDelayed(timeTask, 1000);
-					} else {
-						// prepare didn't work, release the camera
-						releaseMediaRecorder();
-						// inform user
-					}
+					startRecording();
 				}
 			}
 		});
@@ -230,6 +214,97 @@ public class HollerbackCameraActivity extends Activity {
 		super.onPause();
 	}
 
+	private void startRecording() {
+		mSendButton.setVisibility(View.GONE);
+
+		// initialize video camera
+		if (prepareVideoRecorder()) {
+			mTimer.setText("00:00");
+			// Camera is available and unlocked, MediaRecorder is
+			// prepared,
+			// now you can start recording
+			recorder.start();
+
+			// inform the user that recording has started
+			mRecordButton.setImageResource(R.drawable.stop_button);
+			isRecording = true;
+			handler.postDelayed(timeTask, 1000);
+		} else {
+			// prepare didn't work, release the camera
+			releaseMediaRecorder();
+			// inform user
+		}
+	}
+
+	private void stopRecording() {
+		// stop recording and release camera
+		recorder.stop(); // stop the recording
+		releaseMediaRecorder(); // release the MediaRecorder object
+		camera.lock(); // take camera access back from MediaRecorder
+
+		// inform the user that recording has stopped
+		mRecordButton.setImageResource(R.drawable.record_button);
+		isRecording = false;
+		Toast.makeText(getApplicationContext(), "Saved to: " + mFileDataPath,
+				5000).show();
+
+		if (mFileDataPath != null) {
+			mRecordButton.setVisibility(View.GONE);
+			mSendButton.setVisibility(View.VISIBLE);
+		}
+		handler.removeCallbacks(timeTask);
+		secondsPassed = 0;
+
+		displayPreview();
+	}
+
+	public void displayPreview() {
+		mPreviewParentView.setVisibility(View.VISIBLE);
+		mPreviewVideoView.setVisibility(View.VISIBLE);
+		mPreviewPlayBtn.setVisibility(View.VISIBLE);
+		preview.setVisibility(View.GONE);
+		mPreviewDeleteBtn.setVisibility(View.VISIBLE);
+		
+		mPreviewVideoView.setOnCompletionListener(new OnCompletionListener(){
+
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				// TODO Auto-generated method stub
+				mPreviewPlayBtn.setVisibility(View.VISIBLE);
+			}
+		});
+
+		mPreviewDeleteBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				hidePreview();
+			}
+		});
+
+		mPreviewPlayBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				playVideo(mFileDataName);
+				mPreviewPlayBtn.setVisibility(View.GONE);
+			}
+		});
+
+	}
+
+	public void hidePreview() {
+		mPreviewParentView.setVisibility(View.GONE);
+		mPreviewVideoView.setVisibility(View.GONE);
+		mPreviewPlayBtn.setVisibility(View.GONE);
+		preview.setVisibility(View.VISIBLE);
+		mPreviewDeleteBtn.setVisibility(View.GONE);
+
+		mPreviewDeleteBtn.setOnClickListener(null);
+
+		mPreviewPlayBtn.setOnClickListener(null);
+	}
+
 	private String getNewFileName() {
 
 		mFileDataName = FileUtil.generateRandomFileName() + "."
@@ -240,27 +315,10 @@ public class HollerbackCameraActivity extends Activity {
 		return mFileDataPath;
 	}
 
-	private Camera.Size getBestPreviewSize(int width, int height,
-			Camera.Parameters parameters) {
-		Camera.Size result = null;
-		for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
-			LogUtil.i("Preview: w:" + size.width + " h:" + size.height);
-			if (size.width <= width && size.height <= height) {
-				if (result == null) {
-					result = size;
-				} else {
-					int resultArea = result.width * result.height;
-					int newArea = size.width * size.height;
-					if (newArea > resultArea) {
-						result = size;
-					}
-				}
-			}
-
-		}
-		// Toast.makeText(this, result.width + " x " + result.height,
-		// 3000).show();
-		return (result);
+	private void playVideo(String fileKey) {
+		mPreviewVideoView.setVideoPath(FileUtil.getLocalFile(fileKey));
+		mPreviewVideoView.requestFocus();
+		mPreviewVideoView.start();
 	}
 
 	private boolean prepareVideoRecorder() {
@@ -281,7 +339,7 @@ public class HollerbackCameraActivity extends Activity {
 
 		// Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
 
-		recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
+		CameraUtil.setFrontFacingParams(recorder);
 
 		CamcorderProfile prof = CamcorderProfile
 				.get(CamcorderProfile.QUALITY_LOW);
@@ -314,6 +372,19 @@ public class HollerbackCameraActivity extends Activity {
 		return true;
 	}
 
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		if (inPreview) {
+			camera.stopPreview();
+		}
+
+		camera.release();
+		camera = null;
+		inPreview = false;
+		super.onDestroy();
+	}
+
 	private void releaseMediaRecorder() {
 
 		if (recorder != null) {
@@ -342,8 +413,9 @@ public class HollerbackCameraActivity extends Activity {
 		public void surfaceChanged(SurfaceHolder holder, int format, int width,
 				int height) {
 			Camera.Parameters parameters = camera.getParameters();
-			Camera.Size size = getBestPreviewSize((int) targetPreviewWidth,
-					(int) targetPreviewHeight, parameters);
+			Camera.Size size = CameraUtil.getBestPreviewSize(
+					(int) targetPreviewWidth, (int) targetPreviewHeight,
+					parameters);
 			LogUtil.i("Best size: " + size.width + " " + size.height);
 
 			if (size != null) {

@@ -21,7 +21,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_VIDEO" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -29,31 +28,25 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".HollerbackApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:name=".HollerbackApplication"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.moziy.hollerback.activity.SplashScreenActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
-
         </activity>
         <activity
-            android:name="com.moziy.hollerback.HollerbackCameraActivity"
+            android:name="com.moziy.hollerback.activity.HollerbackCameraActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
-                        <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.moziy.hollerback.HollerbackCaptureActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            </intent-filter>s
         </activity>
         <activity
             android:name="com.moziy.hollerback.activity.HollerbackBaseActivity"

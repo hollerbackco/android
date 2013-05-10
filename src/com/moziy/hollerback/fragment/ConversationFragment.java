@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.moziy.hollerback.R;
-import com.moziy.hollerback.activity.HaveFunVideoActivity;
+import com.moziy.hollerback.activity.HollerbackCameraActivity;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
 import com.moziy.hollerback.bitmap.ImageCache;
 import com.moziy.hollerback.bitmap.ImageFetcher;
@@ -132,7 +132,7 @@ public class ConversationFragment extends BaseFragment {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(),
-						HaveFunVideoActivity.class);
+						HollerbackCameraActivity.class);
 				startActivityForResult(intent, TAKE_VIDEO);
 			}
 		});

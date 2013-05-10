@@ -11,6 +11,27 @@
         android:layout_centerVertical="true" />
 
     <RelativeLayout
+        android:id="@+id/rl_video_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:visibility="gone" >
+
+        <VideoView
+            android:id="@+id/vv_video_preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true" />
+
+        <ImageButton
+            android:id="@+id/ib_play_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/play_circle" />
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/top_bar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -26,6 +47,14 @@
             android:textColor="#fff"
             android:textSize="26sp"
             android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/ib_delete_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/delete_btn"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <RelativeLayout
