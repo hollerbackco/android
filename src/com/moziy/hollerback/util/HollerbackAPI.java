@@ -17,7 +17,12 @@ public class HollerbackAPI {
 	/**
 	 * POST "/me/videos/:id/read"
 	 */
-	public static final String API_VIDEO_READ = "/me/videos/%1$s/read";
+	public static final String API_VIDEO_READ_FORMAT = "/me/videos/%1$s/read";
+	
+	/**
+	 * POST new video '/me/conversations/:id/videos'
+	 */
+	public static final String API_VIDEO_POST_FORMAT = "/me/conversations/%1$s/videos";
 
 	/**
 	 * POST
@@ -29,5 +34,7 @@ public class HollerbackAPI {
 	public static final String PARAM_PASSWORD = "password";
 
 	public static final String PARAM_ACCESS_TOKEN = "access_token";
+	
+	public static final String PARAM_FILENAME = "filename";
 
 }

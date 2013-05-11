@@ -113,7 +113,9 @@ public class ConversationListFragment extends BaseFragment {
 				.getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();
-		ConversationFragment fragment = ConversationFragment.newInstance(index);
+		ConversationFragment fragment = ConversationFragment.newInstance(
+				Integer.toString(TempMemoryStore.conversations.get(index)
+						.getConversation_id()), index);
 		fragmentTransaction.replace(R.id.fragment_holder, fragment);
 		fragmentTransaction.addToBackStack(ConversationFragment.class
 				.getSimpleName());

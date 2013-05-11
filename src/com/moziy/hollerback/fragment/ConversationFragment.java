@@ -59,6 +59,8 @@ public class ConversationFragment extends BaseFragment {
 	private Button mReplyBtn;
 
 	public int TAKE_VIDEO = 0x683;
+	
+	private String mConversationId;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -113,6 +115,7 @@ public class ConversationFragment extends BaseFragment {
 	public void initializeArgs() {
 		Bundle bundle = getArguments();
 		int index = bundle.getInt("index");
+		mConversationId = bundle.getString("conv_id");
 		mVideoGalleryAdapter.setVideos(TempMemoryStore.conversations.get(index)
 				.getVideos());
 	}
@@ -138,6 +141,7 @@ public class ConversationFragment extends BaseFragment {
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(),
 						HollerbackCameraActivity.class);
+				intent.putExtra(IABIntent.PARAM_ID, mConversationId);
 				startActivityForResult(intent, TAKE_VIDEO);
 			}
 		});
@@ -161,13 +165,14 @@ public class ConversationFragment extends BaseFragment {
 	 * Create a new instance of CountingFragment, providing "num" as an
 	 * argument.
 	 */
-	public static ConversationFragment newInstance(int index) {
+	public static ConversationFragment newInstance(String conversation_id, int index) {
 
 		ConversationFragment f = new ConversationFragment();
 
 		// Supply num input as an argument.
 		Bundle args = new Bundle();
 		args.putInt("index", index);
+		args.putString("conv_id", conversation_id);
 		f.setArguments(args);
 		return f;
 	}

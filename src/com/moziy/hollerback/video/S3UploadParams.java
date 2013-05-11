@@ -3,6 +3,7 @@ package com.moziy.hollerback.video;
 import android.content.Context;
 
 import com.moziy.hollerback.model.VideoModel;
+import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnS3UploadListener;
 
 public class S3UploadParams {
@@ -13,6 +14,7 @@ public class S3UploadParams {
 	private String mFileName;
 	private String mFileType;
 	public VideoModel mVideo;
+	public String conversationId;
 
 	public String getFileType() {
 		return mFileType;
@@ -22,8 +24,11 @@ public class S3UploadParams {
 		this.mFileType = mFileType;
 	}
 
-	public String VID_MP4 = "mp4";
-	public String IMG_PNG = "-thumb.png";
+	public static String VID_MP4 = "mp4";
+	public static String IMG_PNG = "-thumb.png";
+
+	public static String CONTENT_TYPE_MP4 = "video/mp4";
+	public static String CONTENT_TYPE_PNG = "image/png";
 
 	public Context getmContext() {
 		return mContext;
@@ -62,7 +67,7 @@ public class S3UploadParams {
 
 	}
 
-	public String getJPEGName() {
-		return mFileName.split("\\.")[0] + IMG_PNG;
+	public String getThumbnailName() {
+		return FileUtil.getImageUploadName(mFileName);
 	}
 }

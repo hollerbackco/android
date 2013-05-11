@@ -32,7 +32,9 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.util.ImageUtil;
@@ -74,6 +76,10 @@ public class HollerbackCameraActivity extends Activity {
 	private ImageButton mPreviewPlayBtn, mPreviewDeleteBtn;
 	private ImageView mImagePreview;
 
+	S3RequestHelper mS3RequestHelper;
+
+	private String mConversationId;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -82,7 +88,12 @@ public class HollerbackCameraActivity extends Activity {
 
 		setContentView(R.layout.custom_camera);
 
+		if (getIntent().hasExtra(IABIntent.PARAM_ID)) {
+			mConversationId = getIntent().getStringExtra(IABIntent.PARAM_ID);
+		}
+
 		handler = new Handler();
+		mS3RequestHelper = new S3RequestHelper();
 
 		mTopView = findViewById(R.id.top_bar);
 		mBottomView = findViewById(R.id.bottom_bar);
@@ -140,7 +151,8 @@ public class HollerbackCameraActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
+				mS3RequestHelper.uploadNewVideo(mConversationId, mFileDataName,
+						FileUtil.getImageUploadName(mFileDataName));
 			}
 		});
 

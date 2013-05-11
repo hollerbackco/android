@@ -132,7 +132,12 @@ public class FileUtil {
 
 	public static String generateRandomHexName() {
 		Random m = new Random();
-		return Integer.toHexString(m.nextInt(256)).toUpperCase(Locale.US);
+		String hexString = Integer.toHexString(m.nextInt(256)).toUpperCase(
+				Locale.US);
+		hexString = hexString.trim().length() == 2 ? hexString : "0"
+				+ hexString.trim();
+		return hexString;
+
 	}
 
 	/**

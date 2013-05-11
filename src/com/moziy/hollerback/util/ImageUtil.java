@@ -11,6 +11,7 @@ import android.provider.MediaStore.Video.Thumbnails;
 
 public class ImageUtil {
 
+	//Do this in background thread or AsyncTask later
 	public static Bitmap generateThumbnail(String videoFileNameSource) {
 		Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(
 				FileUtil.getLocalFile(videoFileNameSource),

@@ -3,6 +3,7 @@ package com.moziy.hollerbacky.connection;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.amazonaws.http.JsonResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.moziy.hollerback.debug.LogUtil;
@@ -26,6 +27,41 @@ public class HBRequestManager {
 
 		}
 		return true;
+	}
+
+	public static void postVideo(String conversation_id, String filename) {
+		RequestParams params = new RequestParams();
+
+		params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
+				HollerbackAppState.getValidToken());
+		params.put(HollerbackAPI.PARAM_FILENAME, filename);
+
+		HollerbackAsyncClient.getInstance().post(
+				String.format(HollerbackAPI.API_VIDEO_POST_FORMAT,
+						conversation_id), params,
+				new JsonHttpResponseHandler() {
+
+					@Override
+					public void onFailure(Throwable arg0, JSONObject arg1) {
+						// TODO Auto-generated method stub
+						super.onFailure(arg0, arg1);
+					}
+
+					@Override
+					public void onSuccess(int arg0, JSONObject arg1) {
+						// TODO Auto-generated method stub
+						super.onSuccess(arg0, arg1);
+					}
+
+					@Override
+					protected Object parseResponse(String arg0)
+							throws JSONException {
+						// TODO Auto-generated method stub
+						LogUtil.i(arg0);
+						return super.parseResponse(arg0);
+					}
+				});
+
 	}
 
 	public static void postLogin(String email, String password) {

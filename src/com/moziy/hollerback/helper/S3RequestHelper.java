@@ -24,7 +24,9 @@ import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.video.S3UploadParams;
+import com.moziy.hollerbacky.connection.HBRequestManager;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
+import com.moziy.hollerbacky.connection.RequestCallbacks.OnS3UploadListener;
 
 //TODO: Abstract the upload methods, verification and buckets
 
@@ -54,6 +56,38 @@ public class S3RequestHelper {
 		mOnProgressListener = null;
 	}
 
+	public void uploadNewVideo(final String conversationId,
+			final String videoName, String imageName) {
+		S3UploadParams video = new S3UploadParams();
+		S3UploadParams thumb = new S3UploadParams();
+		video.setFileName(videoName);
+		video.setFilePath(FileUtil.getLocalFile(videoName));
+		video.conversationId = conversationId;
+		thumb.setFileName(imageName);
+		thumb.setFilePath(FileUtil.getLocalFile(imageName));
+
+		video.setOnS3UploadListener(new OnS3UploadListener() {
+
+			@Override
+			public void onS3Upload(boolean success) {
+				HBRequestManager.postVideo(conversationId, videoName);
+
+			}
+
+			@Override
+			public void onS3Url(String url, boolean success) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		S3PutObjectTask s3task2 = new S3PutObjectTask();
+		s3task2.execute(thumb);
+		S3PutObjectTask s3task = new S3PutObjectTask();
+		s3task.execute(video);
+
+	}
+
 	private class S3PutObjectTask extends
 			AsyncTask<S3UploadParams, Void, S3TaskResult> {
 
@@ -75,14 +109,15 @@ public class S3RequestHelper {
 			S3UploadParams requestParam = videos[0];
 
 			S3TaskResult result = new S3TaskResult();
+			result.uploadParams = requestParam;
 
 			// Put the image data into S3.
 			try {
-				s3Client.createBucket(AppEnvironment.getPictureBucket());
+				// s3Client.createBucket(AppEnvironment.getPictureBucket());
 
 				// Content type is determined by file extension.
 				PutObjectRequest por = new PutObjectRequest(
-						AppEnvironment.getPictureBucket(),
+						AppEnvironment.UPLOAD_BUCKET,
 						requestParam.getFileName(), new java.io.File(
 								requestParam.getFilePath()));
 				s3Client.putObject(por);
@@ -96,15 +131,24 @@ public class S3RequestHelper {
 
 		protected void onPostExecute(S3TaskResult result) {
 
-			dialog.dismiss();
+			// dialog.dismiss();
 
 			if (result.getErrorMessage() != null) {
 
 				// displayErrorAlert("Upload Failure",
 				// result.getErrorMessage());
+			} else {
+				HBRequestManager.postVideo(
+						result.getS3UploadParams().conversationId, result
+								.getS3UploadParams().getFileName());
 			}
 
-			if (result != null && result.getUri() != null) {
+			if (result != null) {
+				//
+				// if(result.getS3UploadParams()!=null){
+				// result.getS3UploadParams().getOnS3UploadListener()
+				// .onS3Upload(true);
+				// }
 
 				// Toast.makeText(getApplicationContext(),
 				// "Uploaded to: " + result.getUri().toString(),
@@ -115,8 +159,8 @@ public class S3RequestHelper {
 
 			}
 
-			new S3GeneratePresignedUrlTask()
-					.execute(new S3UploadParams[] { result.getS3UploadParams() });
+			// new S3GeneratePresignedUrlTask()
+			// .execute(new S3UploadParams[] { result.getS3UploadParams() });
 		}
 	}
 
@@ -219,7 +263,7 @@ public class S3RequestHelper {
 					override.setContentType("image/jpeg");
 					GeneratePresignedUrlRequest urlImageRequest = new GeneratePresignedUrlRequest(
 							AppEnvironment.getPictureBucket(),
-							uploadParams.getJPEGName());
+							uploadParams.getThumbnailName());
 					urlImageRequest.setExpiration(expirationDate);
 					urlImageRequest.setResponseHeaders(override);
 
@@ -309,11 +353,12 @@ public class S3RequestHelper {
 			FileOutputStream outputStream;
 
 			String request = reqs[0].getKey();
-			
+
 			try {
 				contentLength = s3Client.getObject(reqs[0]).getObjectMetadata()
 						.getContentLength();
-				LogUtil.i("Content Length: " + contentLength + " Request: " + request);
+				LogUtil.i("Content Length: " + contentLength + " Request: "
+						+ request);
 				is = s3Client.getObject(reqs[0]).getObjectContent();
 
 				outputStream = new FileOutputStream(
@@ -329,7 +374,7 @@ public class S3RequestHelper {
 				while ((bytesRead > 0) && (!this.isCancelled())) {
 					bytesRead = is.read(buffer);
 					if (buffer.length > 0 && bytesRead > 0) {
-						 LogUtil.d("QUIT WRITE");
+						LogUtil.d("QUIT WRITE");
 						outputStream.write(buffer, 0, bytesRead);
 					}
 					totalRead += bytesRead;
@@ -369,8 +414,8 @@ public class S3RequestHelper {
 			// Toast.makeText(HollerbackApplication.getInstance(),
 			// progress[0].toString(), 700).show();
 
-			 LogUtil.i("Progress: " + progress[0].toString() + " / "
-			 + contentLength);
+			LogUtil.i("Progress: " + progress[0].toString() + " / "
+					+ contentLength);
 
 			if (mOnProgressListener != null) {
 				mOnProgressListener.onProgress(progress[0], contentLength);
