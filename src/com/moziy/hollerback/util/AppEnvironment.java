@@ -16,7 +16,7 @@ public class AppEnvironment {
 
 	// public static final String PICTURE_NAME = null;
 	
-	public static final String UPLOAD_BUCKET = "hollerback-app-dev";
+	public static final String UPLOAD_BUCKET = "hollerback-jian";
 
 	public static final String PICTURE_BUCKET = "hollerback-app-dev";
 

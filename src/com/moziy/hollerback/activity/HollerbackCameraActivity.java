@@ -188,12 +188,18 @@ public class HollerbackCameraActivity extends Activity {
 		@Override
 		public int onProgress(long progress) {
 			// TODO Auto-generated method stub
+			
+			//have the loading spinner execute htere
 			return 0;
 		}
 
 		@Override
 		public int onComplete() {
 			// TODO Auto-generated method stub
+			
+			LogUtil.i("oncomplete called");
+			
+			//have the loading spinner die here
 			return 0;
 		}
 

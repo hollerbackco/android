@@ -146,6 +146,11 @@ public class S3RequestHelper {
 				LogUtil.e(result.getErrorMessage());
 
 			} else {
+				
+				if(result.getS3UploadParams()!=null){
+					result.getS3UploadParams().getOnS3UploadListener().onComplete();
+				}
+				
 				if (AppEnvironment.ALLOW_UPLOAD_VIDEOS) {
 					HBRequestManager.postVideo(
 							result.getS3UploadParams().conversationId, result
