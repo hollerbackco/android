@@ -18,6 +18,8 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.moziy.hollerback.activity.HollerbackBaseActivity;
+import com.moziy.hollerback.activity.HollerbackCameraActivity;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
@@ -57,70 +59,73 @@ public class S3RequestHelper {
 	}
 
 	public void uploadNewVideo(final String conversationId,
-			final String videoName, String imageName) {
+			final String videoName, String imageName,
+			OnS3UploadListener onS3UploadListener) {
 		S3UploadParams video = new S3UploadParams();
 		S3UploadParams thumb = new S3UploadParams();
+
 		video.setFileName(videoName);
 		video.setFilePath(FileUtil.getLocalFile(videoName));
 		video.conversationId = conversationId;
 		thumb.setFileName(imageName);
 		thumb.setFilePath(FileUtil.getLocalFile(imageName));
 
-		video.setOnS3UploadListener(new OnS3UploadListener() {
+		video.setOnS3UploadListener(onS3UploadListener);
 
-			@Override
-			public void onS3Upload(boolean success) {
-				HBRequestManager.postVideo(conversationId, videoName);
-
-			}
-
-			@Override
-			public void onS3Url(String url, boolean success) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
-		S3PutObjectTask s3task2 = new S3PutObjectTask();
-		s3task2.execute(thumb);
 		S3PutObjectTask s3task = new S3PutObjectTask();
-		s3task.execute(video);
+		s3task.execute(new S3UploadParams[] { video, thumb });
 
 	}
 
 	private class S3PutObjectTask extends
 			AsyncTask<S3UploadParams, Void, S3TaskResult> {
 
+		@Override
+		protected void onProgressUpdate(Void... values) {
+			// TODO Auto-generated method stub
+			super.onProgressUpdate(values);
+		}
+
+		@Override
+		protected void onCancelled() {
+			// TODO Auto-generated method stub
+			super.onCancelled();
+		}
+
 		ProgressDialog dialog;
 
 		protected void onPreExecute() {
-			// dialog = new ProgressDialog(HollerbackCameraActivity.this);
-			// dialog.setMessage("Uploading");
-			// dialog.setCancelable(false);
-			// dialog.show();
+			dialog = new ProgressDialog(HollerbackCameraActivity.sInstance);
+			dialog.setMessage("Uploading");
+			dialog.setCancelable(false);
+			dialog.show();
 		}
 
 		protected S3TaskResult doInBackground(S3UploadParams... videos) {
 
-			if (videos == null || videos.length != 1) {
-				return null;
-			}
-
-			S3UploadParams requestParam = videos[0];
+			S3UploadParams videoRequestParam = videos[0];
+			S3UploadParams thumbRequestParam = videos[1];
 
 			S3TaskResult result = new S3TaskResult();
-			result.uploadParams = requestParam;
+			result.uploadParams = videoRequestParam;
 
 			// Put the image data into S3.
 			try {
 				// s3Client.createBucket(AppEnvironment.getPictureBucket());
 
 				// Content type is determined by file extension.
-				PutObjectRequest por = new PutObjectRequest(
+				PutObjectRequest videoUploadRequest = new PutObjectRequest(
 						AppEnvironment.UPLOAD_BUCKET,
-						requestParam.getFileName(), new java.io.File(
-								requestParam.getFilePath()));
-				s3Client.putObject(por);
+						videoRequestParam.getFileName(), new java.io.File(
+								videoRequestParam.getFilePath()));
+
+				PutObjectRequest thumbUploadRequest = new PutObjectRequest(
+						AppEnvironment.UPLOAD_BUCKET,
+						thumbRequestParam.getFileName(), new java.io.File(
+								thumbRequestParam.getFilePath()));
+
+				s3Client.putObject(thumbUploadRequest);
+				s3Client.putObject(videoUploadRequest);
 			} catch (Exception exception) {
 
 				result.setErrorMessage(exception.getMessage());
@@ -131,16 +136,21 @@ public class S3RequestHelper {
 
 		protected void onPostExecute(S3TaskResult result) {
 
-			// dialog.dismiss();
+			dialog.dismiss();
 
 			if (result.getErrorMessage() != null) {
 
 				// displayErrorAlert("Upload Failure",
 				// result.getErrorMessage());
+
+				LogUtil.e(result.getErrorMessage());
+
 			} else {
-				HBRequestManager.postVideo(
-						result.getS3UploadParams().conversationId, result
-								.getS3UploadParams().getFileName());
+				if (AppEnvironment.ALLOW_UPLOAD_VIDEOS) {
+					HBRequestManager.postVideo(
+							result.getS3UploadParams().conversationId, result
+									.getS3UploadParams().getFileName());
+				}
 			}
 
 			if (result != null) {

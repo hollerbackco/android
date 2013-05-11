@@ -38,6 +38,7 @@ import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.util.ImageUtil;
+import com.moziy.hollerbacky.connection.RequestCallbacks.OnS3UploadListener;
 
 public class HollerbackCameraActivity extends Activity {
 
@@ -80,6 +81,8 @@ public class HollerbackCameraActivity extends Activity {
 
 	private String mConversationId;
 
+	public static HollerbackCameraActivity sInstance;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,6 +90,8 @@ public class HollerbackCameraActivity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.custom_camera);
+
+		sInstance = this;
 
 		if (getIntent().hasExtra(IABIntent.PARAM_ID)) {
 			mConversationId = getIntent().getStringExtra(IABIntent.PARAM_ID);
@@ -152,7 +157,8 @@ public class HollerbackCameraActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				mS3RequestHelper.uploadNewVideo(mConversationId, mFileDataName,
-						FileUtil.getImageUploadName(mFileDataName));
+						FileUtil.getImageUploadName(mFileDataName),
+						mOnS3UploadListener);
 			}
 		});
 
@@ -171,6 +177,38 @@ public class HollerbackCameraActivity extends Activity {
 
 		mTimer = (TextView) findViewById(R.id.timer);
 	}
+
+	OnS3UploadListener mOnS3UploadListener = new OnS3UploadListener() {
+
+		@Override
+		public void onStart() {
+
+		}
+
+		@Override
+		public int onProgress(long progress) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public int onComplete() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void onS3Upload(boolean success) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onS3Url(String url, boolean success) {
+			// TODO Auto-generated method stub
+
+		}
+	};
 
 	Runnable timeTask = new Runnable() {
 

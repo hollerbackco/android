@@ -26,6 +26,8 @@ public class AppEnvironment {
 	public static final int ENV = ENV_PRODUCTION;
 	
 	public static final String IMAGE_THUMB_SUFFIX = "-thumb.png";
+	
+	public static boolean ALLOW_UPLOAD_VIDEOS = false; 
 
 	public static String getPictureBucket() {
 		return PICTURE_BUCKET;

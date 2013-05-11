@@ -17,6 +17,8 @@ import com.moziy.hollerback.fragment.ConversationListFragment;
  */
 public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 
+	public static HollerbackBaseActivity sInstance;
+	
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -29,6 +31,7 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 		super.onCreate(arg0);
 		setContentView(R.layout.hollerback_main);
 		initFragment();
+		sInstance = this;
 	}
 
 	@Override
