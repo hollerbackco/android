@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/action_bar_height"
-    android:background="#fefefe"
     android:orientation="vertical" >
 
     <ImageButton
@@ -16,10 +15,18 @@
         android:src="@drawable/settings_btn" />
 
     <ImageView
+        android:id="@+id/iv_action_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:src="@drawable/logo_name" />
+
+    <TextView
+        android:id="@+id/tv_action_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
     <ImageButton
         android:id="@+id/ib_action_right"

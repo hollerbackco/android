@@ -22,6 +22,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.WelcomeFragmentActivity;
 import com.moziy.hollerback.adapter.ConversationListAdapter;
+import com.moziy.hollerback.background.ContactFetchAsyncTask;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
@@ -196,11 +197,17 @@ public class ConversationListFragment extends BaseFragment {
 
 	@Override
 	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
+		viewHelper.setAddConversation();
+		viewHelper.setHeaderLogo();
+		viewHelper.setSettings();
 		viewHelper.getRightBtn().setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				startAddConversationFragment();
+				ContactFetchAsyncTask mTask = new ContactFetchAsyncTask(
+						getActivity(), null);
+				mTask.execute();
+				// startAddConversationFragment();
 			}
 		});
 

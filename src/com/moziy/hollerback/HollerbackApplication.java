@@ -19,4 +19,8 @@ public class HollerbackApplication extends Application {
 		return sInstance;
 	}
 
+	public String s(int id) {
+		return getResources().getString(id);
+	}
+
 }

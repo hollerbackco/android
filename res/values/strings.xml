@@ -16,5 +16,7 @@
     <string name="hint_country_code_phone">Country Code and Phone Number</string>
     
     <string name="no_network_connection_toast">Not connected to Internet</string>
+    
+    <string name="new_conversation">New Conversation</string>
 
 </resources>

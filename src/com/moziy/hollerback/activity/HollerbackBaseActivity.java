@@ -1,5 +1,7 @@
 package com.moziy.hollerback.activity;
 
+import java.util.List;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,8 +11,11 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.cache.memory.TempMemoryStore;
+import com.moziy.hollerback.fragment.AddConversationFragment;
 import com.moziy.hollerback.fragment.ConversationListFragment;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
+import com.moziy.hollerback.model.LocalContactItem;
 
 /**
  * Main Activity that gets initiated when user is signed in
@@ -38,6 +43,10 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 				null);
 		getSupportActionBar().setDisplayShowHomeEnabled(false);
 		getSupportActionBar().setCustomView(view);
+		getSupportActionBar().setDisplayShowTitleEnabled(false);
+		getSupportActionBar().setBackgroundDrawable(
+				getResources().getDrawable(
+						R.drawable.ad_action_bar_gradient_bak));
 		mActionBarView = new CustomActionBarHelper(view);
 		setContentView(R.layout.hollerback_main);
 
@@ -87,5 +96,19 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 		ConversationListFragment fragment = new ConversationListFragment();
 		fragmentTransaction.add(R.id.fragment_holder, fragment);
 		fragmentTransaction.commit();
+	}
+
+	public void addContactListFragment(android.app.FragmentTransaction ft,
+			List<LocalContactItem> result) {
+		TempMemoryStore.contacts = result;
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		AddConversationFragment fragment = new AddConversationFragment();
+		fragmentTransaction.replace(R.id.fragment_holder, fragment);
+		fragmentTransaction.addToBackStack(AddConversationFragment.class
+				.getSimpleName());
+		fragmentTransaction.commit();
+
 	}
 }
