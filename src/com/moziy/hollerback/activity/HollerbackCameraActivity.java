@@ -3,6 +3,7 @@ package com.moziy.hollerback.activity;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
@@ -93,6 +94,10 @@ public class HollerbackCameraActivity extends Activity {
 
 		sInstance = this;
 
+		dialog = new ProgressDialog(HollerbackCameraActivity.this);
+		dialog.setMessage("Uploading");
+		dialog.setCancelable(false);
+
 		if (getIntent().hasExtra(IABIntent.PARAM_ID)) {
 			mConversationId = getIntent().getStringExtra(IABIntent.PARAM_ID);
 		}
@@ -178,28 +183,39 @@ public class HollerbackCameraActivity extends Activity {
 		mTimer = (TextView) findViewById(R.id.timer);
 	}
 
+	ProgressDialog dialog;
+
+	Handler mLoadingHandler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+		}
+	};
+
 	OnS3UploadListener mOnS3UploadListener = new OnS3UploadListener() {
 
 		@Override
 		public void onStart() {
-
+			dialog.show();
 		}
 
 		@Override
 		public int onProgress(long progress) {
 			// TODO Auto-generated method stub
-			
-			//have the loading spinner execute htere
+
+			// have the loading spinner execute htere
 			return 0;
 		}
 
 		@Override
 		public int onComplete() {
 			// TODO Auto-generated method stub
-			
+
 			LogUtil.i("oncomplete called");
-			
-			//have the loading spinner die here
+
+			dialog.dismiss();
 			return 0;
 		}
 

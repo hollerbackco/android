@@ -92,13 +92,9 @@ public class S3RequestHelper {
 			super.onCancelled();
 		}
 
-		ProgressDialog dialog;
 
 		protected void onPreExecute() {
-			dialog = new ProgressDialog(HollerbackCameraActivity.sInstance);
-			dialog.setMessage("Uploading");
-			dialog.setCancelable(false);
-			dialog.show();
+
 		}
 
 		protected S3TaskResult doInBackground(S3UploadParams... videos) {
@@ -108,6 +104,8 @@ public class S3RequestHelper {
 
 			S3TaskResult result = new S3TaskResult();
 			result.uploadParams = videoRequestParam;
+			
+			videoRequestParam.getOnS3UploadListener().onStart();
 
 			// Put the image data into S3.
 			try {
@@ -136,7 +134,6 @@ public class S3RequestHelper {
 
 		protected void onPostExecute(S3TaskResult result) {
 
-			dialog.dismiss();
 
 			if (result.getErrorMessage() != null) {
 

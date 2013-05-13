@@ -6,6 +6,7 @@ import com.moziy.hollerback.activity.SplashScreenActivity;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 import android.content.BroadcastReceiver;
@@ -97,11 +98,18 @@ public class SignInFragment extends BaseFragment implements OnClickListener {
 						.getBooleanExtra(IABIntent.PARAM_AUTHENTICATED, false)) {
 					loginUser();
 				} else {
-					Toast.makeText(getActivity(), "Login Error!", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), "Login Error!",
+							Toast.LENGTH_SHORT).show();
 
 				}
 			}
 		}
 	};
+
+	@Override
+	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

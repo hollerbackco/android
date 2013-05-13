@@ -1,6 +1,7 @@
 package com.moziy.hollerback.fragment;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.validator.TextValidator;
 
 import android.os.Bundle;
@@ -82,6 +83,12 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 			break;
 		}
 
+	}
+
+	@Override
+	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

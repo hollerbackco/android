@@ -25,6 +25,7 @@ import com.moziy.hollerback.adapter.ConversationListAdapter;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
+import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.VideoModel;
@@ -122,6 +123,30 @@ public class ConversationListFragment extends BaseFragment {
 		fragmentTransaction.commit();
 	}
 
+	private void startSettingsFragment() {
+		FragmentManager fragmentManager = getActivity()
+				.getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		SettingsFragment fragment = new SettingsFragment();
+		fragmentTransaction.replace(R.id.fragment_holder, fragment);
+		fragmentTransaction.addToBackStack(SettingsFragment.class
+				.getSimpleName());
+		fragmentTransaction.commit();
+	}
+
+	private void startAddConversationFragment() {
+		FragmentManager fragmentManager = getActivity()
+				.getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		AddConversationFragment fragment = new AddConversationFragment();
+		fragmentTransaction.replace(R.id.fragment_holder, fragment);
+		fragmentTransaction.addToBackStack(AddConversationFragment.class
+				.getSimpleName());
+		fragmentTransaction.commit();
+	}
+
 	/**
 	 * Create a new instance of CountingFragment, providing "num" as an
 	 * argument.
@@ -168,5 +193,24 @@ public class ConversationListFragment extends BaseFragment {
 
 		}
 	};
+
+	@Override
+	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
+		viewHelper.getRightBtn().setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				startAddConversationFragment();
+			}
+		});
+
+		viewHelper.getLeftBtn().setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				startSettingsFragment();
+			}
+		});
+	}
 
 }

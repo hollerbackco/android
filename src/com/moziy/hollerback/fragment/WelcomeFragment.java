@@ -1,6 +1,7 @@
 package com.moziy.hollerback.fragment;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.helper.CustomActionBarHelper;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -93,5 +94,11 @@ public class WelcomeFragment extends BaseFragment implements OnClickListener {
 		fragmentTransaction
 				.addToBackStack(SignUpFragment.class.getSimpleName());
 		fragmentTransaction.commit();
+	}
+
+	@Override
+	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
+		// TODO Auto-generated method stub
+
 	}
 }
