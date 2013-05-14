@@ -6,5 +6,7 @@
     <dimen name="image_thumbnail_size">100dp</dimen>
     <dimen name="image_thumbnail_spacing">1dp</dimen>
     <dimen name="action_bar_height">64dp</dimen>
+    
+    <dimen name="et_add_contacts_height">100dp</dimen>
 
 </resources>

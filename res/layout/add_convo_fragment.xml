@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/et_add_contacts"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/et_add_contacts_height"
+            android:minLines="3" />
+    </RelativeLayout>
+
     <com.emilsjolander.components.stickylistheaders.StickyListHeadersListView
         android:id="@+id/list"
         android:layout_width="match_parent"

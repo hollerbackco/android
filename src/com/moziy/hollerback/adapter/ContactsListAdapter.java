@@ -17,17 +17,16 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
-import com.moziy.hollerback.helper.ContactsHelper;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.model.LocalContactItem;
 
 public class ContactsListAdapter extends BaseAdapter implements
 		StickyListHeadersAdapter, SectionIndexer {
 
 	private String[] contacts;
-	private int[] sectionIndices;
-	private Character[] sectionsLetters;
 	private LayoutInflater inflater;
 	private Context context;
+	private int[] sectionId;
 
 	public ContactsListAdapter(Context context) {
 		this.context = context;
@@ -41,8 +40,7 @@ public class ContactsListAdapter extends BaseAdapter implements
 		}
 		contacts = new String[names.size()];
 		names.toArray(contacts);
-		sectionIndices = getSectionIndices();
-		sectionsLetters = getStartingLetters();
+
 	}
 
 	public String parseNumber(String number) {
@@ -58,31 +56,6 @@ public class ContactsListAdapter extends BaseAdapter implements
 					+ e.toString());
 			return null;
 		}
-	}
-
-	private Character[] getStartingLetters() {
-		Character[] letters = new Character[sectionIndices.length];
-		for (int i = 0; i < sectionIndices.length; i++) {
-			letters[i] = contacts[sectionIndices[i]].charAt(0);
-		}
-		return letters;
-	}
-
-	private int[] getSectionIndices() {
-		ArrayList<Integer> sectionIndices = new ArrayList<Integer>();
-		char lastFirstChar = contacts[0].charAt(0);
-		sectionIndices.add(0);
-		for (int i = 1; i < contacts.length; i++) {
-			if (contacts[i].charAt(0) != lastFirstChar) {
-				lastFirstChar = contacts[i].charAt(0);
-				sectionIndices.add(i);
-			}
-		}
-		int[] sections = new int[sectionIndices.size()];
-		for (int i = 0; i < sectionIndices.size(); i++) {
-			sections[i] = sectionIndices.get(i);
-		}
-		return sections;
 	}
 
 	@Override
@@ -127,21 +100,15 @@ public class ContactsListAdapter extends BaseAdapter implements
 			holder = new HeaderViewHolder();
 			convertView = inflater.inflate(R.layout.header, parent, false);
 			holder.text1 = (TextView) convertView.findViewById(R.id.text1);
-			holder.text2 = (TextView) convertView.findViewById(R.id.text2);
 			convertView.setTag(holder);
 		} else {
 			holder = (HeaderViewHolder) convertView.getTag();
 		}
 		// set header text as first char in name
-		char headerChar = contacts[position].subSequence(0, 1).charAt(0);
-		String headerText;
-		if (headerChar % 2 == 0) {
-			headerText = headerChar + "\n" + headerChar + "\n" + headerChar;
-		} else {
-			headerText = headerChar + "\n" + headerChar;
-		}
-		holder.text1.setText(headerText);
-		holder.text2.setText(headerText);
+
+		LogUtil.i("Header View get " + position);
+
+		holder.text1.setText("Hello Rollo");
 		return convertView;
 	}
 
@@ -151,46 +118,25 @@ public class ContactsListAdapter extends BaseAdapter implements
 	public long getHeaderId(int position) {
 		// return the first character of the country as ID because this is what
 		// headers are based upon
-		return contacts[position].subSequence(0, 1).charAt(0);
+		if (position == 0) {
+			return 0;
+		} else if (position == 9) {
+			return 9;
+		} else if (position == 20) {
+			return 24;
+		}
+		return 0;
 	}
 
 	class HeaderViewHolder {
 		TextView text1;
-		TextView text2;
 	}
 
 	class ViewHolder {
 		TextView text;
 	}
 
-	@Override
-	public int getPositionForSection(int section) {
-		if (section >= sectionIndices.length) {
-			section = sectionIndices.length - 1;
-		} else if (section < 0) {
-			section = 0;
-		}
-		return sectionIndices[section];
-	}
-
-	@Override
-	public int getSectionForPosition(int position) {
-		for (int i = 0; i < sectionIndices.length; i++) {
-			if (position < sectionIndices[i]) {
-				return i - 1;
-			}
-		}
-		return sectionIndices.length - 1;
-	}
-
-	@Override
-	public Object[] getSections() {
-		return sectionsLetters;
-	}
-
 	public void clear() {
-		sectionIndices = new int[0];
-		sectionsLetters = new Character[0];
 		contacts = new String[0];
 		notifyDataSetChanged();
 	}
@@ -203,9 +149,40 @@ public class ContactsListAdapter extends BaseAdapter implements
 		}
 		names.toArray(contacts);
 
-		sectionIndices = getSectionIndices();
-		sectionsLetters = getStartingLetters();
 		notifyDataSetChanged();
+	}
+
+	@Override
+	public Object[] getSections() {
+		sectionId = new int[3];
+		sectionId[0] = 0;
+		sectionId[1] = 9;
+		sectionId[2] = 20;
+		return new String[] { "Recent", "Hollerback", "Phonebook" };
+	}
+
+	@Override
+	public int getPositionForSection(int section) {
+		if (section == 0) {
+			return sectionId[0];
+		} else if (1 == section) {
+			return sectionId[1];
+		} else if (2 == section) {
+			return sectionId[2];
+		} else
+			return 0;
+	}
+
+	@Override
+	public int getSectionForPosition(int position) {
+		if (position == sectionId[0]) {
+			return sectionId[0];
+		} else if (position == sectionId[1]) {
+			return sectionId[1];
+		} else if (position == sectionId[2]) {
+			return sectionId[2];
+		} else
+			return 0;
 	}
 
 }

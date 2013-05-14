@@ -67,7 +67,7 @@ public class ConversationListFragment extends BaseFragment {
 		super.onResume();
 		IABroadcastManager.registerForLocalBroadcast(receiver,
 				IABIntent.INTENT_GET_CONVERSATIONS);
-		HBRequestManager.getConversations();
+		//HBRequestManager.getConversations();
 	}
 
 	OnItemClickListener mOnListItemClickListener = new OnItemClickListener() {
