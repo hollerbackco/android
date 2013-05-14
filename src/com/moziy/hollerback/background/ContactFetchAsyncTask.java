@@ -1,5 +1,6 @@
 package com.moziy.hollerback.background;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.util.Log;
 
 public class ContactFetchAsyncTask extends
-		AsyncTask<Void, Void, List<LocalContactItem>> {
+		AsyncTask<Void, Void, ArrayList<LocalContactItem>> {
 	private FragmentTransaction ft;
 	private Activity activity;
 
@@ -28,7 +29,7 @@ public class ContactFetchAsyncTask extends
 	}
 
 	@SuppressWarnings("unused")
-	protected List<LocalContactItem> doInBackground(Void... params) {
+	protected ArrayList<LocalContactItem> doInBackground(Void... params) {
 		Cursor c = activity.getContentResolver().query(
 				Data.CONTENT_URI,
 				new String[] { Data._ID, Data.DISPLAY_NAME, Phone.NUMBER,
@@ -46,7 +47,7 @@ public class ContactFetchAsyncTask extends
 		int col3Index = c.getColumnIndex(columnNames[3]);
 		int col4Index = c.getColumnIndex(columnNames[4]);
 
-		List<LocalContactItem> contactItemList = new LinkedList<LocalContactItem>();
+		ArrayList<LocalContactItem> contactItemList = new ArrayList<LocalContactItem>();
 		for (int i = 0; i < count; i++) {
 			String displayName = c.getString(displayNameColIndex);
 			String phoneNumber = c.getString(col2Index);
@@ -66,7 +67,7 @@ public class ContactFetchAsyncTask extends
 		return contactItemList;
 	}
 
-	protected void onPostExecute(List<LocalContactItem> result) {
+	protected void onPostExecute(ArrayList<LocalContactItem> result) {
 		((HollerbackBaseActivity) activity).addContactListFragment(ft, result);
 
 	}

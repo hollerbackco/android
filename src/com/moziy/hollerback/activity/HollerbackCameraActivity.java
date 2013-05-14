@@ -198,7 +198,9 @@ public class HollerbackCameraActivity extends Activity {
 
 		@Override
 		public void onStart() {
-			dialog.show();
+			// dialog.show();
+			//Toast.makeText(HollerbackCameraActivity.this, "Upload Started",
+			//		Toast.LENGTH_LONG).show();
 		}
 
 		@Override
@@ -215,7 +217,9 @@ public class HollerbackCameraActivity extends Activity {
 
 			LogUtil.i("oncomplete called");
 
-			dialog.dismiss();
+			// dialog.dismiss();
+			//Toast.makeText(HollerbackCameraActivity.this, "Upload Finished",
+			//		Toast.LENGTH_LONG).show();
 			return 0;
 		}
 

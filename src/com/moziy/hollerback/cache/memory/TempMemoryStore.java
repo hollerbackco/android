@@ -9,6 +9,6 @@ import com.moziy.hollerback.model.LocalContactItem;
 public class TempMemoryStore {
 
 	public static ArrayList<ConversationModel> conversations;
-	public static List<LocalContactItem> contacts;
+	public static ArrayList<LocalContactItem> contacts;
 
 }

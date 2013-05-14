@@ -21,6 +21,7 @@ import com.moziy.hollerback.adapter.ContactsListAdapter;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.LocalContactItem;
+import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class AddConversationFragment extends BaseFragment {
 
@@ -40,7 +41,16 @@ public class AddConversationFragment extends BaseFragment {
 		stickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
 		initializeView(fragmentView);
 		mAdapter.setContacts(TempMemoryStore.contacts);
+		HBRequestManager.getContacts(TempMemoryStore.contacts);
+
 		return fragmentView;
+	}
+
+	@Override
+	public void onResume() {
+
+		super.onResume();
+
 	}
 
 	@Override
@@ -69,6 +79,7 @@ public class AddConversationFragment extends BaseFragment {
 
 			}
 		});
+
 	}
 
 	List<LocalContactItem> searchItems;

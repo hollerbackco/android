@@ -1,5 +1,8 @@
 package com.moziy.hollerbacky.connection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,6 +10,8 @@ import com.amazonaws.http.JsonResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.model.LocalContactItem;
+import com.moziy.hollerback.util.HBRequestUtil;
 import com.moziy.hollerback.util.HollerbackAPI;
 import com.moziy.hollerback.util.HollerbackAppState;
 import com.moziy.hollerback.util.JSONUtil;
@@ -141,5 +146,88 @@ public class HBRequestManager {
 
 		}
 
+	}
+
+	public static void postConversations() {
+		if (HollerbackAppState.isValidSession()) {
+			RequestParams params = new RequestParams();
+			params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
+					HollerbackAppState.getValidToken());
+
+			HollerbackAsyncClient.getInstance().get(
+					HollerbackAPI.API_CONVERSATION, params,
+					new JsonHttpResponseHandler() {
+
+						@Override
+						protected Object parseResponse(String arg0)
+								throws JSONException {
+							LogUtil.i(arg0);
+							return super.parseResponse(arg0);
+
+						}
+
+						@Override
+						public void onFailure(Throwable arg0, JSONObject arg1) {
+							// TODO Auto-generated method stub
+							super.onFailure(arg0, arg1);
+							LogUtil.e(HollerbackAPI.API_CONVERSATION
+									+ "FAILURE");
+						}
+
+						@Override
+						public void onSuccess(int arg0, JSONObject arg1) {
+							// TODO Auto-generated method stub
+							super.onSuccess(arg0, arg1);
+							LogUtil.i("ON SUCCESS API CONVO");
+							JSONUtil.processGetConversations(arg1);
+						}
+
+					});
+
+		}
+	}
+
+	public static void getContacts(ArrayList<LocalContactItem> contacts) {
+
+		if (HollerbackAppState.isValidSession()) {
+			RequestParams params = new RequestParams();
+
+			LogUtil.i("Token: " + HollerbackAppState.getValidToken());
+
+			params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
+					HollerbackAppState.getValidToken());
+
+			params.put(HollerbackAPI.PARAM_NUMBERS,
+					HBRequestUtil.generateStringArray(contacts));
+
+			HollerbackAsyncClient.getInstance().get(HollerbackAPI.API_CONTACTS,
+					params, new JsonHttpResponseHandler() {
+
+						@Override
+						protected Object parseResponse(String arg0)
+								throws JSONException {
+							LogUtil.i("RESPONSE: " + arg0);
+							return super.parseResponse(arg0);
+
+						}
+
+						@Override
+						public void onFailure(Throwable arg0, JSONObject arg1) {
+							// TODO Auto-generated method stub
+							super.onFailure(arg0, arg1);
+							LogUtil.e(HollerbackAPI.API_CONTACTS + "FAILURE");
+						}
+
+						@Override
+						public void onSuccess(int arg0, JSONObject arg1) {
+							// TODO Auto-generated method stub
+							super.onSuccess(arg0, arg1);
+							LogUtil.i("ON SUCCESS API CONTACTS");
+							JSONUtil.processGetContacts(arg1);
+						}
+
+					});
+
+		}
 	}
 }

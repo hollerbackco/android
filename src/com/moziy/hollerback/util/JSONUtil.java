@@ -54,7 +54,6 @@ public class JSONUtil {
 
 				for (int i = 0; i < conversationArray.length(); i++) {
 
-
 					LogUtil.i("Processing JSON " + i);
 					JSONObject conversation = (JSONObject) conversationArray
 							.get(i);
@@ -91,6 +90,14 @@ public class JSONUtil {
 			IABroadcastManager.sendLocalBroadcast(intent);
 		} catch (Exception e) {
 			LogUtil.e(e.getMessage());
+		}
+	}
+
+	public static void processGetContacts(JSONObject json) {
+		try {
+			LogUtil.i(json.toString());
+		} catch (Exception e) {
+
 		}
 	}
 }

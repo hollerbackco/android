@@ -1,5 +1,6 @@
 package com.moziy.hollerback.activity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
@@ -99,7 +100,7 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 	}
 
 	public void addContactListFragment(android.app.FragmentTransaction ft,
-			List<LocalContactItem> result) {
+			ArrayList<LocalContactItem> result) {
 		TempMemoryStore.contacts = result;
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager

@@ -92,7 +92,6 @@ public class S3RequestHelper {
 			super.onCancelled();
 		}
 
-
 		protected void onPreExecute() {
 
 		}
@@ -104,7 +103,7 @@ public class S3RequestHelper {
 
 			S3TaskResult result = new S3TaskResult();
 			result.uploadParams = videoRequestParam;
-			
+
 			videoRequestParam.getOnS3UploadListener().onStart();
 
 			// Put the image data into S3.
@@ -127,13 +126,13 @@ public class S3RequestHelper {
 			} catch (Exception exception) {
 
 				result.setErrorMessage(exception.getMessage());
+				exception.printStackTrace();
 			}
 
 			return result;
 		}
 
 		protected void onPostExecute(S3TaskResult result) {
-
 
 			if (result.getErrorMessage() != null) {
 
@@ -143,15 +142,17 @@ public class S3RequestHelper {
 				LogUtil.e(result.getErrorMessage());
 
 			} else {
-				
-				if(result.getS3UploadParams()!=null){
-					result.getS3UploadParams().getOnS3UploadListener().onComplete();
+
+				if (result.getS3UploadParams() != null) {
+					result.getS3UploadParams().getOnS3UploadListener()
+							.onComplete();
 				}
-				
+
 				if (AppEnvironment.ALLOW_UPLOAD_VIDEOS) {
 					HBRequestManager.postVideo(
 							result.getS3UploadParams().conversationId, result
 									.getS3UploadParams().getFileName());
+					LogUtil.i("LOL CATWALK");
 				}
 			}
 

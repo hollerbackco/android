@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.HollerbackAPI;
 
@@ -32,6 +33,7 @@ public class HollerbackAsyncClient {
 
 	public void get(String url, RequestParams params,
 			JsonHttpResponseHandler responseHandler) {
+		LogUtil.i("Get Request: " + getAbsoluteUrl(url));
 		client.get(getAbsoluteUrl(url), params, responseHandler);
 	}
 
