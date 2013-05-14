@@ -1,6 +1,7 @@
 package com.moziy.hollerback.adapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,12 +24,14 @@ import com.moziy.hollerback.model.LocalContactItem;
 public class ContactsListAdapter extends BaseAdapter implements
 		StickyListHeadersAdapter, SectionIndexer {
 
-	private String[] contacts;
+	//private String[] contacts;
 	private LayoutInflater inflater;
 	private Context context;
 	private int[] sectionId;
+	public List<LocalContactItem> contactitems;
 
 	public ContactsListAdapter(Context context) {
+		contactitems = new ArrayList<LocalContactItem>();
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		ArrayList<String> names = new ArrayList<String>();
@@ -38,9 +41,14 @@ public class ContactsListAdapter extends BaseAdapter implements
 				names.add(c.mDisplayName + " x " + num);
 			}
 		}
-		contacts = new String[names.size()];
-		names.toArray(contacts);
+		//contacts = new String[names.size()];
+		//names.toArray(contacts);
 
+	}
+
+	public void setContacts(List<LocalContactItem> stuff) {
+		contactitems = stuff;
+		this.notifyDataSetChanged();
 	}
 
 	public String parseNumber(String number) {
@@ -60,12 +68,12 @@ public class ContactsListAdapter extends BaseAdapter implements
 
 	@Override
 	public int getCount() {
-		return contacts.length;
+		return contactitems.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return contacts[position];
+		return contactitems.get(position);
 	}
 
 	@Override
@@ -88,7 +96,7 @@ public class ContactsListAdapter extends BaseAdapter implements
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		holder.text.setText(contacts[position]);
+		holder.text.setText(contactitems.get(position).mDisplayName);
 
 		return convertView;
 	}
@@ -137,17 +145,17 @@ public class ContactsListAdapter extends BaseAdapter implements
 	}
 
 	public void clear() {
-		contacts = new String[0];
+		//contacts = new String[0];
 		notifyDataSetChanged();
 	}
 
 	public void restore() {
-		contacts = new String[TempMemoryStore.contacts.size()];
+		//contacts = new String[TempMemoryStore.contacts.size()];
 		ArrayList<String> names = new ArrayList<String>();
 		for (LocalContactItem c : TempMemoryStore.contacts) {
 			names.add(c.mDisplayName);
 		}
-		names.toArray(contacts);
+		//names.toArray(contacts);
 
 		notifyDataSetChanged();
 	}

@@ -1,5 +1,6 @@
 package com.moziy.hollerback.fragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.adapter.ContactsListAdapter;
+import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.LocalContactItem;
 
@@ -37,6 +39,7 @@ public class AddConversationFragment extends BaseFragment {
 		// null));
 		stickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
 		initializeView(fragmentView);
+		mAdapter.setContacts(TempMemoryStore.contacts);
 		return fragmentView;
 	}
 
@@ -57,7 +60,7 @@ public class AddConversationFragment extends BaseFragment {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				s.toString();
+				searchForContact(s.toString());
 			}
 
 			@Override
@@ -68,9 +71,23 @@ public class AddConversationFragment extends BaseFragment {
 		});
 	}
 
+	List<LocalContactItem> searchItems;
+
 	protected List<LocalContactItem> searchForContact(String searchString) {
-		List<LocalContactItem> items = null;
-		return items;
+		if (!searchString.trim().isEmpty()) {
+			searchItems = new ArrayList<LocalContactItem>();
+			for (LocalContactItem contact : TempMemoryStore.contacts) {
+				if (contact.mDisplayName.toLowerCase().contains(
+						searchString.trim().toLowerCase())) {
+					searchItems.add(contact);
+				}
+			}
+		} else {
+			searchItems = TempMemoryStore.contacts;
+		}
+		mAdapter.clear();
+		mAdapter.setContacts(searchItems);
+		return searchItems;
 	}
 
 	@Override
@@ -79,7 +96,6 @@ public class AddConversationFragment extends BaseFragment {
 		viewHelper.getRightBtn().setVisibility(View.GONE);
 		viewHelper.setHeaderText(HollerbackApplication.getInstance().s(
 				R.string.new_conversation));
-
 	}
 
 }
