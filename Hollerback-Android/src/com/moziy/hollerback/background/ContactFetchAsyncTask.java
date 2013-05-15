@@ -1,7 +1,6 @@
 package com.moziy.hollerback.background;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
@@ -10,14 +9,11 @@ import android.os.AsyncTask;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.activity.HollerbackBaseActivity;
 import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
 import com.moziy.hollerback.util.CollectionOpUtils;
+import com.moziy.hollerback.util.NumberUtil;
 
 public class ContactFetchAsyncTask extends AsyncTask<Void, Void, SortedArray> {
 	private FragmentTransaction ft;
@@ -50,8 +46,6 @@ public class ContactFetchAsyncTask extends AsyncTask<Void, Void, SortedArray> {
 		int col3Index = c.getColumnIndex(columnNames[3]);
 		int col4Index = c.getColumnIndex(columnNames[4]);
 
-		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-
 		ArrayList<UserModel> contactItemList = new ArrayList<UserModel>();
 		for (int i = 0; i < count; i++) {
 			String displayName = c.getString(displayNameColIndex);
@@ -65,8 +59,10 @@ public class ContactFetchAsyncTask extends AsyncTask<Void, Void, SortedArray> {
 			contactItem.mContactId = contactId;
 			contactItem.mDisplayName = displayName;
 
-			contactItem.mPhone = phoneNumber;
-			contactItemList.add(contactItem);
+			contactItem.mPhone = NumberUtil.getE164Number(phoneNumber);
+			if (contactItem.mPhone != null) {
+				contactItemList.add(contactItem);
+			}
 			boolean b2 = c.moveToNext();
 		}
 		c.close();

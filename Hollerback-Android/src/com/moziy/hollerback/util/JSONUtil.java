@@ -10,10 +10,6 @@ import org.json.JSONObject;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
@@ -108,28 +104,25 @@ public class JSONUtil {
 				JSONObject userObject = dataObject.getJSONObject(i);
 				UserModel user = new UserModel();
 				user.name = userObject.getString("name");
-				user.normalizedPhone = userObject.getString("phone_normalized");
+				user.mPhone = userObject.getString("phone_normalized");
 				users.add(user);
-				if (TempMemoryStore.users.mUserModelHash.containsKey(user.normalizedPhone)) {
-					TempMemoryStore.users.mUserModelHash.get(user.normalizedPhone).isHollerbackUser = true;
+				if (TempMemoryStore.users.mUserModelHash
+						.containsKey(user.mPhone)) {
+					TempMemoryStore.users.mUserModelHash.get(user.mPhone).isHollerbackUser = true;
 				}
 			}
 
-			ArrayList<UserModel> valuesList = new ArrayList<UserModel>(TempMemoryStore.users.mUserModelHash.values());
+			ArrayList<UserModel> valuesList = new ArrayList<UserModel>(
+					TempMemoryStore.users.mUserModelHash.values());
 
-			
-			SortedArray array = CollectionOpUtils
-					.sortContacts(valuesList);
-			
-			
-			
-			
+			SortedArray array = CollectionOpUtils.sortContacts(valuesList);
+
 			TempMemoryStore.users = array;
-			
-//			for (UserModel user : TempMemoryStore.users) {
-//				LogUtil.i(user.mDisplayName + " hb: "
-//						+ Boolean.toString(user.isHollerbackUser));
-//			}
+
+			// for (UserModel user : TempMemoryStore.users) {
+			// LogUtil.i(user.mDisplayName + " hb: "
+			// + Boolean.toString(user.isHollerbackUser));
+			// }
 
 			// TempMemoryStore.users = users;
 			Intent intent = new Intent(IABIntent.INTENT_GET_CONTACTS);

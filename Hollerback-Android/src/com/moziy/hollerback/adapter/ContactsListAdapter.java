@@ -11,10 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.debug.LogUtil;
@@ -35,7 +31,7 @@ public class ContactsListAdapter extends BaseAdapter implements
 		sectionId = new int[2];
 		sectionId[0] = 0;
 		sectionId[1] = 0;
-		//sectionId[2] = 0;
+		// sectionId[2] = 0;
 
 	}
 
@@ -45,24 +41,9 @@ public class ContactsListAdapter extends BaseAdapter implements
 		if (indexes != null) {
 			sectionId[0] = indexes.get(1);
 			sectionId[1] = indexes.get(2);
-			//sectionId[2] = indexes.get(2);
+			// sectionId[2] = indexes.get(2);
 		}
 		this.notifyDataSetChanged();
-	}
-
-	public String parseNumber(String number) {
-		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-		try {
-			PhoneNumber phoneNumber = phoneUtil.parse(number, "US");
-			if (phoneUtil.isValidNumber(phoneNumber)) {
-				return phoneUtil.format(phoneNumber, PhoneNumberFormat.E164);
-			}
-			return null;
-		} catch (NumberParseException e) {
-			System.err.println("NumberParseException was thrown: "
-					+ e.toString());
-			return null;
-		}
 	}
 
 	@Override
@@ -138,8 +119,8 @@ public class ContactsListAdapter extends BaseAdapter implements
 		// return the first character of the country as ID because this is what
 		// headers are based upon
 		LogUtil.i("HeaderPosition: " + position);
-		if (position >= sectionId[sectionId.length-1]) {
-			return sectionId[sectionId.length-1];
+		if (position >= sectionId[sectionId.length - 1]) {
+			return sectionId[sectionId.length - 1];
 		}
 		return sectionId[0];
 

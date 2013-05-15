@@ -4,6 +4,7 @@ public class ChipsItem {
 
 	private String title;
 	private int imageid;
+	private String hashKey;
 	public ChipsItem(){
 		
 	}
@@ -22,6 +23,14 @@ public class ChipsItem {
 	}
 	public void setImageid(int imageid) {
 		this.imageid = imageid;
+	}
+	
+	public String getHashKey(){
+		return hashKey;
+	}
+	
+	public void setUserHash(String hashKey){
+		this.hashKey = hashKey;
 	}
 	
 	@Override

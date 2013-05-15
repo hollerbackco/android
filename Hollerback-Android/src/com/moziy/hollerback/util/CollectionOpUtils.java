@@ -1,23 +1,14 @@
 package com.moziy.hollerback.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.kpbird.chipsedittextlibrary.ChipsItem;
-import com.moziy.hollerback.cache.memory.TempMemoryStore;
-import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
 
 public class CollectionOpUtils {
 
 	public static SortedArray sortContacts(ArrayList<UserModel> users) {
-
-		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
 		SortedArray sortedArray = new SortedArray();
 
@@ -40,17 +31,9 @@ public class CollectionOpUtils {
 		sortedArray.array.addAll(phoneBookUsers);
 
 		for (UserModel user : sortedArray.array) {
-			PhoneNumber number;
-			try {
-				number = phoneUtil.parse(user.mPhone, "US");
-				String formattedNumber = phoneUtil.format(number,
-						PhoneNumberFormat.E164);
-				sortedArray.mUserModelHash.put(formattedNumber, user);
-				sortedArray.sortedKeys.add(formattedNumber);
-			} catch (NumberParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			sortedArray.mUserModelHash.put(user.mPhone, user);
+			sortedArray.sortedKeys.add(user.mPhone);
 		}
 
 		sortedArray.indexes.add(0);
@@ -65,6 +48,7 @@ public class CollectionOpUtils {
 		for (UserModel user : users) {
 			ChipsItem item = new ChipsItem();
 			item.setTitle(user.getName());
+			item.setUserHash(user.mPhone);
 			chips.add(item);
 		}
 		return chips;

@@ -8,7 +8,6 @@ public class UserModel {
 	public String mPhone;
 
 	// From Server
-	public String normalizedPhone;
 	public String name;
 	public boolean isHollerbackUser;
 	public boolean isRecentUser;

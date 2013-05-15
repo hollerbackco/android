@@ -110,7 +110,7 @@ public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView im
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		ChipsItem ci = (ChipsItem) getAdapter().getItem(position);
-		
+		Log.i("HB","Item Selected: " + ci.getHashKey());
 		setChips(); // call generate chips when user select any item from auto complete
 	}
 	
