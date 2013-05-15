@@ -11,6 +11,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
@@ -45,9 +48,23 @@ public class AddConversationFragment extends BaseFragment {
 		initializeView(fragmentView);
 		mAdapter.setContacts(TempMemoryStore.users.sortedKeys, null);
 		HBRequestManager.getContacts(TempMemoryStore.users.array);
+		stickyList.setOnItemClickListener(mContactClickListener);
 
 		return fragmentView;
 	}
+
+	OnItemClickListener mContactClickListener = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+
+			UserModel user = TempMemoryStore.users.mUserModelHash
+					.get(mAdapter.contactitems.get(position));
+			
+			Toast.makeText(getActivity(), user.getName(), Toast.LENGTH_LONG).show();
+		}
+	};
 
 	@Override
 	public void onResume() {
@@ -102,7 +119,8 @@ public class AddConversationFragment extends BaseFragment {
 
 			mAdapter.setContacts(tempSort.sortedKeys, tempSort.indexes);
 		} else {
-			mAdapter.setContacts(TempMemoryStore.users.sortedKeys, TempMemoryStore.users.indexes);
+			mAdapter.setContacts(TempMemoryStore.users.sortedKeys,
+					TempMemoryStore.users.indexes);
 		}
 	}
 
@@ -126,7 +144,8 @@ public class AddConversationFragment extends BaseFragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_CONTACTS)) {
-				mAdapter.setContacts(TempMemoryStore.users.sortedKeys, TempMemoryStore.users.indexes);
+				mAdapter.setContacts(TempMemoryStore.users.sortedKeys,
+						TempMemoryStore.users.indexes);
 				mAdapter.notifyDataSetChanged();
 			}
 		}
