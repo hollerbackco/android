@@ -6,16 +6,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <RelativeLayout
+    <com.kpbird.chipsedittextlibrary.ChipsMultiAutoCompleteTextview
+        android:id="@+id/et_add_contacts"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="@dimen/et_add_contacts_height"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:text="" >
 
-        <EditText
-            android:id="@+id/et_add_contacts"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/et_add_contacts_height"
-            android:minLines="3" />
-    </RelativeLayout>
+        <requestFocus />
+    </com.kpbird.chipsedittextlibrary.ChipsMultiAutoCompleteTextview>
 
     <com.emilsjolander.components.stickylistheaders.StickyListHeadersListView
         android:id="@+id/list"

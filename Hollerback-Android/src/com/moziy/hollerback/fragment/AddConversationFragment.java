@@ -17,12 +17,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
+import com.kpbird.chipsedittextlibrary.ChipsAdapter;
+import com.kpbird.chipsedittextlibrary.ChipsItem;
+import com.kpbird.chipsedittextlibrary.ChipsMultiAutoCompleteTextview;
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.adapter.ContactsListAdapter;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
@@ -33,7 +37,10 @@ public class AddConversationFragment extends BaseFragment {
 
 	StickyListHeadersListView stickyList;
 	ContactsListAdapter mAdapter;
-	EditText mEditText;
+	ChipsMultiAutoCompleteTextview mEditText;
+	ChipsAdapter mContactChipsAdapter;
+
+	ArrayList<ChipsItem> mContactChips;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +57,10 @@ public class AddConversationFragment extends BaseFragment {
 		HBRequestManager.getContacts(TempMemoryStore.users.array);
 		stickyList.setOnItemClickListener(mContactClickListener);
 
+		//CollectionOpUtils.setChipItems(TempMemoryStore.users.array);
+
+		mContactChipsAdapter = new ChipsAdapter(getActivity(), CollectionOpUtils.setChipItems(TempMemoryStore.users.array));
+		mEditText.setAdapter(mContactChipsAdapter);
 		return fragmentView;
 	}
 
@@ -61,8 +72,9 @@ public class AddConversationFragment extends BaseFragment {
 
 			UserModel user = TempMemoryStore.users.mUserModelHash
 					.get(mAdapter.contactitems.get(position));
-			
-			Toast.makeText(getActivity(), user.getName(), Toast.LENGTH_LONG).show();
+
+			Toast.makeText(getActivity(), user.getName(), Toast.LENGTH_LONG)
+					.show();
 		}
 	};
 
@@ -78,7 +90,8 @@ public class AddConversationFragment extends BaseFragment {
 	protected void initializeView(View view) {
 		mAdapter = new ContactsListAdapter(getActivity());
 		stickyList.setAdapter(mAdapter);
-		mEditText = (EditText) view.findViewById(R.id.et_add_contacts);
+		mEditText = (ChipsMultiAutoCompleteTextview) view
+				.findViewById(R.id.et_add_contacts);
 
 		mEditText.addTextChangedListener(new TextWatcher() {
 
@@ -91,7 +104,8 @@ public class AddConversationFragment extends BaseFragment {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				searchForContact(s.toString());
+				String[] last = s.toString().split(",");
+				searchForContact(last[last.length-1]);
 			}
 
 			@Override
