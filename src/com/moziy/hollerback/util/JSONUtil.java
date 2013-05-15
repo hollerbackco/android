@@ -1,6 +1,7 @@
 package com.moziy.hollerback.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,12 +10,17 @@ import org.json.JSONObject;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.model.ConversationModel;
+import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
 import com.moziy.hollerback.model.VideoModel;
 
@@ -104,10 +110,26 @@ public class JSONUtil {
 				user.name = userObject.getString("name");
 				user.normalizedPhone = userObject.getString("phone_normalized");
 				users.add(user);
-				if (TempMemoryStore.usersHash.containsKey(user.normalizedPhone)) {
-					TempMemoryStore.usersHash.get(user.normalizedPhone).isHollerbackUser = true;
+				if (TempMemoryStore.users.mUserModelHash.containsKey(user.normalizedPhone)) {
+					TempMemoryStore.users.mUserModelHash.get(user.normalizedPhone).isHollerbackUser = true;
 				}
 			}
+
+			ArrayList<UserModel> valuesList = new ArrayList<UserModel>(TempMemoryStore.users.mUserModelHash.values());
+
+			
+			SortedArray array = CollectionOpUtils
+					.sortContacts(valuesList);
+			
+			
+			
+			
+			TempMemoryStore.users = array;
+			
+//			for (UserModel user : TempMemoryStore.users) {
+//				LogUtil.i(user.mDisplayName + " hb: "
+//						+ Boolean.toString(user.isHollerbackUser));
+//			}
 
 			// TempMemoryStore.users = users;
 			Intent intent = new Intent(IABIntent.INTENT_GET_CONTACTS);

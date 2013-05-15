@@ -24,7 +24,6 @@
         android:clipToPadding="false"
         android:drawSelectorOnTop="true"
         android:fastScrollEnabled="true"
-        android:padding="16dip"
         android:scrollbarStyle="outsideOverlay"
         tools:listitem="@layout/test_list_item_layout" />
 

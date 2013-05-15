@@ -13,6 +13,7 @@ import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.fragment.AddConversationFragment;
 import com.moziy.hollerback.fragment.ConversationListFragment;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
+import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
 
 /**
@@ -97,8 +98,8 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 	}
 
 	public void addContactListFragment(android.app.FragmentTransaction ft,
-			HashMap<String, UserModel> result) {
-		TempMemoryStore.usersHash = result;
+			SortedArray result) {
+		TempMemoryStore.users = result;
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();

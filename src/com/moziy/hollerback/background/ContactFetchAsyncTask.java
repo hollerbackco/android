@@ -15,10 +15,11 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.activity.HollerbackBaseActivity;
+import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
+import com.moziy.hollerback.util.CollectionOpUtils;
 
-public class ContactFetchAsyncTask extends
-		AsyncTask<Void, Void, HashMap<String, UserModel>> {
+public class ContactFetchAsyncTask extends AsyncTask<Void, Void, SortedArray> {
 	private FragmentTransaction ft;
 	private Activity activity;
 
@@ -31,7 +32,7 @@ public class ContactFetchAsyncTask extends
 	}
 
 	@SuppressWarnings("unused")
-	protected HashMap<String, UserModel> doInBackground(Void... params) {
+	protected SortedArray doInBackground(Void... params) {
 		Cursor c = activity.getContentResolver().query(
 				Data.CONTENT_URI,
 				new String[] { Data._ID, Data.DISPLAY_NAME, Phone.NUMBER,
@@ -70,23 +71,11 @@ public class ContactFetchAsyncTask extends
 		}
 		c.close();
 
-		HashMap<String, UserModel> contactsMap = new HashMap<String, UserModel>();
-		for (UserModel user : contactItemList) {
-			PhoneNumber number;
-			try {
-				number = phoneUtil.parse(user.mPhone, "US");
-				contactsMap.put(
-						phoneUtil.format(number, PhoneNumberFormat.E164), user);
-			} catch (NumberParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		return CollectionOpUtils.sortContacts(contactItemList);
 
-		return contactsMap;
 	}
 
-	protected void onPostExecute(HashMap<String, UserModel> result) {
+	protected void onPostExecute(SortedArray result) {
 		((HollerbackBaseActivity) activity).addContactListFragment(ft, result);
 	}
 }

@@ -1,7 +1,6 @@
 package com.moziy.hollerback.fragment;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,7 +21,9 @@ import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
+import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
+import com.moziy.hollerback.util.CollectionOpUtils;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class AddConversationFragment extends BaseFragment {
@@ -42,9 +43,8 @@ public class AddConversationFragment extends BaseFragment {
 		// null));
 		stickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
 		initializeView(fragmentView);
-		mAdapter.setContacts(new ArrayList<UserModel>(TempMemoryStore.usersHash
-				.values()));
-		HBRequestManager.getContacts(mAdapter.contactitems);
+		mAdapter.setContacts(TempMemoryStore.users.sortedKeys, null);
+		HBRequestManager.getContacts(TempMemoryStore.users.array);
 
 		return fragmentView;
 	}
@@ -86,23 +86,24 @@ public class AddConversationFragment extends BaseFragment {
 
 	}
 
-	ArrayList<UserModel> searchItems;
-
-	protected List<UserModel> searchForContact(String searchString) {
+	protected void searchForContact(String searchString) {
+		ArrayList<UserModel> searchItems;
 		if (!searchString.trim().isEmpty()) {
 			searchItems = new ArrayList<UserModel>();
-			for (UserModel contact : mAdapter.contactitems) {
-				if (contact.mDisplayName.toLowerCase().contains(
-						searchString.trim().toLowerCase())) {
+
+			for (UserModel contact : TempMemoryStore.users.array) {
+				if (contact.getName().toLowerCase()
+						.contains(searchString.trim().toLowerCase())) {
 					searchItems.add(contact);
 				}
 			}
+
+			SortedArray tempSort = CollectionOpUtils.sortContacts(searchItems);
+
+			mAdapter.setContacts(tempSort.sortedKeys, tempSort.indexes);
 		} else {
-			searchItems = mAdapter.contactitems;
+			mAdapter.setContacts(TempMemoryStore.users.sortedKeys, TempMemoryStore.users.indexes);
 		}
-		mAdapter.clear();
-		mAdapter.setContacts(searchItems);
-		return searchItems;
 	}
 
 	@Override
@@ -125,8 +126,7 @@ public class AddConversationFragment extends BaseFragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_CONTACTS)) {
-				mAdapter.setContacts(new ArrayList<UserModel>(
-						TempMemoryStore.usersHash.values()));
+				mAdapter.setContacts(TempMemoryStore.users.sortedKeys, TempMemoryStore.users.indexes);
 				mAdapter.notifyDataSetChanged();
 			}
 		}

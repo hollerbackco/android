@@ -11,5 +11,13 @@ public class UserModel {
 	public String normalizedPhone;
 	public String name;
 	public boolean isHollerbackUser;
+	public boolean isRecentUser;
+
+	public String getName() {
+		if (name != null && !name.isEmpty()) {
+			return name;
+		}
+		return mDisplayName;
+	}
 
 }

@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
@@ -17,27 +16,37 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.model.UserModel;
 
 public class ContactsListAdapter extends BaseAdapter implements
-		StickyListHeadersAdapter, SectionIndexer {
+		StickyListHeadersAdapter {
 
 	// private String[] contacts;
 	private LayoutInflater inflater;
-	private Context context;
 	private int[] sectionId;
-	public ArrayList<UserModel> contactitems;
+	public ArrayList<String> contactitems;
+	public ArrayList<Integer> indexes;
 
 	public ContactsListAdapter(Context context) {
-		contactitems = new ArrayList<UserModel>();
-		this.context = context;
+		contactitems = new ArrayList<String>();
 		inflater = LayoutInflater.from(context);
+		sectionId = new int[2];
+		sectionId[0] = 0;
+		sectionId[1] = 0;
+		//sectionId[2] = 0;
 
 	}
 
-	public void setContacts(ArrayList<UserModel> stuff) {
-		contactitems = stuff;
+	public void setContacts(ArrayList<String> keys, ArrayList<Integer> index) {
+		contactitems = keys;
+		indexes = index;
+		if (indexes != null) {
+			sectionId[0] = indexes.get(1);
+			sectionId[1] = indexes.get(2);
+			//sectionId[2] = indexes.get(2);
+		}
 		this.notifyDataSetChanged();
 	}
 
@@ -88,8 +97,9 @@ public class ContactsListAdapter extends BaseAdapter implements
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		holder.text.setText(contactitems.get(position).mDisplayName);
-		UserModel user = contactitems.get(position);
+		UserModel user = TempMemoryStore.users.mUserModelHash.get(contactitems
+				.get(position));
+		holder.text.setText(user.getName());
 
 		holder.mContactStateImage
 				.setBackgroundResource(user.isHollerbackUser ? R.drawable.banana_img
@@ -113,7 +123,11 @@ public class ContactsListAdapter extends BaseAdapter implements
 
 		LogUtil.i("Header View get " + position);
 
-		holder.text1.setText("Hello Rollo");
+		if (getHeaderId(position) == sectionId[0]) {
+			holder.text1.setText("Hollerback Friends");
+		} else if (getHeaderId(position) == sectionId[1]) {
+			holder.text1.setText("Address Book Contacts");
+		}
 		return convertView;
 	}
 
@@ -123,14 +137,12 @@ public class ContactsListAdapter extends BaseAdapter implements
 	public long getHeaderId(int position) {
 		// return the first character of the country as ID because this is what
 		// headers are based upon
-		if (position == 0) {
-			return 0;
-		} else if (position == 9) {
-			return 9;
-		} else if (position == 20) {
-			return 24;
+		LogUtil.i("HeaderPosition: " + position);
+		if (position >= sectionId[sectionId.length-1]) {
+			return sectionId[sectionId.length-1];
 		}
-		return 0;
+		return sectionId[0];
+
 	}
 
 	class HeaderViewHolder {
@@ -154,38 +166,4 @@ public class ContactsListAdapter extends BaseAdapter implements
 
 		notifyDataSetChanged();
 	}
-
-	@Override
-	public Object[] getSections() {
-		sectionId = new int[3];
-		sectionId[0] = 0;
-		sectionId[1] = 9;
-		sectionId[2] = 20;
-		return new String[] { "Recent", "Hollerback", "Phonebook" };
-	}
-
-	@Override
-	public int getPositionForSection(int section) {
-		if (section == 0) {
-			return sectionId[0];
-		} else if (1 == section) {
-			return sectionId[1];
-		} else if (2 == section) {
-			return sectionId[2];
-		} else
-			return 0;
-	}
-
-	@Override
-	public int getSectionForPosition(int position) {
-		if (position == sectionId[0]) {
-			return sectionId[0];
-		} else if (position == sectionId[1]) {
-			return sectionId[1];
-		} else if (position == sectionId[2]) {
-			return sectionId[2];
-		} else
-			return 0;
-	}
-
 }
