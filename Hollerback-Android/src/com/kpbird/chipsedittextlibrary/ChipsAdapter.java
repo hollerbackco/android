@@ -2,6 +2,8 @@ package com.kpbird.chipsedittextlibrary;
 
 import java.util.ArrayList;
 
+import com.moziy.hollerback.R;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;

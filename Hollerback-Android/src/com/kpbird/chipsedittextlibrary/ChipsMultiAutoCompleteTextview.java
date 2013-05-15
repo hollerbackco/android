@@ -1,5 +1,7 @@
 package com.kpbird.chipsedittextlibrary;
 
+import com.moziy.hollerback.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
