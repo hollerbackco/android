@@ -1,22 +1,19 @@
 package com.moziy.hollerback.activity;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.fragment.AddConversationFragment;
 import com.moziy.hollerback.fragment.ConversationListFragment;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
-import com.moziy.hollerback.model.LocalContactItem;
+import com.moziy.hollerback.model.UserModel;
 
 /**
  * Main Activity that gets initiated when user is signed in
@@ -100,8 +97,8 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 	}
 
 	public void addContactListFragment(android.app.FragmentTransaction ft,
-			ArrayList<LocalContactItem> result) {
-		TempMemoryStore.contacts = result;
+			HashMap<String, UserModel> result) {
+		TempMemoryStore.usersHash = result;
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();

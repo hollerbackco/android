@@ -1,16 +1,14 @@
 package com.moziy.hollerbacky.connection;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.amazonaws.http.JsonResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.moziy.hollerback.debug.LogUtil;
-import com.moziy.hollerback.model.LocalContactItem;
+import com.moziy.hollerback.model.UserModel;
 import com.moziy.hollerback.util.HBRequestUtil;
 import com.moziy.hollerback.util.HollerbackAPI;
 import com.moziy.hollerback.util.HollerbackAppState;
@@ -187,7 +185,7 @@ public class HBRequestManager {
 		}
 	}
 
-	public static void getContacts(ArrayList<LocalContactItem> contacts) {
+	public static void getContacts(ArrayList<UserModel> contacts) {
 
 		if (HollerbackAppState.isValidSession()) {
 			RequestParams params = new RequestParams();

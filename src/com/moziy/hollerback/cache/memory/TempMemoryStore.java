@@ -1,14 +1,16 @@
 package com.moziy.hollerback.cache.memory;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import com.moziy.hollerback.model.ConversationModel;
-import com.moziy.hollerback.model.LocalContactItem;
+import com.moziy.hollerback.model.UserModel;
 
 public class TempMemoryStore {
 
 	public static ArrayList<ConversationModel> conversations;
-	public static ArrayList<LocalContactItem> contacts;
+	//public static ArrayList<UserModel> contacts;
+
+	public static HashMap<String, UserModel> usersHash;
 
 }

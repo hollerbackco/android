@@ -6,19 +6,19 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.debug.LogUtil;
-import com.moziy.hollerback.model.LocalContactItem;
+import com.moziy.hollerback.model.UserModel;
 
 public class HBRequestUtil {
 
 	public static String generatePhoneNumberArrayString(
-			ArrayList<LocalContactItem> items) {
+			ArrayList<UserModel> items) {
 		PhoneNumberUtil util = PhoneNumberUtil.getInstance();
 		String start = "[";
 		String end = "]";
 
 		int count = 0;
 
-		for (LocalContactItem item : items) {
+		for (UserModel item : items) {
 			try {
 				PhoneNumber phoneNumber = util.parse(item.mPhone, "US");
 				if (util.isValidNumber(phoneNumber)) {
@@ -40,12 +40,12 @@ public class HBRequestUtil {
 	}
 
 	public static ArrayList<String> generateStringArray(
-			ArrayList<LocalContactItem> items) {
+			ArrayList<UserModel> items) {
 		PhoneNumberUtil util = PhoneNumberUtil.getInstance();
 
 		ArrayList<String> numbers = new ArrayList<String>();
 
-		for (LocalContactItem item : items) {
+		for (UserModel item : items) {
 			try {
 				PhoneNumber phoneNumber = util.parse(item.mPhone, "US");
 				if (util.isValidNumber(phoneNumber)) {

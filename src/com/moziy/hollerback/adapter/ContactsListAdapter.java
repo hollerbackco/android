@@ -1,13 +1,13 @@
 package com.moziy.hollerback.adapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -17,36 +17,26 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.R;
-import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.debug.LogUtil;
-import com.moziy.hollerback.model.LocalContactItem;
+import com.moziy.hollerback.model.UserModel;
 
 public class ContactsListAdapter extends BaseAdapter implements
 		StickyListHeadersAdapter, SectionIndexer {
 
-	//private String[] contacts;
+	// private String[] contacts;
 	private LayoutInflater inflater;
 	private Context context;
 	private int[] sectionId;
-	public List<LocalContactItem> contactitems;
+	public ArrayList<UserModel> contactitems;
 
 	public ContactsListAdapter(Context context) {
-		contactitems = new ArrayList<LocalContactItem>();
+		contactitems = new ArrayList<UserModel>();
 		this.context = context;
 		inflater = LayoutInflater.from(context);
-		ArrayList<String> names = new ArrayList<String>();
-		for (LocalContactItem c : TempMemoryStore.contacts) {
-			String num = parseNumber(c.mPhone);
-			if (num != null) {
-				names.add(c.mDisplayName + " x " + num);
-			}
-		}
-		//contacts = new String[names.size()];
-		//names.toArray(contacts);
 
 	}
 
-	public void setContacts(List<LocalContactItem> stuff) {
+	public void setContacts(ArrayList<UserModel> stuff) {
 		contactitems = stuff;
 		this.notifyDataSetChanged();
 	}
@@ -91,12 +81,19 @@ public class ContactsListAdapter extends BaseAdapter implements
 					false);
 			holder.text = (TextView) convertView
 					.findViewById(R.id.tv_contact_name);
+			holder.mContactStateImage = (ImageView) convertView
+					.findViewById(R.id.iv_contact_type);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
 		holder.text.setText(contactitems.get(position).mDisplayName);
+		UserModel user = contactitems.get(position);
+
+		holder.mContactStateImage
+				.setBackgroundResource(user.isHollerbackUser ? R.drawable.banana_img
+						: R.drawable.phone_img);
 
 		return convertView;
 	}
@@ -142,20 +139,18 @@ public class ContactsListAdapter extends BaseAdapter implements
 
 	class ViewHolder {
 		TextView text;
+		ImageView mContactStateImage;
 	}
 
 	public void clear() {
-		//contacts = new String[0];
+		// contacts = new String[0];
 		notifyDataSetChanged();
 	}
 
 	public void restore() {
-		//contacts = new String[TempMemoryStore.contacts.size()];
-		ArrayList<String> names = new ArrayList<String>();
-		for (LocalContactItem c : TempMemoryStore.contacts) {
-			names.add(c.mDisplayName);
-		}
-		//names.toArray(contacts);
+		// contacts = new String[TempMemoryStore.contacts.size()];
+
+		// names.toArray(contacts);
 
 		notifyDataSetChanged();
 	}

@@ -15,6 +15,7 @@ import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.model.ConversationModel;
+import com.moziy.hollerback.model.UserModel;
 import com.moziy.hollerback.model.VideoModel;
 
 public class JSONUtil {
@@ -95,9 +96,24 @@ public class JSONUtil {
 
 	public static void processGetContacts(JSONObject json) {
 		try {
-			LogUtil.i(json.toString());
-		} catch (Exception e) {
+			ArrayList<UserModel> users = new ArrayList<UserModel>();
+			JSONArray dataObject = json.getJSONArray("data");
+			for (int i = 0; i < dataObject.length(); i++) {
+				JSONObject userObject = dataObject.getJSONObject(i);
+				UserModel user = new UserModel();
+				user.name = userObject.getString("name");
+				user.normalizedPhone = userObject.getString("phone_normalized");
+				users.add(user);
+				if (TempMemoryStore.usersHash.containsKey(user.normalizedPhone)) {
+					TempMemoryStore.usersHash.get(user.normalizedPhone).isHollerbackUser = true;
+				}
+			}
 
+			// TempMemoryStore.users = users;
+			Intent intent = new Intent(IABIntent.INTENT_GET_CONTACTS);
+			IABroadcastManager.sendLocalBroadcast(intent);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

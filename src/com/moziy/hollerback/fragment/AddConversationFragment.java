@@ -3,24 +3,26 @@ package com.moziy.hollerback.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.adapter.ContactsListAdapter;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
+import com.moziy.hollerback.communication.IABIntent;
+import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
-import com.moziy.hollerback.model.LocalContactItem;
+import com.moziy.hollerback.model.UserModel;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class AddConversationFragment extends BaseFragment {
@@ -40,8 +42,9 @@ public class AddConversationFragment extends BaseFragment {
 		// null));
 		stickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
 		initializeView(fragmentView);
-		mAdapter.setContacts(TempMemoryStore.contacts);
-		HBRequestManager.getContacts(TempMemoryStore.contacts);
+		mAdapter.setContacts(new ArrayList<UserModel>(TempMemoryStore.usersHash
+				.values()));
+		HBRequestManager.getContacts(mAdapter.contactitems);
 
 		return fragmentView;
 	}
@@ -50,7 +53,8 @@ public class AddConversationFragment extends BaseFragment {
 	public void onResume() {
 
 		super.onResume();
-
+		IABroadcastManager.registerForLocalBroadcast(receiver,
+				IABIntent.INTENT_GET_CONTACTS);
 	}
 
 	@Override
@@ -82,23 +86,30 @@ public class AddConversationFragment extends BaseFragment {
 
 	}
 
-	List<LocalContactItem> searchItems;
+	ArrayList<UserModel> searchItems;
 
-	protected List<LocalContactItem> searchForContact(String searchString) {
+	protected List<UserModel> searchForContact(String searchString) {
 		if (!searchString.trim().isEmpty()) {
-			searchItems = new ArrayList<LocalContactItem>();
-			for (LocalContactItem contact : TempMemoryStore.contacts) {
+			searchItems = new ArrayList<UserModel>();
+			for (UserModel contact : mAdapter.contactitems) {
 				if (contact.mDisplayName.toLowerCase().contains(
 						searchString.trim().toLowerCase())) {
 					searchItems.add(contact);
 				}
 			}
 		} else {
-			searchItems = TempMemoryStore.contacts;
+			searchItems = mAdapter.contactitems;
 		}
 		mAdapter.clear();
 		mAdapter.setContacts(searchItems);
 		return searchItems;
+	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		IABroadcastManager.unregisterLocalReceiver(receiver);
 	}
 
 	@Override
@@ -108,5 +119,17 @@ public class AddConversationFragment extends BaseFragment {
 		viewHelper.setHeaderText(HollerbackApplication.getInstance().s(
 				R.string.new_conversation));
 	}
+
+	BroadcastReceiver receiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_CONTACTS)) {
+				mAdapter.setContacts(new ArrayList<UserModel>(
+						TempMemoryStore.usersHash.values()));
+				mAdapter.notifyDataSetChanged();
+			}
+		}
+	};
 
 }
