@@ -8,10 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -57,10 +60,11 @@ public class AddConversationFragment extends BaseFragment {
 		HBRequestManager.getContacts(TempMemoryStore.users.array);
 		stickyList.setOnItemClickListener(mContactClickListener);
 
-		//CollectionOpUtils.setChipItems(TempMemoryStore.users.array);
+		// CollectionOpUtils.setChipItems(TempMemoryStore.users.array);
 
-		mContactChipsAdapter = new ChipsAdapter(getActivity(), CollectionOpUtils.setChipItems(TempMemoryStore.users.array));
-		mEditText.setAdapter(mContactChipsAdapter);
+		mContactChipsAdapter = new ChipsAdapter(getActivity(),
+				CollectionOpUtils.setChipItems(TempMemoryStore.users.array));
+		// mEditText.setAdapter(mContactChipsAdapter);
 		return fragmentView;
 	}
 
@@ -75,6 +79,27 @@ public class AddConversationFragment extends BaseFragment {
 
 			Toast.makeText(getActivity(), user.getName(), Toast.LENGTH_LONG)
 					.show();
+
+			String partial = "";
+
+			if (!mEditText.getText().toString().trim().isEmpty()) {
+
+				partial = mEditText
+						.getText()
+						.toString()
+						.substring(
+								0,
+								mEditText.getText().toString().lastIndexOf(",") + 1)
+						+ " ";
+			}
+
+			String c = (partial + user.mDisplayName.trim() + ", ");
+
+			mEditText.setText(c);
+			mEditText.setSelection(c.length());
+			mEditText.setChips();
+			searchForContact("");
+
 		}
 	};
 
@@ -105,7 +130,7 @@ public class AddConversationFragment extends BaseFragment {
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 				String[] last = s.toString().split(",");
-				searchForContact(last[last.length-1]);
+				searchForContact(last[last.length - 1]);
 			}
 
 			@Override

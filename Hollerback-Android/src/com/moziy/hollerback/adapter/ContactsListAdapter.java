@@ -102,8 +102,6 @@ public class ContactsListAdapter extends BaseAdapter implements
 		}
 		// set header text as first char in name
 
-		LogUtil.i("Header View get " + position);
-
 		if (getHeaderId(position) == sectionId[0]) {
 			holder.text1.setText("Hollerback Friends");
 		} else if (getHeaderId(position) == sectionId[1]) {
@@ -118,7 +116,6 @@ public class ContactsListAdapter extends BaseAdapter implements
 	public long getHeaderId(int position) {
 		// return the first character of the country as ID because this is what
 		// headers are based upon
-		LogUtil.i("HeaderPosition: " + position);
 		if (position >= sectionId[sectionId.length - 1]) {
 			return sectionId[sectionId.length - 1];
 		}
