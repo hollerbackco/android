@@ -43,6 +43,8 @@ public class AddConversationFragment extends BaseFragment {
 	ChipsMultiAutoCompleteTextview mEditText;
 	ChipsAdapter mContactChipsAdapter;
 
+	ArrayList<UserModel> mInvites;
+
 	ArrayList<ChipsItem> mContactChips;
 
 	@Override
@@ -65,6 +67,9 @@ public class AddConversationFragment extends BaseFragment {
 		mContactChipsAdapter = new ChipsAdapter(getActivity(),
 				CollectionOpUtils.setChipItems(TempMemoryStore.users.array));
 		// mEditText.setAdapter(mContactChipsAdapter);
+
+		mInvites = new ArrayList<UserModel>();
+
 		return fragmentView;
 	}
 
@@ -76,6 +81,8 @@ public class AddConversationFragment extends BaseFragment {
 
 			UserModel user = TempMemoryStore.users.mUserModelHash
 					.get(mAdapter.contactitems.get(position));
+
+			mInvites.add(user);
 
 			Toast.makeText(getActivity(), user.getName(), Toast.LENGTH_LONG)
 					.show();
@@ -89,11 +96,10 @@ public class AddConversationFragment extends BaseFragment {
 						.toString()
 						.substring(
 								0,
-								mEditText.getText().toString().lastIndexOf(",") + 1)
-						+ " ";
+								mEditText.getText().toString().lastIndexOf(",") + 1);
 			}
 
-			String c = (partial + user.mDisplayName.trim() + ", ");
+			String c = (partial + user.mDisplayName.trim() + ",");
 
 			mEditText.setText(c);
 			mEditText.setSelection(c.length());
@@ -135,8 +141,7 @@ public class AddConversationFragment extends BaseFragment {
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-
+				
 			}
 		});
 

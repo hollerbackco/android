@@ -21,8 +21,7 @@ import android.widget.TextView;
 
 import com.moziy.hollerback.R;
 
-public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView
-		 {
+public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView {
 
 	/* Constructor */
 	public ChipsMultiAutoCompleteTextview(Context context) {
@@ -45,8 +44,8 @@ public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView
 
 	/* set listeners for item click and text change */
 	public void init(Context context) {
-		//setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-		//setOnItemClickListener(this);
+		// setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+		// setOnItemClickListener(this);
 		addTextChangedListener(textWather);
 	}
 
@@ -59,10 +58,10 @@ public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
-//			if (count >= 1) {
-//				if (s.charAt(start) == ',')
-//					setChips(); // generate chips
-//			}
+			// if (count >= 1) {
+			// if (s.charAt(start) == ',')
+			// setChips(); // generate chips
+			// }
 		}
 
 		@Override
@@ -93,8 +92,9 @@ public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView
 				TextView textView = (TextView) lf.inflate(
 						R.layout.chips_edittext, null);
 				textView.setText(c); // set text
-				//int image = ((ChipsAdapter) getAdapter()).getImage(c);
-				//textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, image, 0);
+				// int image = ((ChipsAdapter) getAdapter()).getImage(c);
+				// textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, image,
+				// 0);
 				// capture bitmapt of genreated textview
 				int spec = MeasureSpec.makeMeasureSpec(0,
 						MeasureSpec.UNSPECIFIED);
@@ -127,13 +127,27 @@ public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView
 
 	}
 
-//	@Override
-//	public void onItemClick(AdapterView<?> parent, View view, int position,
-//			long id) {
-//		ChipsItem ci = (ChipsItem) getAdapter().getItem(position);
-//		Log.i("HB", "Item Selected: " + ci.getHashKey());
-//		setChips(); // call generate chips when user select any item from auto
-//					// complete
-//	}
+	@Override
+	public void onSelectionChanged(int start, int end) {
+
+		CharSequence text = getText();
+		if (text != null) {
+			//if (start != text.length() || end != text.length()) {
+				setSelection(text.length(), text.length());
+				return;
+			//}
+		}
+
+		super.onSelectionChanged(start, end);
+	}
+
+	// @Override
+	// public void onItemClick(AdapterView<?> parent, View view, int position,
+	// long id) {
+	// ChipsItem ci = (ChipsItem) getAdapter().getItem(position);
+	// Log.i("HB", "Item Selected: " + ci.getHashKey());
+	// setChips(); // call generate chips when user select any item from auto
+	// // complete
+	// }
 
 }
