@@ -42,5 +42,7 @@ public class HollerbackAPI {
 	public static final String PARAM_FILENAME = "filename";
 
 	public static final String PARAM_NUMBERS = "numbers[]";
+	
+	public static final String PARAM_INVITES = "invites[]";
 
 }

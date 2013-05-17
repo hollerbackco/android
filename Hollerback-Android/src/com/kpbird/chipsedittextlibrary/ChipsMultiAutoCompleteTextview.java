@@ -20,6 +20,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.debug.LogUtil;
 
 public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView {
 
@@ -76,11 +77,25 @@ public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView {
 
 	/* This function has whole logic for chips generate */
 	public void setChips() {
+
+		// if (count != -1) {
+		// String[] chippers = new String[count+1];
+		// String[] contacts = getText().toString().trim().split(",");
+		// String s = "";
+		// for (int i = 0; i < count-1; i++) {
+		//
+		// chippers[i] = contacts[i];
+		// }
+		// chippers[count-1] = contacts[contacts.length];
+		// }
+
 		if (getText().toString().contains(",")) // check comman in string
 		{
 
 			SpannableStringBuilder ssb = new SpannableStringBuilder(getText());
 			// split string wich comma
+
+			
 			String chips[] = getText().toString().trim().split(",");
 			int x = 0;
 			// loop will generate ImageSpan for every country name separated by
@@ -92,6 +107,7 @@ public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView {
 				TextView textView = (TextView) lf.inflate(
 						R.layout.chips_edittext, null);
 				textView.setText(c); // set text
+				
 				// int image = ((ChipsAdapter) getAdapter()).getImage(c);
 				// textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, image,
 				// 0);
@@ -132,10 +148,10 @@ public class ChipsMultiAutoCompleteTextview extends MultiAutoCompleteTextView {
 
 		CharSequence text = getText();
 		if (text != null) {
-			//if (start != text.length() || end != text.length()) {
-				setSelection(text.length(), text.length());
-				return;
-			//}
+			// if (start != text.length() || end != text.length()) {
+			setSelection(text.length(), text.length());
+			return;
+			// }
 		}
 
 		super.onSelectionChanged(start, end);

@@ -24,16 +24,18 @@ public class HBRequestManager {
 
 	static boolean isS3Upload;
 
-	public static boolean postVideo(JSONObject jsonObject, String filePath,
-			String fileName) {
-		if (isS3Upload) {
-
-		}
-		return true;
-	}
+	// public static boolean postVideo(JSONObject jsonObject, String filePath,
+	// String fileName) {
+	// if (isS3Upload) {
+	//
+	// }
+	// return true;
+	// }
 
 	public static void postVideo(String conversation_id, String filename) {
 		RequestParams params = new RequestParams();
+		
+		LogUtil.i("PostVideo", conversation_id);
 
 		params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
 				HollerbackAppState.getValidToken());
@@ -54,6 +56,7 @@ public class HBRequestManager {
 					public void onSuccess(int arg0, JSONObject arg1) {
 						// TODO Auto-generated method stub
 						super.onSuccess(arg0, arg1);
+						JSONUtil.processVideoPost(arg1);
 					}
 
 					@Override
@@ -146,13 +149,16 @@ public class HBRequestManager {
 
 	}
 
-	public static void postConversations() {
+	public static void postConversations(ArrayList<UserModel> contacts) {
 		if (HollerbackAppState.isValidSession()) {
 			RequestParams params = new RequestParams();
 			params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
 					HollerbackAppState.getValidToken());
 
-			HollerbackAsyncClient.getInstance().get(
+			params.put(HollerbackAPI.PARAM_INVITES,
+					HBRequestUtil.generateStringArray(contacts));
+
+			HollerbackAsyncClient.getInstance().post(
 					HollerbackAPI.API_CONVERSATION, params,
 					new JsonHttpResponseHandler() {
 
@@ -177,7 +183,7 @@ public class HBRequestManager {
 							// TODO Auto-generated method stub
 							super.onSuccess(arg0, arg1);
 							LogUtil.i("ON SUCCESS API CONVO");
-							JSONUtil.processGetConversations(arg1);
+							JSONUtil.processPostConversations(arg1);
 						}
 
 					});

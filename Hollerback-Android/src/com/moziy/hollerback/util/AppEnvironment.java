@@ -16,7 +16,7 @@ public class AppEnvironment {
 
 	// public static final String PICTURE_NAME = null;
 	
-	public static final String UPLOAD_BUCKET = "hollerback-jian";
+	public static final String UPLOAD_BUCKET = "hollerback-app-dev";
 
 	public static final String PICTURE_BUCKET = "hollerback-app-dev";
 
@@ -27,7 +27,7 @@ public class AppEnvironment {
 	
 	public static final String IMAGE_THUMB_SUFFIX = "-thumb.png";
 	
-	public static boolean ALLOW_UPLOAD_VIDEOS = false; 
+	public static boolean ALLOW_UPLOAD_VIDEOS = true; 
 
 	public static String getPictureBucket() {
 		return PICTURE_BUCKET;

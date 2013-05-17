@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.activity.HollerbackBaseActivity;
 import com.moziy.hollerback.activity.HollerbackCameraActivity;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
 import com.moziy.hollerback.bitmap.ImageCache;
@@ -58,7 +59,7 @@ public class ConversationFragment extends BaseFragment {
 	private Button mReplyBtn;
 
 	public int TAKE_VIDEO = 0x683;
-	
+
 	private String mConversationId;
 
 	@Override
@@ -115,6 +116,7 @@ public class ConversationFragment extends BaseFragment {
 		Bundle bundle = getArguments();
 		int index = bundle.getInt("index");
 		mConversationId = bundle.getString("conv_id");
+		LogUtil.i("Conversation Fragment: ID: " + mConversationId);
 		mVideoGalleryAdapter.setVideos(TempMemoryStore.conversations.get(index)
 				.getVideos());
 	}
@@ -140,8 +142,15 @@ public class ConversationFragment extends BaseFragment {
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(),
 						HollerbackCameraActivity.class);
-				intent.putExtra(IABIntent.PARAM_ID, mConversationId);
-				startActivityForResult(intent, TAKE_VIDEO);
+				LogUtil.i("Putting Extra ID: " + mConversationId == null ? "null"
+						: mConversationId);
+
+				Bundle mBundle = new Bundle();
+				mBundle.putString(IABIntent.PARAM_ID, mConversationId);
+				intent.putExtras(mBundle);
+
+				// intent.putExtra(IABIntent.PARAM_ID, mConversationId);
+				startActivity(intent);
 			}
 		});
 	}
@@ -164,7 +173,8 @@ public class ConversationFragment extends BaseFragment {
 	 * Create a new instance of CountingFragment, providing "num" as an
 	 * argument.
 	 */
-	public static ConversationFragment newInstance(String conversation_id, int index) {
+	public static ConversationFragment newInstance(String conversation_id,
+			int index) {
 
 		ConversationFragment f = new ConversationFragment();
 
@@ -181,7 +191,8 @@ public class ConversationFragment extends BaseFragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_REQUEST_VIDEO)) {
-				LogUtil.i("Received ID: " + intent.getStringExtra(IABIntent.PARAM_ID));
+				LogUtil.i("Received ID: "
+						+ intent.getStringExtra(IABIntent.PARAM_ID));
 				playVideo(intent.getStringExtra(IABIntent.PARAM_ID));
 
 			}
@@ -190,9 +201,9 @@ public class ConversationFragment extends BaseFragment {
 
 	private void playVideo(String fileKey) {
 		String path = FileUtil.getLocalFile(fileKey);
-		
+
 		LogUtil.i("Play video: " + path);
-		
+
 		mVideoView.setVideoPath(path);
 		mVideoView.requestFocus();
 		mVideoView.start();
@@ -224,7 +235,7 @@ public class ConversationFragment extends BaseFragment {
 	@Override
 	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

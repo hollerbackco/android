@@ -1,6 +1,7 @@
 package com.moziy.hollerback.fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,16 +9,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
 import com.kpbird.chipsedittextlibrary.ChipsAdapter;
@@ -25,6 +24,7 @@ import com.kpbird.chipsedittextlibrary.ChipsItem;
 import com.kpbird.chipsedittextlibrary.ChipsMultiAutoCompleteTextview;
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.activity.HollerbackCameraActivity;
 import com.moziy.hollerback.adapter.ContactsListAdapter;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
@@ -46,6 +46,12 @@ public class AddConversationFragment extends BaseFragment {
 	ArrayList<UserModel> mInvites;
 
 	ArrayList<ChipsItem> mContactChips;
+
+	Button mCreateConversationBtn;
+
+	private int mInvitesCount;
+
+	HashMap<String, String> nameKeys;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,6 +107,23 @@ public class AddConversationFragment extends BaseFragment {
 
 			String c = (partial + user.mDisplayName.trim() + ",");
 
+			mInvitesCount++;
+
+			String[] chips = new String[mInvitesCount];
+			String[] contacts = c.toString().trim().split(",");
+			for (int i = 0; i < mInvitesCount - 1; i++) {
+
+				chips[i] = contacts[i];
+			}
+			chips[mInvitesCount - 1] = contacts[contacts.length - 1];
+
+			c = "";
+			for (String s : chips) {
+				c += (s + ",");
+			}
+
+			LogUtil.i("Running Chips for: " + c);
+
 			mEditText.setText(c);
 			mEditText.setSelection(c.length());
 			mEditText.setChips();
@@ -141,7 +164,17 @@ public class AddConversationFragment extends BaseFragment {
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				
+
+			}
+		});
+
+		mCreateConversationBtn = (Button) view.findViewById(R.id.b_hollerback);
+		mCreateConversationBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				createNewConversation();
+
 			}
 		});
 
@@ -192,7 +225,15 @@ public class AddConversationFragment extends BaseFragment {
 						TempMemoryStore.users.indexes);
 				mAdapter.notifyDataSetChanged();
 			}
+
 		}
 	};
+
+	public void createNewConversation() {
+		TempMemoryStore.invitedUsers = mInvites;
+		Intent intent = new Intent(getActivity(),
+				HollerbackCameraActivity.class);
+		startActivityForResult(intent, 3);
+	}
 
 }

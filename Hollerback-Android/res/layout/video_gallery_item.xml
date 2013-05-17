@@ -10,4 +10,10 @@
         android:layout_height="80dp"
         android:src="@drawable/test_thumb" />
 
+    <ImageView
+        android:id="@+id/iv_selected_video"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone" />
+
 </RelativeLayout>

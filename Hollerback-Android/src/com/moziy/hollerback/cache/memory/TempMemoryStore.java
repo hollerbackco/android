@@ -13,5 +13,7 @@ public class TempMemoryStore {
 	// public static ArrayList<UserModel> contacts;
 
 	public static SortedArray users;
+	
+	public static ArrayList<UserModel> invitedUsers;
 
 }

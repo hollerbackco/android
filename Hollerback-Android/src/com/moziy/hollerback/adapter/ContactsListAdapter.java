@@ -3,6 +3,7 @@ package com.moziy.hollerback.adapter;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +24,12 @@ public class ContactsListAdapter extends BaseAdapter implements
 	private LayoutInflater inflater;
 	private int[] sectionId;
 	public ArrayList<String> contactitems;
+	public ArrayList<String> alreadyClickedUsers;
 	public ArrayList<Integer> indexes;
 
 	public ContactsListAdapter(Context context) {
 		contactitems = new ArrayList<String>();
+		alreadyClickedUsers = new ArrayList<String>();
 		inflater = LayoutInflater.from(context);
 		sectionId = new int[2];
 		sectionId[0] = 0;
@@ -82,6 +85,12 @@ public class ContactsListAdapter extends BaseAdapter implements
 				.get(position));
 		holder.text.setText(user.getName());
 
+		if (alreadyClickedUsers.contains(user.mPhone)) {
+			holder.text.setTextColor(Color.BLACK);
+		} else {
+			holder.text.setTextColor(Color.GRAY);
+		}
+
 		holder.mContactStateImage
 				.setBackgroundResource(user.isHollerbackUser ? R.drawable.banana_img
 						: R.drawable.phone_img);
@@ -127,9 +136,9 @@ public class ContactsListAdapter extends BaseAdapter implements
 		TextView text1;
 	}
 
-	class ViewHolder {
-		TextView text;
-		ImageView mContactStateImage;
+	public class ViewHolder {
+		public TextView text;
+		public ImageView mContactStateImage;
 	}
 
 	public void clear() {
@@ -143,5 +152,13 @@ public class ContactsListAdapter extends BaseAdapter implements
 		// names.toArray(contacts);
 
 		notifyDataSetChanged();
+	}
+
+	public void addUser(UserModel user) {
+		alreadyClickedUsers.add(user.mPhone);
+	}
+
+	public void removeUser(UserModel user) {
+		alreadyClickedUsers.remove(user.mPhone);
 	}
 }

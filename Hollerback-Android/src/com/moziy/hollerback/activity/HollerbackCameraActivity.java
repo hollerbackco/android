@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
@@ -33,12 +36,15 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
+import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.util.ImageUtil;
+import com.moziy.hollerbacky.connection.HBRequestManager;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnS3UploadListener;
 
 public class HollerbackCameraActivity extends Activity {
@@ -98,10 +104,6 @@ public class HollerbackCameraActivity extends Activity {
 		dialog.setMessage("Uploading");
 		dialog.setCancelable(false);
 
-		if (getIntent().hasExtra(IABIntent.PARAM_ID)) {
-			mConversationId = getIntent().getStringExtra(IABIntent.PARAM_ID);
-		}
-
 		handler = new Handler();
 		mS3RequestHelper = new S3RequestHelper();
 
@@ -155,15 +157,31 @@ public class HollerbackCameraActivity extends Activity {
 		// .getWindowManager().getDefaultDisplay().getWidth()) / 2;
 		// mBottomView.setLayoutParams(bottomParams);
 
+		Bundle b = getIntent().getExtras();
+		LogUtil.i("Bundle: " + b == null ? "null" : "real");
+
+		if (b != null && b.getString(IABIntent.PARAM_ID) != null) {
+			mConversationId = b.getString(IABIntent.PARAM_ID);
+			LogUtil.i("HollerbackCamera CONVO: " + mConversationId);
+		}
+
 		mRecordButton = (ImageButton) findViewById(R.id.record_button);
 
 		mSendButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				mS3RequestHelper.uploadNewVideo(mConversationId, mFileDataName,
-						FileUtil.getImageUploadName(mFileDataName),
-						mOnS3UploadListener);
+				dialog.show();
+				if (mConversationId == null) {
+					HBRequestManager
+							.postConversations(TempMemoryStore.invitedUsers);
+					LogUtil.e("Conversation ID NULL");
+				} else {
+					mS3RequestHelper.uploadNewVideo(mConversationId,
+							mFileDataName,
+							FileUtil.getImageUploadName(mFileDataName),
+							mOnS3UploadListener);
+				}
 			}
 		});
 
@@ -183,6 +201,12 @@ public class HollerbackCameraActivity extends Activity {
 		mTimer = (TextView) findViewById(R.id.timer);
 	}
 
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+	}
+
 	ProgressDialog dialog;
 
 	Handler mLoadingHandler = new Handler() {
@@ -199,8 +223,8 @@ public class HollerbackCameraActivity extends Activity {
 		@Override
 		public void onStart() {
 			// dialog.show();
-			//Toast.makeText(HollerbackCameraActivity.this, "Upload Started",
-			//		Toast.LENGTH_LONG).show();
+			// Toast.makeText(HollerbackCameraActivity.this, "Upload Started",
+			// Toast.LENGTH_LONG).show();
 		}
 
 		@Override
@@ -218,8 +242,8 @@ public class HollerbackCameraActivity extends Activity {
 			LogUtil.i("oncomplete called");
 
 			// dialog.dismiss();
-			//Toast.makeText(HollerbackCameraActivity.this, "Upload Finished",
-			//		Toast.LENGTH_LONG).show();
+			// Toast.makeText(HollerbackCameraActivity.this, "Upload Finished",
+			// Toast.LENGTH_LONG).show();
 			return 0;
 		}
 
@@ -266,6 +290,9 @@ public class HollerbackCameraActivity extends Activity {
 			camera = Camera.open();
 		}
 		previewHolder.addCallback(surfaceCallback);
+
+		IABroadcastManager.registerForLocalBroadcast(receiver,
+				IABIntent.INTENT_UPLOAD_VIDEO);
 	}
 
 	@Override
@@ -278,6 +305,7 @@ public class HollerbackCameraActivity extends Activity {
 		// camera = null;
 		// inPreview = false;
 		super.onPause();
+		IABroadcastManager.unregisterLocalReceiver(receiver);
 	}
 
 	private void startRecording() {
@@ -324,7 +352,6 @@ public class HollerbackCameraActivity extends Activity {
 
 		displayPreview();
 		ImageUtil.generateThumbnail(mFileDataName);
-
 	}
 
 	public void displayPreview() {
@@ -539,4 +566,23 @@ public class HollerbackCameraActivity extends Activity {
 			}
 		}
 	};
+
+	BroadcastReceiver receiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (IABIntent.isIntent(intent, IABIntent.INTENT_POST_CONVERSATIONS)) {
+				mConversationId = intent.getStringExtra(IABIntent.PARAM_ID);
+				mS3RequestHelper.uploadNewVideo(mConversationId, mFileDataName,
+						FileUtil.getImageUploadName(mFileDataName),
+						mOnS3UploadListener);
+			} else if (IABIntent
+					.isIntent(intent, IABIntent.INTENT_UPLOAD_VIDEO)) {
+				dialog.dismiss();
+				HollerbackCameraActivity.this.finish();
+			}
+
+		}
+	};
+
 }

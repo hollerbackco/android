@@ -46,6 +46,24 @@ public class JSONUtil {
 
 	}
 
+	public static void processVideoPost(JSONObject object) {
+		try {
+			JSONObject dataObject = object.getJSONObject("data");
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Toast.makeText(HollerbackApplication.getInstance(), "DONE",
+				Toast.LENGTH_LONG).show();
+
+		Intent intent = new Intent(IABIntent.INTENT_SESSION_REQUEST);
+		intent.putExtra(IABIntent.PARAM_AUTHENTICATED, IABIntent.VALUE_TRUE);
+		IABroadcastManager.sendLocalBroadcast(intent);
+
+	}
+
 	public static void processGetConversations(JSONObject object) {
 		ArrayList<ConversationModel> conversations = new ArrayList<ConversationModel>();
 		try {
@@ -126,6 +144,45 @@ public class JSONUtil {
 
 			// TempMemoryStore.users = users;
 			Intent intent = new Intent(IABIntent.INTENT_GET_CONTACTS);
+			IABroadcastManager.sendLocalBroadcast(intent);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void processPostConversations(JSONObject json) {
+
+		ConversationModel conversationModel = new ConversationModel();
+
+		try {
+
+			JSONObject conversation = json.getJSONObject("data");
+			JSONArray videosArray = conversation.getJSONArray("videos");
+			ConversationModel model = new ConversationModel();
+			model.setConversation_id(conversation.getInt("id"));
+			model.setConversation_name(conversation.getString("name"));
+			model.setConversation_unread_count(conversation
+					.getInt("unread_count"));
+
+			ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
+			for (int j = 0; j < videosArray.length(); j++) {
+
+				JSONObject videoItem = (JSONObject) videosArray.get(j);
+
+				VideoModel video = new VideoModel();
+				video.setFileName(videoItem.getString("filename"));
+				video.setId(videoItem.getInt("id"));
+				video.setRead(videoItem.getBoolean("isRead"));
+				videos.add(video);
+			}
+
+			model.setVideos(videos);
+			LogUtil.i("Video Size " + videos.size());
+
+			TempMemoryStore.conversations.add(conversationModel);
+
+			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATIONS);
+			intent.putExtra(IABIntent.PARAM_ID, model.getConversation_id());
 			IABroadcastManager.sendLocalBroadcast(intent);
 		} catch (Exception e) {
 			e.printStackTrace();
