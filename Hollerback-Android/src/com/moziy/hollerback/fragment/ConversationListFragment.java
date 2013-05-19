@@ -75,7 +75,8 @@ public class ConversationListFragment extends BaseFragment {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			startConversationFragment(position);
+			LogUtil.i("Starting Conversation: " + position + " id: " + id);
+			startConversationFragment((int) id);
 		}
 
 	};
@@ -123,6 +124,7 @@ public class ConversationListFragment extends BaseFragment {
 	}
 
 	public void startConversationFragment(int index) {
+		LogUtil.i("Start Conversation Index: " + index);
 		FragmentManager fragmentManager = getActivity()
 				.getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
