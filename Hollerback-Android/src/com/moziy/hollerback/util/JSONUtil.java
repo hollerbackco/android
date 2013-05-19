@@ -58,7 +58,7 @@ public class JSONUtil {
 		Toast.makeText(HollerbackApplication.getInstance(), "DONE",
 				Toast.LENGTH_LONG).show();
 
-		Intent intent = new Intent(IABIntent.INTENT_SESSION_REQUEST);
+		Intent intent = new Intent(IABIntent.INTENT_UPLOAD_VIDEO);
 		intent.putExtra(IABIntent.PARAM_AUTHENTICATED, IABIntent.VALUE_TRUE);
 		IABroadcastManager.sendLocalBroadcast(intent);
 
