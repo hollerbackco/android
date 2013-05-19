@@ -1,5 +1,7 @@
 package com.moziy.hollerback.fragment;
 
+import java.util.ArrayList;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +14,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.moziy.hollerback.R;
-import com.moziy.hollerback.activity.HollerbackBaseActivity;
 import com.moziy.hollerback.activity.HollerbackCameraActivity;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
 import com.moziy.hollerback.bitmap.ImageCache;
@@ -29,6 +31,7 @@ import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.FileUtil;
+import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerback.view.HorizontalListView;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 
@@ -48,7 +51,7 @@ public class ConversationFragment extends BaseFragment {
 	private static final String IMAGE_CACHE_DIR = "thumbs";
 
 	// Image Loading
-
+	int index = -1;
 	// Video Playback Stuff
 	private VideoView mVideoView;
 	private TextView mProgressText;
@@ -61,6 +64,8 @@ public class ConversationFragment extends BaseFragment {
 	public int TAKE_VIDEO = 0x683;
 
 	private String mConversationId;
+
+	S3RequestHelper helper = new S3RequestHelper();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -110,15 +115,36 @@ public class ConversationFragment extends BaseFragment {
 		mVideoGalleryAdapter.notifyDataSetChanged();
 		IABroadcastManager.registerForLocalBroadcast(receiver,
 				IABIntent.INTENT_REQUEST_VIDEO);
+		IABroadcastManager.registerForLocalBroadcast(receiver,
+				IABIntent.INTENT_GET_URLS);
+	}
+
+	// TODO: Move out of here
+	private ArrayList<S3UploadParams> generateUploadParams(int i) {
+
+		ArrayList<S3UploadParams> mGetUrls = new ArrayList<S3UploadParams>();
+		for (VideoModel video : TempMemoryStore.conversations.get(i)
+				.getVideos()) {
+			S3UploadParams param = new S3UploadParams();
+			param.setFileName(video.getFileName());
+			param.setOnS3UploadListener(null);
+			param.mVideo = video;
+			mGetUrls.add(param);
+		}
+
+		return mGetUrls;
 	}
 
 	public void initializeArgs() {
 		Bundle bundle = getArguments();
-		int index = bundle.getInt("index");
+		index = bundle.getInt("index");
 		mConversationId = bundle.getString("conv_id");
 		LogUtil.i("Conversation Fragment: ID: " + mConversationId);
 		mVideoGalleryAdapter.setVideos(TempMemoryStore.conversations.get(index)
 				.getVideos());
+		LogUtil.d("Get URLS for Index: " + Integer.toString(index));
+		helper.getS3URLParams(generateUploadParams(index));
+
 	}
 
 	@Override
@@ -195,6 +221,9 @@ public class ConversationFragment extends BaseFragment {
 						+ intent.getStringExtra(IABIntent.PARAM_ID));
 				playVideo(intent.getStringExtra(IABIntent.PARAM_ID));
 
+			} else if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_URLS)) {
+				Toast.makeText(getActivity(), "URLs Done", 3000).show();
+				mVideoGalleryAdapter.notifyDataSetChanged();
 			}
 		}
 	};
@@ -234,7 +263,6 @@ public class ConversationFragment extends BaseFragment {
 
 	@Override
 	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
-		// TODO Auto-generated method stub
 
 	}
 

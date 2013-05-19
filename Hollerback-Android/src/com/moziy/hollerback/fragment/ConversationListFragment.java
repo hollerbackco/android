@@ -163,22 +163,6 @@ public class ConversationListFragment extends BaseFragment {
 		return f;
 	}
 
-	// TODO: Move out of here
-	private ArrayList<S3UploadParams> generateUploadParams() {
-
-		ArrayList<S3UploadParams> mGetUrls = new ArrayList<S3UploadParams>();
-		for (VideoModel video : TempMemoryStore.conversations.get(0)
-				.getVideos()) {
-			S3UploadParams param = new S3UploadParams();
-			param.setFileName(video.getFileName());
-			param.setOnS3UploadListener(null);
-			param.mVideo = video;
-			mGetUrls.add(param);
-		}
-
-		return mGetUrls;
-	}
-
 	BroadcastReceiver receiver = new BroadcastReceiver() {
 
 		@Override
@@ -186,9 +170,6 @@ public class ConversationListFragment extends BaseFragment {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_CONVERSATIONS)) {
 				mConversationListAdapter
 						.setConversations(TempMemoryStore.conversations);
-
-				S3RequestHelper helper = new S3RequestHelper();
-				helper.doSomeS3Stuff(generateUploadParams());
 
 			}
 

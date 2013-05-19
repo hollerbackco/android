@@ -242,7 +242,7 @@ public class S3RequestHelper {
 		}
 	}
 
-	public void doSomeS3Stuff(ArrayList<S3UploadParams> videos) {
+	public void getS3URLParams(ArrayList<S3UploadParams> videos) {
 		S3UploadParams[] videosArray = videos.toArray(new S3UploadParams[videos
 				.size()]);
 		new S3RequestHelper.S3GenerateUrlTask().execute(videosArray);
@@ -280,12 +280,12 @@ public class S3RequestHelper {
 					urlImageRequest.setExpiration(expirationDate);
 					urlImageRequest.setResponseHeaders(override);
 
-					LogUtil.i("Creating Request: " + uploadParams.getFileName());
+					//LogUtil.i("Creating Request: " + uploadParams.getFileName());
 
 					URL imageUrl = s3Client
 							.generatePresignedUrl(urlImageRequest);
 
-					LogUtil.i("Calling URLS " + uploadParams.getFileName());
+					//LogUtil.i("Calling URLS " + uploadParams.getFileName());
 
 					result.setUri(Uri.parse(videoUrl.toURI().toString()));
 
@@ -293,8 +293,8 @@ public class S3RequestHelper {
 					uploadParams.mVideo
 							.setThumbUrl(imageUrl.toURI().toString());
 
-					LogUtil.i("VID: " + videoUrl.toURI().toString());
-					LogUtil.i("IMG: " + imageUrl.toURI().toString());
+					//LogUtil.i("VID: " + videoUrl.toURI().toString());
+					//LogUtil.i("IMG: " + imageUrl.toURI().toString());
 
 					// updateTextView.obtainMessage(VIDEO_SENT).sendToTarget();
 
@@ -326,6 +326,9 @@ public class S3RequestHelper {
 				// TestPostTask task = new TestPostTask();
 				// task.execute(new String[] { result.getUri().toString() });
 			}
+			LogUtil.i("Video params stuff like yo");
+			Intent intent = new Intent(IABIntent.INTENT_GET_URLS);
+			IABroadcastManager.sendLocalBroadcast(intent);
 		}
 	}
 

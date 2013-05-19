@@ -11,6 +11,7 @@ public class IABIntent {
 	public static final String INTENT_UPLOAD_VIDEO = "UploadVideo";
 	public static final String INTENT_GET_CONTACTS = "GetContacts";
 	public static final String INTENT_POST_CONVERSATIONS = "PostConversation";
+	public static final String INTENT_GET_URLS = "GetUrls";
 
 	public static final String PARAM_SUCCESS = "200";
 	public static final String PARAM_FAILURE = "500";
