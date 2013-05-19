@@ -15,10 +15,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ListView;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.WelcomeFragmentActivity;
 import com.moziy.hollerback.adapter.ConversationListAdapter;
@@ -26,18 +28,16 @@ import com.moziy.hollerback.background.ContactFetchAsyncTask;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
-import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.ConversationModel;
-import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.HollerbackAppState;
-import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class ConversationListFragment extends BaseFragment {
 
-	ListView mConversationList;
+	PullToRefreshListView mConversationList;
 	ConversationListAdapter mConversationListAdapter;
 	Button mLogoutBtn;
 
@@ -82,7 +82,19 @@ public class ConversationListFragment extends BaseFragment {
 
 	@Override
 	protected void initializeView(View view) {
-		mConversationList = (ListView) view.findViewById(R.id.message_listview);
+		mConversationList = (PullToRefreshListView) view
+				.findViewById(R.id.message_listview);
+
+		mConversationList.setShowIndicator(false);
+
+		mConversationList.setOnRefreshListener(new OnRefreshListener() {
+
+			@Override
+			public void onRefresh(PullToRefreshBase refreshView) {
+				LogUtil.i("Refresh the Listview");
+				HBRequestManager.getConversations();
+			}
+		});
 
 		mConversationListAdapter = new ConversationListAdapter(getActivity());
 		mConversationListAdapter
@@ -170,7 +182,7 @@ public class ConversationListFragment extends BaseFragment {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_CONVERSATIONS)) {
 				mConversationListAdapter
 						.setConversations(TempMemoryStore.conversations);
-
+				mConversationList.onRefreshComplete();
 			}
 
 		}
