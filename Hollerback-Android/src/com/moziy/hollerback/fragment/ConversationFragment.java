@@ -117,6 +117,7 @@ public class ConversationFragment extends BaseFragment {
 				IABIntent.INTENT_REQUEST_VIDEO);
 		IABroadcastManager.registerForLocalBroadcast(receiver,
 				IABIntent.INTENT_GET_URLS);
+
 	}
 
 	// TODO: Move out of here

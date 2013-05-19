@@ -13,7 +13,19 @@ public class TempMemoryStore {
 	// public static ArrayList<UserModel> contacts;
 
 	public static SortedArray users;
-	
+
 	public static ArrayList<UserModel> invitedUsers;
+
+	public static int getIndexForConversationId(int id) {
+		int i = 0;
+		for (ConversationModel conversation : conversations) {
+			if (conversation.getConversation_id() == id) {
+				return i;
+			}
+			i++;
+		}
+
+		return -1;
+	}
 
 }

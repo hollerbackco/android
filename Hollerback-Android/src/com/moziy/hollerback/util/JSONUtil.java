@@ -48,7 +48,20 @@ public class JSONUtil {
 
 	public static void processVideoPost(JSONObject object) {
 		try {
-			JSONObject dataObject = object.getJSONObject("data");
+			LogUtil.i(object.toString());
+			JSONObject videoObject = object.getJSONObject("data");
+
+			VideoModel video = new VideoModel();
+			video.setFileName(videoObject.getString("filename"));
+			video.setId(videoObject.getInt("id"));
+			video.setRead(videoObject.getBoolean("isRead"));
+
+			TempMemoryStore.conversations
+					.get(TempMemoryStore.getIndexForConversationId(videoObject
+							.getInt("conversation_id"))).getVideos()
+					.add(0, video);
+
+			// videos.add(video);
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
