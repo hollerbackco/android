@@ -2,7 +2,6 @@ package com.moziy.hollerback.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,8 +58,7 @@ public class JSONUtil {
 
 			TempMemoryStore.conversations
 					.get(TempMemoryStore.getIndexForConversationId(videoObject
-							.getInt("conversation_id"))).getVideos()
-					.add(video);
+							.getInt("conversation_id"))).getVideos().add(video);
 
 			// videos.add(video);
 
@@ -92,7 +90,7 @@ public class JSONUtil {
 					LogUtil.i("Processing JSON " + i);
 					JSONObject conversation = (JSONObject) conversationArray
 							.get(i);
-					JSONArray videosArray = conversation.getJSONArray("videos");
+
 					ConversationModel model = new ConversationModel();
 					model.setConversation_id(conversation.getInt("id"));
 					model.setConversation_name(conversation.getString("name"));
@@ -100,22 +98,29 @@ public class JSONUtil {
 							.getInt("unread_count"));
 					conversations.add(model);
 
-					ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
-					for (int j = 0; j < videosArray.length(); j++) {
+					JSONArray videosArray = conversation.getJSONArray("videos");
 
-						JSONObject videoItem = (JSONObject) videosArray.get(j);
+					if (videosArray != null) {
+						ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
+						for (int j = 0; j < videosArray.length(); j++) {
 
-						VideoModel video = new VideoModel();
-						video.setFileName(videoItem.getString("filename"));
-						video.setId(videoItem.getInt("id"));
-						video.setRead(videoItem.getBoolean("isRead"));
-						videos.add(video);
+							JSONObject videoItem = (JSONObject) videosArray
+									.get(j);
+
+							VideoModel video = new VideoModel();
+							video.setFileName(videoItem.getString("filename"));
+							video.setId(videoItem.getInt("id"));
+							video.setRead(videoItem.getBoolean("isRead"));
+							videos.add(video);
+						}
+
+						Collections.reverse(videos);
+
+						model.setVideos(videos);
+						LogUtil.i("Video Size " + videos.size());
+					} else {
+						LogUtil.e("Error Parsing: Conv.videos");
 					}
-
-					Collections.reverse(videos);
-
-					model.setVideos(videos);
-					LogUtil.i("Video Size " + videos.size());
 
 				}
 

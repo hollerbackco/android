@@ -540,4 +540,8 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 		return position;
 	}
 
+	public void scrollToEnd(int end) {
+		mScroller.setFinalX(end);
+	}
+
 }

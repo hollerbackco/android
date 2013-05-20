@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.bitmap.ImageFetcher;
+import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.VideoModel;
 
 public class VideoGalleryAdapter extends BaseAdapter {
@@ -19,6 +20,8 @@ public class VideoGalleryAdapter extends BaseAdapter {
 	LayoutInflater inflater;
 
 	ImageFetcher mImageFetcher;
+
+	int mVideoWidth;
 
 	public VideoGalleryAdapter(ImageFetcher imageFetcher, Context context) {
 		mImageFetcher = imageFetcher;
@@ -75,10 +78,15 @@ public class VideoGalleryAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		if (mVideos.get(position).getThumbUrl() != null && mImageFetcher!=null) {
-			
+		if (mVideos.get(position).getThumbUrl() != null
+				&& mImageFetcher != null) {
+
 			mImageFetcher.loadImage(mVideos.get(position).getThumbUrl(),
 					viewHolder.videoThumbnail);
+		}
+
+		if (mVideoWidth == 0) {
+			mVideoWidth = viewHolder.videoThumbnail.getWidth();
 		}
 
 		return convertView;
@@ -86,6 +94,10 @@ public class VideoGalleryAdapter extends BaseAdapter {
 
 	static class ViewHolder {
 		ImageView videoThumbnail;
+	}
+
+	public int getVideoImagePreviewWidth() {
+		return mVideoWidth;
 	}
 
 }

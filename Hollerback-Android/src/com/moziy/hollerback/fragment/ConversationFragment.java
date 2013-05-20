@@ -146,7 +146,7 @@ public class ConversationFragment extends BaseFragment {
 				.getVideos());
 		LogUtil.d("Get URLS for Index: " + Integer.toString(index));
 		helper.getS3URLParams(generateUploadParams(index));
-	
+
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public class ConversationFragment extends BaseFragment {
 		mReplyBtn = (Button) view.findViewById(R.id.btn_video_reply);
 
 		ListView lv;
-		
+
 		mReplyBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -228,14 +228,20 @@ public class ConversationFragment extends BaseFragment {
 			} else if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_URLS)) {
 				Toast.makeText(getActivity(), "URLs Done", 3000).show();
 				mVideoGalleryAdapter.notifyDataSetChanged();
-				
+
 				mVideoGallery.clearFocus();
 				mVideoGallery.post(new Runnable() {
 					@Override
 					public void run() {
 						mVideoGallery.requestFocusFromTouch();
-						mVideoGallery.setSelection(TempMemoryStore.conversations
-								.get(index).getVideos().size() - 1);
+						// mVideoGallery.setSelection(TempMemoryStore.conversations
+						// .get(index).getVideos().size() - 1);
+
+						mVideoGallery.setSelection(mVideoGallery.getRight());
+						mVideoGallery.scrollToEnd(mVideoGalleryAdapter
+								.getVideoImagePreviewWidth()
+								* mVideoGalleryAdapter.getCount());
+						LogUtil.i("Gallery x: " + mVideoGallery.getRight());
 						mVideoGallery.requestFocus();
 					}
 				});
