@@ -39,7 +39,6 @@ public class ConversationListFragment extends BaseFragment {
 
 	PullToRefreshListView mConversationList;
 	ConversationListAdapter mConversationListAdapter;
-	Button mLogoutBtn;
 
 	AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(
 			AppEnvironment.ACCESS_KEY_ID, AppEnvironment.SECRET_KEY));
@@ -104,22 +103,6 @@ public class ConversationListFragment extends BaseFragment {
 		mConversationList.setAdapter(mConversationListAdapter);
 
 		mConversationList.setOnItemClickListener(mOnListItemClickListener);
-
-		mLogoutBtn = (Button) view.findViewById(R.id.btn_logout);
-		mLogoutBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				if (HollerbackAppState.isValidSession()) {
-					HollerbackAppState.logOut();
-					Intent intent = new Intent(getActivity(),
-							WelcomeFragmentActivity.class);
-					getActivity().startActivity(intent);
-					getActivity().finish();
-				}
-
-			}
-		});
 
 	}
 

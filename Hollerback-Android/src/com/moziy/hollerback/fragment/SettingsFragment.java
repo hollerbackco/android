@@ -1,14 +1,21 @@
 package com.moziy.hollerback.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.activity.WelcomeFragmentActivity;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
+import com.moziy.hollerback.util.HollerbackAppState;
 
 public class SettingsFragment extends BaseFragment {
+
+	Button mLogoutBtn;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -20,7 +27,21 @@ public class SettingsFragment extends BaseFragment {
 
 	@Override
 	protected void initializeView(View view) {
-		// TODO Auto-generated method stub
+		mLogoutBtn = (Button) view.findViewById(R.id.btn_logout);
+		mLogoutBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if (HollerbackAppState.isValidSession()) {
+					HollerbackAppState.logOut();
+					Intent intent = new Intent(getActivity(),
+							WelcomeFragmentActivity.class);
+					getActivity().startActivity(intent);
+					getActivity().finish();
+				}
+
+			}
+		});
 
 	}
 
