@@ -1,6 +1,7 @@
 package com.moziy.hollerback.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.json.JSONArray;
@@ -59,7 +60,7 @@ public class JSONUtil {
 			TempMemoryStore.conversations
 					.get(TempMemoryStore.getIndexForConversationId(videoObject
 							.getInt("conversation_id"))).getVideos()
-					.add(0, video);
+					.add(video);
 
 			// videos.add(video);
 
@@ -110,6 +111,8 @@ public class JSONUtil {
 						video.setRead(videoItem.getBoolean("isRead"));
 						videos.add(video);
 					}
+
+					Collections.reverse(videos);
 
 					model.setVideos(videos);
 					LogUtil.i("Video Size " + videos.size());

@@ -122,7 +122,6 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 
 	@Override
 	public void setSelection(int position) {
-		// TODO: implement
 	}
 
 	private void addAndMeasureChild(final View child, int viewPos) {
@@ -334,8 +333,10 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 			synchronized (HorizontalListView.this) {
 				mNextX += (int) distanceX;
 				if (mOnScrollListener != null) {
-					mOnScrollListener.onScrollStateChanged(null,
-							AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL);
+					mOnScrollListener
+							.onScrollStateChanged(
+									null,
+									AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL);
 				}
 			}
 			requestLayout();
