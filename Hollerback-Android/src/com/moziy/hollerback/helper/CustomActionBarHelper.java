@@ -55,4 +55,10 @@ public class CustomActionBarHelper {
 		mHeaderText.setVisibility(View.GONE);
 	}
 
+	public void setSettingsFragmentSettings() {
+		mImageLeftBtn.setVisibility(View.GONE);
+	}
+
+	
+	
 }
