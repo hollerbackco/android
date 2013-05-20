@@ -122,6 +122,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 
 	@Override
 	public void setSelection(int position) {
+		setSelectionFromTop(position, 0);
 	}
 
 	private void addAndMeasureChild(final View child, int viewPos) {
@@ -396,5 +397,147 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 			return viewRect.contains((int) e.getRawX(), (int) e.getRawY());
 		}
 	};
+
+	/**
+	 * Regular layout - usually an unsolicited layout from the view system
+	 */
+	static final int LAYOUT_NORMAL = 0;
+
+	/**
+	 * The offset in pixels from the top of the AdapterView to the top of the
+	 * view to select during the next layout.
+	 */
+	int mSpecificTop;
+
+	/**
+	 * Position from which to start looking for mSyncRowId
+	 */
+	int mSyncPosition;
+
+	/**
+	 * Row id to look for when data has changed
+	 */
+	long mSyncRowId = INVALID_ROW_ID;
+
+	/**
+	 * Height of the view when mSyncPosition and mSyncRowId where set
+	 */
+	long mSyncHeight;
+
+	/**
+	 * True if we need to sync to mSyncRowId
+	 */
+	boolean mNeedSync = false;
+
+	/**
+	 * Indicates whether to sync based on the selection or position. Possible
+	 * values are {@link #SYNC_SELECTED_POSITION} or
+	 * {@link #SYNC_FIRST_POSITION}.
+	 */
+	int mSyncMode;
+
+	/**
+	 * Make a mSelectedItem appear in a specific location and build the rest of
+	 * the views from there. The top is specified by mSpecificTop.
+	 */
+	static final int LAYOUT_SPECIFIC = 4;
+
+	int mResurrectToPosition = INVALID_POSITION;
+
+	/**
+	 * Controls how the next layout will happen
+	 */
+	int mLayoutMode = LAYOUT_NORMAL;
+
+	/**
+	 * The position within the adapter's data set of the item to select during
+	 * the next layout.
+	 */
+	int mNextSelectedPosition = INVALID_POSITION;
+
+	/**
+	 * The item id of the item to select during the next layout.
+	 */
+	long mNextSelectedRowId = INVALID_ROW_ID;
+
+	/**
+	 * Sync based on the selected child
+	 */
+	static final int SYNC_SELECTED_POSITION = 0;
+
+	/**
+	 * This view's padding
+	 */
+	Rect mListPadding = new Rect();
+
+	/**
+	 * Sets the selected item and positions the selection y pixels from the top
+	 * edge of the ListView. (If in touch mode, the item will not be selected
+	 * but it will still be positioned appropriately.)
+	 * 
+	 * @param position
+	 *            Index (starting at 0) of the data item to be selected.
+	 * @param y
+	 *            The distance from the top edge of the ListView (plus padding)
+	 *            that the item will be positioned.
+	 */
+	public void setSelectionFromTop(int position, int y) {
+		if (mAdapter == null) {
+			return;
+		}
+
+		if (!isInTouchMode()) {
+			position = lookForSelectablePosition(position, true);
+			if (position >= 0) {
+				setNextSelectedPositionInt(position);
+			}
+		} else {
+			mResurrectToPosition = position;
+		}
+
+		if (position >= 0) {
+			mLayoutMode = LAYOUT_SPECIFIC;
+			mSpecificTop = mListPadding.top + y;
+
+			if (mNeedSync) {
+				mSyncPosition = position;
+				mSyncRowId = mAdapter.getItemId(position);
+			}
+
+			requestLayout();
+		}
+	}
+
+	/**
+	 * Utility to keep mNextSelectedPosition and mNextSelectedRowId in sync
+	 * 
+	 * @param position
+	 *            Intended value for mSelectedPosition the next time we go
+	 *            through layout
+	 */
+	void setNextSelectedPositionInt(int position) {
+		mNextSelectedPosition = position;
+		mNextSelectedRowId = getItemIdAtPosition(position);
+		// If we are trying to sync to the selection, update that too
+		if (mNeedSync && mSyncMode == SYNC_SELECTED_POSITION && position >= 0) {
+			mSyncPosition = position;
+			mSyncRowId = mNextSelectedRowId;
+		}
+	}
+
+	/**
+	 * Find a position that can be selected (i.e., is not a separator).
+	 * 
+	 * @param position
+	 *            The starting position to look at.
+	 * @param lookDown
+	 *            Whether to look down for other positions.
+	 * @return The next selectable position starting at position and then
+	 *         searching either up or down. Returns {@link #INVALID_POSITION} if
+	 *         nothing can be found.
+	 */
+	int lookForSelectablePosition(int position, boolean lookDown) {
+		return position;
+	}
 
 }
