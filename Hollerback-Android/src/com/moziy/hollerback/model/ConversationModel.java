@@ -7,6 +7,8 @@ public class ConversationModel extends BaseModel {
 	private int conversation_id;
 	private String conversation_name;
 	private int conversation_unread_count;
+	private String recentThumbUrl;
+	private String recentVideoUrl;
 
 	private ArrayList<VideoModel> mVideos;
 

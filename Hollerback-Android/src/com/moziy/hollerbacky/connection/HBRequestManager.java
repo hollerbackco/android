@@ -34,7 +34,7 @@ public class HBRequestManager {
 
 	public static void postVideo(String conversation_id, String filename) {
 		RequestParams params = new RequestParams();
-		
+
 		LogUtil.i("PostVideo", conversation_id);
 
 		params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
@@ -232,6 +232,49 @@ public class HBRequestManager {
 
 					});
 
+		}
+	}
+
+	public static void getConversationVideos(String conversationId) {
+		if (HollerbackAppState.isValidSession()) {
+			RequestParams params = new RequestParams();
+
+			params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
+					HollerbackAppState.getValidToken());
+
+			HollerbackAsyncClient
+					.getInstance()
+					.get(String.format(
+							HollerbackAPI.API_CONVERSATION_DETAILS_VIDEOS_FORMAT,
+							conversationId), params,
+							new JsonHttpResponseHandler() {
+
+								@Override
+								protected Object parseResponse(String arg0)
+										throws JSONException {
+									LogUtil.i("RESPONSE: " + arg0);
+									return super.parseResponse(arg0);
+
+								}
+
+								@Override
+								public void onFailure(Throwable arg0,
+										JSONObject arg1) {
+									// TODO Auto-generated method stub
+									super.onFailure(arg0, arg1);
+									LogUtil.e(HollerbackAPI.API_CONTACTS
+											+ "FAILURE");
+								}
+
+								@Override
+								public void onSuccess(int arg0, JSONObject arg1) {
+									// TODO Auto-generated method stub
+									super.onSuccess(arg0, arg1);
+									LogUtil.i("ON SUCCESS API CONTACTS");
+									JSONUtil.processConversationVideos(arg1);
+								}
+
+							});
 		}
 	}
 }

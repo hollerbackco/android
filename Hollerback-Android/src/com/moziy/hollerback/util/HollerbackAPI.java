@@ -15,6 +15,11 @@ public class HollerbackAPI {
 	public static final String API_CONVERSATION = "/me/conversations";
 
 	/**
+	 * GET video details: /me/conversations/:id
+	 */
+	public static final String API_CONVERSATION_DETAILS_VIDEOS_FORMAT = "/me/conversations/%1$s/videos";
+
+	/**
 	 * POST "/me/videos/:id/read"
 	 */
 	public static final String API_VIDEO_READ_FORMAT = "/me/videos/%1$s/read";
@@ -42,7 +47,7 @@ public class HollerbackAPI {
 	public static final String PARAM_FILENAME = "filename";
 
 	public static final String PARAM_NUMBERS = "numbers[]";
-	
+
 	public static final String PARAM_INVITES = "invites[]";
 
 }

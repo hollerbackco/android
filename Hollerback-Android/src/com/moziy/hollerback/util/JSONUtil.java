@@ -98,29 +98,31 @@ public class JSONUtil {
 							.getInt("unread_count"));
 					conversations.add(model);
 
-					JSONArray videosArray = conversation.getJSONArray("videos");
-
-					if (videosArray != null) {
-						ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
-						for (int j = 0; j < videosArray.length(); j++) {
-
-							JSONObject videoItem = (JSONObject) videosArray
-									.get(j);
-
-							VideoModel video = new VideoModel();
-							video.setFileName(videoItem.getString("filename"));
-							video.setId(videoItem.getInt("id"));
-							video.setRead(videoItem.getBoolean("isRead"));
-							videos.add(video);
-						}
-
-						Collections.reverse(videos);
-
-						model.setVideos(videos);
-						LogUtil.i("Video Size " + videos.size());
-					} else {
-						LogUtil.e("Error Parsing: Conv.videos");
-					}
+					// JSONArray videosArray =
+					// conversation.getJSONArray("videos");
+					//
+					// if (videosArray != null) {
+					// ArrayList<VideoModel> videos = new
+					// ArrayList<VideoModel>();
+					// for (int j = 0; j < videosArray.length(); j++) {
+					//
+					// JSONObject videoItem = (JSONObject) videosArray
+					// .get(j);
+					//
+					// VideoModel video = new VideoModel();
+					// video.setFileName(videoItem.getString("filename"));
+					// video.setId(videoItem.getInt("id"));
+					// video.setRead(videoItem.getBoolean("isRead"));
+					// videos.add(video);
+					// }
+					//
+					// Collections.reverse(videos);
+					//
+					// model.setVideos(videos);
+					// LogUtil.i("Video Size " + videos.size());
+					// } else {
+					// LogUtil.e("Error Parsing: Conv.videos");
+					// }
 
 				}
 
@@ -207,6 +209,34 @@ public class JSONUtil {
 			IABroadcastManager.sendLocalBroadcast(intent);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static void processConversationVideos(JSONObject json) {
+		try {
+			String conversationId = "";
+			JSONArray videosArray = json.getJSONArray("data");
+			ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
+
+			for (int j = 0; j < videosArray.length(); j++) {
+
+				JSONObject videoItem = (JSONObject) videosArray.get(j);
+				conversationId = videoItem.getString("conversation_id");
+				VideoModel video = new VideoModel();
+				video.setFileName(videoItem.getString("filename"));
+				video.setId(videoItem.getInt("id"));
+
+				video.setRead(videoItem.getBoolean("isRead"));
+				videos.add(video);
+			}
+
+			Collections.reverse(videos);
+
+			TempMemoryStore.videos.put(conversationId, videos);
+			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATION_VIDEOS);
+			intent.putExtra(IABIntent.PARAM_ID, conversationId);
+			IABroadcastManager.sendLocalBroadcast(intent);
+		} catch (Exception e) {
 		}
 	}
 }

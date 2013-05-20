@@ -6,11 +6,15 @@ import java.util.HashMap;
 import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
+import com.moziy.hollerback.model.VideoModel;
 
 public class TempMemoryStore {
 
 	public static ArrayList<ConversationModel> conversations;
 	// public static ArrayList<UserModel> contacts;
+
+	// Hash CONV_ID, VIDEOSs
+	public static HashMap<String, ArrayList<VideoModel>> videos = new HashMap<String, ArrayList<VideoModel>>();
 
 	public static SortedArray users;
 

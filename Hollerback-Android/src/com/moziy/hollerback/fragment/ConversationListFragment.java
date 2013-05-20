@@ -75,6 +75,7 @@ public class ConversationListFragment extends BaseFragment {
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			LogUtil.i("Starting Conversation: " + position + " id: " + id);
+
 			startConversationFragment((int) id);
 		}
 

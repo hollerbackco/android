@@ -32,8 +32,10 @@ import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.FileUtil;
+import com.moziy.hollerback.util.ViewUtil;
 import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerback.view.HorizontalListView;
+import com.moziy.hollerbacky.connection.HBRequestManager;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 
 public class ConversationFragment extends BaseFragment {
@@ -118,15 +120,16 @@ public class ConversationFragment extends BaseFragment {
 				IABIntent.INTENT_REQUEST_VIDEO);
 		IABroadcastManager.registerForLocalBroadcast(receiver,
 				IABIntent.INTENT_GET_URLS);
+		IABroadcastManager.registerForLocalBroadcast(receiver,
+				IABIntent.INTENT_GET_CONVERSATION_VIDEOS);
 
 	}
 
 	// TODO: Move out of here
-	private ArrayList<S3UploadParams> generateUploadParams(int i) {
+	private ArrayList<S3UploadParams> generateUploadParams(String conversationId) {
 
 		ArrayList<S3UploadParams> mGetUrls = new ArrayList<S3UploadParams>();
-		for (VideoModel video : TempMemoryStore.conversations.get(i)
-				.getVideos()) {
+		for (VideoModel video : TempMemoryStore.videos.get(conversationId)) {
 			S3UploadParams param = new S3UploadParams();
 			param.setFileName(video.getFileName());
 			param.setOnS3UploadListener(null);
@@ -142,10 +145,12 @@ public class ConversationFragment extends BaseFragment {
 		index = bundle.getInt("index");
 		mConversationId = bundle.getString("conv_id");
 		LogUtil.i("Conversation Fragment: ID: " + mConversationId);
-		mVideoGalleryAdapter.setVideos(TempMemoryStore.conversations.get(index)
-				.getVideos());
+		// mVideoGalleryAdapter.setVideos(TempMemoryStore.conversations.get(index)
+		// .getVideos());
 		LogUtil.d("Get URLS for Index: " + Integer.toString(index));
-		helper.getS3URLParams(generateUploadParams(index));
+		// helper.getS3URLParams(generateUploadParams(index));
+
+		HBRequestManager.getConversationVideos(mConversationId);
 
 	}
 
@@ -163,8 +168,6 @@ public class ConversationFragment extends BaseFragment {
 		mProgressText = (TextView) view.findViewById(R.id.tv_progress);
 
 		mReplyBtn = (Button) view.findViewById(R.id.btn_video_reply);
-
-		ListView lv;
 
 		mReplyBtn.setOnClickListener(new OnClickListener() {
 
@@ -230,6 +233,15 @@ public class ConversationFragment extends BaseFragment {
 				mVideoGalleryAdapter.notifyDataSetChanged();
 
 				mVideoGallery.clearFocus();
+
+			} else if (IABIntent.isIntent(intent,
+					IABIntent.INTENT_GET_CONVERSATION_VIDEOS)) {
+				LogUtil.d("Get URLS for Index: " + Integer.toString(index));
+				helper.getS3URLParams(generateUploadParams(intent
+						.getStringExtra(IABIntent.PARAM_ID)));
+				mVideoGalleryAdapter.setVideos(TempMemoryStore.videos
+						.get(intent.getStringExtra(IABIntent.PARAM_ID)));
+
 				mVideoGallery.post(new Runnable() {
 					@Override
 					public void run() {
@@ -238,10 +250,18 @@ public class ConversationFragment extends BaseFragment {
 						// .get(index).getVideos().size() - 1);
 
 						mVideoGallery.setSelection(mVideoGallery.getRight());
-						mVideoGallery.scrollToEnd(mVideoGalleryAdapter
-								.getVideoImagePreviewWidth()
+
+						int imageWidth = (int) ViewUtil.convertDpToPixel(80,
+								getActivity());
+
+						LogUtil.i("Image Width: " + imageWidth);
+
+						mVideoGallery.scrollToEnd(imageWidth
 								* mVideoGalleryAdapter.getCount());
-						LogUtil.i("Gallery x: " + mVideoGallery.getRight());
+						LogUtil.i("Gallery x: "
+								+ (int) (ViewUtil.convertDpToPixel(80,
+										getActivity()) * mVideoGalleryAdapter
+										.getCount()));
 						mVideoGallery.requestFocus();
 					}
 				});
