@@ -56,9 +56,8 @@ public class JSONUtil {
 			video.setId(videoObject.getInt("id"));
 			video.setRead(videoObject.getBoolean("isRead"));
 
-			TempMemoryStore.conversations
-					.get(TempMemoryStore.getIndexForConversationId(videoObject
-							.getInt("conversation_id"))).getVideos().add(video);
+			TempMemoryStore.videos
+					.get(videoObject.getString("conversation_id")).add(video);
 
 			// videos.add(video);
 
@@ -187,20 +186,20 @@ public class JSONUtil {
 			model.setConversation_unread_count(conversation
 					.getInt("unread_count"));
 
-			ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
-			for (int j = 0; j < videosArray.length(); j++) {
-
-				JSONObject videoItem = (JSONObject) videosArray.get(j);
-
-				VideoModel video = new VideoModel();
-				video.setFileName(videoItem.getString("filename"));
-				video.setId(videoItem.getInt("id"));
-				video.setRead(videoItem.getBoolean("isRead"));
-				videos.add(video);
-			}
-
-			model.setVideos(videos);
-			LogUtil.i("Video Size " + videos.size());
+//			ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
+//			for (int j = 0; j < videosArray.length(); j++) {
+//
+//				JSONObject videoItem = (JSONObject) videosArray.get(j);
+//
+//				VideoModel video = new VideoModel();
+//				video.setFileName(videoItem.getString("filename"));
+//				video.setId(videoItem.getInt("id"));
+//				video.setRead(videoItem.getBoolean("isRead"));
+//				videos.add(video);
+//			}
+//
+//			model.setVideos(videos);
+//			LogUtil.i("Video Size " + videos.size());
 
 			TempMemoryStore.conversations.add(conversationModel);
 

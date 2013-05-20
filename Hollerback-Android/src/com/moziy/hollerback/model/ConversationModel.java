@@ -12,13 +12,13 @@ public class ConversationModel extends BaseModel {
 
 	private ArrayList<VideoModel> mVideos;
 
-	public ArrayList<VideoModel> getVideos() {
-		return mVideos;
-	}
+	//public ArrayList<VideoModel> getVideos() {
+	//	return mVideos;
+	//}
 
-	public void setVideos(ArrayList<VideoModel> mVideos) {
-		this.mVideos = mVideos;
-	}
+	//public void setVideos(ArrayList<VideoModel> mVideos) {
+	//	this.mVideos = mVideos;
+	//}
 
 	public ConversationModel() {
 

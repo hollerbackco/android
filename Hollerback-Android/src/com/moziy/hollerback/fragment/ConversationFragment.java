@@ -68,6 +68,9 @@ public class ConversationFragment extends BaseFragment {
 
 	private String mConversationId;
 
+	// state
+	boolean urlLoaded = false;
+
 	S3RequestHelper helper = new S3RequestHelper();
 
 	@Override
@@ -265,6 +268,7 @@ public class ConversationFragment extends BaseFragment {
 						mVideoGallery.requestFocus();
 					}
 				});
+
 			}
 		}
 	};
