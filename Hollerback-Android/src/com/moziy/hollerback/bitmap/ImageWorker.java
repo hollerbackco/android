@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 
 import com.moziy.hollerback.BuildConfig;
+import com.moziy.hollerback.util.URLUtil;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading
@@ -85,7 +86,7 @@ public abstract class ImageWorker {
 		BitmapDrawable value = null;
 
 		if (mImageCache != null) {
-			value = mImageCache.getBitmapFromMemCache(String.valueOf(data));
+			value = mImageCache.getBitmapFromMemCache(URLUtil.stripAWSParams(String.valueOf(data)));
 		}
 
 		if (value != null) {
@@ -206,7 +207,7 @@ public abstract class ImageWorker {
 			bitmapWorkerTask.cancel(true);
 			if (BuildConfig.DEBUG) {
 				final Object bitmapData = bitmapWorkerTask.data;
-				//Log.d(TAG, "cancelWork - cancelled work for " + bitmapData);
+				// Log.d(TAG, "cancelWork - cancelled work for " + bitmapData);
 			}
 		}
 	}
@@ -224,8 +225,8 @@ public abstract class ImageWorker {
 			if (bitmapData == null || !bitmapData.equals(data)) {
 				bitmapWorkerTask.cancel(true);
 				if (BuildConfig.DEBUG) {
-					//Log.d(TAG, "cancelPotentialWork - cancelled work for "
-					//		+ data);
+					// Log.d(TAG, "cancelPotentialWork - cancelled work for "
+					// + data);
 				}
 			} else {
 				// The same work is already in progress.
@@ -270,7 +271,7 @@ public abstract class ImageWorker {
 		@Override
 		protected BitmapDrawable doInBackground(Object... params) {
 			if (BuildConfig.DEBUG) {
-				//Log.d(TAG, "doInBackground - starting work");
+				// Log.d(TAG, "doInBackground - starting work");
 			}
 
 			data = params[0];
@@ -297,7 +298,7 @@ public abstract class ImageWorker {
 			// the cache
 			if (mImageCache != null && !isCancelled()
 					&& getAttachedImageView() != null && !mExitTasksEarly) {
-				bitmap = mImageCache.getBitmapFromDiskCache(dataString);
+				bitmap = mImageCache.getBitmapFromDiskCache(URLUtil.stripAWSParams(dataString));
 			}
 
 			// If the bitmap was not found in the cache and this task has not
@@ -332,12 +333,12 @@ public abstract class ImageWorker {
 				}
 
 				if (mImageCache != null) {
-					mImageCache.addBitmapToCache(dataString, drawable);
+					mImageCache.addBitmapToCache(URLUtil.stripAWSParams(dataString), drawable);
 				}
 			}
 
 			if (BuildConfig.DEBUG) {
-				//Log.d(TAG, "doInBackground - finished work");
+				// Log.d(TAG, "doInBackground - finished work");
 			}
 
 			return drawable;
@@ -357,7 +358,7 @@ public abstract class ImageWorker {
 			final ImageView imageView = getAttachedImageView();
 			if (value != null && imageView != null) {
 				if (BuildConfig.DEBUG) {
-					//Log.d(TAG, "onPostExecute - setting bitmap");
+					// Log.d(TAG, "onPostExecute - setting bitmap");
 				}
 				setImageDrawable(imageView, value);
 			}
