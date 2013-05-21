@@ -4,7 +4,7 @@ public class VideoModel extends BaseModel {
 
 	private String fileName;
 	private boolean isRead;
-	private int id;
+	private int videoId;
 	private String fileUrl;
 	private String thumbUrl;
 
@@ -40,12 +40,12 @@ public class VideoModel extends BaseModel {
 		this.isRead = isRead;
 	}
 
-	public int getId() {
-		return id;
+	public int getVideoId() {
+		return videoId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setVideoId(int id) {
+		videoId = id;
 	}
 
 	public static String getURLPath() {

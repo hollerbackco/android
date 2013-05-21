@@ -29,6 +29,7 @@ import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.helper.ActiveRecordHelper;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.util.AppEnvironment;
@@ -50,6 +51,7 @@ public class ConversationListFragment extends BaseFragment {
 		View fragmentView = inflater.inflate(R.layout.message_list_fragment,
 				null);
 		initializeView(fragmentView);
+
 		return fragmentView;
 	}
 

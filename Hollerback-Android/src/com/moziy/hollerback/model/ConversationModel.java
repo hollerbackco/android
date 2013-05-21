@@ -2,27 +2,37 @@ package com.moziy.hollerback.model;
 
 import java.util.ArrayList;
 
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+import com.moziy.hollerback.database.ActiveRecordFields;
+
+@Table(name = ActiveRecordFields.T_CONVERSATION)
 public class ConversationModel extends BaseModel {
 
+	@Column(name = ActiveRecordFields.C_CONV_ID)
 	private int conversation_id;
+
+	@Column(name = ActiveRecordFields.C_CONV_NAME)
 	private String conversation_name;
+
+	@Column(name = ActiveRecordFields.C_CONV_UNREAD)
 	private int conversation_unread_count;
+
+	@Column(name = ActiveRecordFields.C_CONV_MOST_RECENT_THUMB)
 	private String recentThumbUrl;
+
+	@Column(name = ActiveRecordFields.C_CONV_MOST_RECENT_VIDEO)
 	private String recentVideoUrl;
 
 	private ArrayList<VideoModel> mVideos;
 
-	//public ArrayList<VideoModel> getVideos() {
-	//	return mVideos;
-	//}
+	// public ArrayList<VideoModel> getVideos() {
+	// return mVideos;
+	// }
 
-	//public void setVideos(ArrayList<VideoModel> mVideos) {
-	//	this.mVideos = mVideos;
-	//}
-
-	public ConversationModel() {
-
-	}
+	// public void setVideos(ArrayList<VideoModel> mVideos) {
+	// this.mVideos = mVideos;
+	// }
 
 	public int getConversation_id() {
 		return conversation_id;

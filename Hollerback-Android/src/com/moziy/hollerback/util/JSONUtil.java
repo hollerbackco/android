@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.query.Delete;
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
@@ -53,7 +55,7 @@ public class JSONUtil {
 
 			VideoModel video = new VideoModel();
 			video.setFileName(videoObject.getString("filename"));
-			video.setId(videoObject.getInt("id"));
+			video.setVideoId(videoObject.getInt("id"));
 			video.setRead(videoObject.getBoolean("isRead"));
 
 			TempMemoryStore.videos
@@ -78,6 +80,9 @@ public class JSONUtil {
 	public static void processGetConversations(JSONObject object) {
 		ArrayList<ConversationModel> conversations = new ArrayList<ConversationModel>();
 		try {
+			//new Delete().from(ConversationModel.class).where("Id = *")
+			//		.execute();
+			ActiveAndroid.beginTransaction();
 
 			JSONObject dataObject = object.getJSONObject("data");
 			JSONArray conversationArray = dataObject
@@ -95,35 +100,11 @@ public class JSONUtil {
 					model.setConversation_name(conversation.getString("name"));
 					model.setConversation_unread_count(conversation
 							.getInt("unread_count"));
+					model.save();
 					conversations.add(model);
 
-					// JSONArray videosArray =
-					// conversation.getJSONArray("videos");
-					//
-					// if (videosArray != null) {
-					// ArrayList<VideoModel> videos = new
-					// ArrayList<VideoModel>();
-					// for (int j = 0; j < videosArray.length(); j++) {
-					//
-					// JSONObject videoItem = (JSONObject) videosArray
-					// .get(j);
-					//
-					// VideoModel video = new VideoModel();
-					// video.setFileName(videoItem.getString("filename"));
-					// video.setId(videoItem.getInt("id"));
-					// video.setRead(videoItem.getBoolean("isRead"));
-					// videos.add(video);
-					// }
-					//
-					// Collections.reverse(videos);
-					//
-					// model.setVideos(videos);
-					// LogUtil.i("Video Size " + videos.size());
-					// } else {
-					// LogUtil.e("Error Parsing: Conv.videos");
-					// }
-
 				}
+				ActiveAndroid.setTransactionSuccessful();
 
 			}
 			TempMemoryStore.conversations = conversations;
@@ -133,6 +114,8 @@ public class JSONUtil {
 			IABroadcastManager.sendLocalBroadcast(intent);
 		} catch (Exception e) {
 			LogUtil.e(e.getMessage());
+		} finally {
+			ActiveAndroid.endTransaction();
 		}
 	}
 
@@ -186,20 +169,20 @@ public class JSONUtil {
 			model.setConversation_unread_count(conversation
 					.getInt("unread_count"));
 
-//			ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
-//			for (int j = 0; j < videosArray.length(); j++) {
-//
-//				JSONObject videoItem = (JSONObject) videosArray.get(j);
-//
-//				VideoModel video = new VideoModel();
-//				video.setFileName(videoItem.getString("filename"));
-//				video.setId(videoItem.getInt("id"));
-//				video.setRead(videoItem.getBoolean("isRead"));
-//				videos.add(video);
-//			}
-//
-//			model.setVideos(videos);
-//			LogUtil.i("Video Size " + videos.size());
+			// ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
+			// for (int j = 0; j < videosArray.length(); j++) {
+			//
+			// JSONObject videoItem = (JSONObject) videosArray.get(j);
+			//
+			// VideoModel video = new VideoModel();
+			// video.setFileName(videoItem.getString("filename"));
+			// video.setId(videoItem.getInt("id"));
+			// video.setRead(videoItem.getBoolean("isRead"));
+			// videos.add(video);
+			// }
+			//
+			// model.setVideos(videos);
+			// LogUtil.i("Video Size " + videos.size());
 
 			TempMemoryStore.conversations.add(conversationModel);
 
@@ -223,7 +206,7 @@ public class JSONUtil {
 				conversationId = videoItem.getString("conversation_id");
 				VideoModel video = new VideoModel();
 				video.setFileName(videoItem.getString("filename"));
-				video.setId(videoItem.getInt("id"));
+				video.setVideoId(videoItem.getInt("id"));
 
 				video.setRead(videoItem.getBoolean("isRead"));
 				videos.add(video);

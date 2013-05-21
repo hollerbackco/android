@@ -1,8 +1,7 @@
 package com.moziy.hollerback;
 
-import android.app.Application;
 
-public class HollerbackApplication extends Application {
+public class HollerbackApplication extends com.activeandroid.app.Application {
 	private static HollerbackApplication sInstance = null;
 
 	@Override

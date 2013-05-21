@@ -1,5 +1,7 @@
 package com.moziy.hollerback.model;
 
-public class BaseModel {
+import com.activeandroid.Model;
+
+public class BaseModel extends Model {
 
 }
