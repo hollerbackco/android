@@ -97,6 +97,8 @@ public class ConversationFragment extends BaseFragment {
 
 		initializeView(fragmentView);
 
+		mVideoGallery.setVisibility(View.INVISIBLE);
+
 		return fragmentView;
 	}
 
@@ -292,6 +294,8 @@ public class ConversationFragment extends BaseFragment {
 						+ (int) (ViewUtil.convertDpToPixel(80, getActivity()) * mVideoGalleryAdapter
 								.getCount()));
 				mVideoGallery.requestFocus();
+				mVideoGallery.setVisibility(View.VISIBLE);
+
 			}
 		});
 	}

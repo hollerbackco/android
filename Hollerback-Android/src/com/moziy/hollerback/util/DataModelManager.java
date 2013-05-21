@@ -1,6 +1,7 @@
 package com.moziy.hollerback.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -96,8 +97,12 @@ public class DataModelManager {
 
 			HashMap<String, ArrayList<VideoModel>> h = new HashMap<String, ArrayList<VideoModel>>();
 
-			h.put(params[0], (ArrayList<VideoModel>) ActiveRecordHelper
-					.getVideosForConversation(params[0]));
+			ArrayList<VideoModel> videos = (ArrayList<VideoModel>) ActiveRecordHelper
+					.getVideosForConversation(params[0]);
+
+			Collections.reverse(videos);
+
+			h.put(params[0], videos);
 
 			return h;
 

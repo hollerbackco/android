@@ -16,6 +16,7 @@ import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
+import com.moziy.hollerback.database.ActiveRecordFields;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.SortedArray;
@@ -193,7 +194,7 @@ public class JSONUtil {
 		}
 	}
 
-	public static void processConversationVideos(JSONObject json) {
+	public static void processConversationVideos(String convoId, JSONObject json) {
 		try {
 
 			ActiveAndroid.beginTransaction();
@@ -205,7 +206,10 @@ public class JSONUtil {
 			if (videosArray != null) {
 
 				try {
-					new Delete().from(VideoModel.class).execute();
+					new Delete()
+							.from(VideoModel.class)
+							.where(ActiveRecordFields.C_VID_CONV_ID + " = ?",
+									convoId).execute();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
