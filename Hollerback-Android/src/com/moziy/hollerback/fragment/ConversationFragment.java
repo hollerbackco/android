@@ -262,10 +262,10 @@ public class ConversationFragment extends BaseFragment {
 
 				if (mVideos != null) {
 					mVideoGalleryAdapter.setVideos(mVideos);
-					LogUtil.d("Setting new Videos");
+					mVideoGalleryAdapter.notifyDataSetChanged();
+					LogUtil.d("Setting new Videos size: " + mVideos.size());
+					setGalleryToEnd();
 				}
-
-				setGalleryToEnd();
 
 			}
 		}

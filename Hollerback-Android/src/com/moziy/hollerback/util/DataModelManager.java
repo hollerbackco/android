@@ -95,6 +95,7 @@ public class DataModelManager {
 			}
 
 			HashMap<String, ArrayList<VideoModel>> h = new HashMap<String, ArrayList<VideoModel>>();
+
 			h.put(params[0], (ArrayList<VideoModel>) ActiveRecordHelper
 					.getVideosForConversation(params[0]));
 
