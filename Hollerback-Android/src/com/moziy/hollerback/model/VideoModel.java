@@ -1,10 +1,33 @@
 package com.moziy.hollerback.model;
 
+import com.activeandroid.annotation.Table;
+import com.activeandroid.annotation.Column;
+
+import com.moziy.hollerback.database.ActiveRecordFields;
+
+@Table(name = ActiveRecordFields.T_VIDEOS)
 public class VideoModel extends BaseModel {
 
-	private String fileName;
+	@Column(name = ActiveRecordFields.C_VID_FILENAME)
+	private String filename;
+
+	@Column(name = ActiveRecordFields.C_VID_ISREAD)
 	private boolean isRead;
+
+	@Column(name = ActiveRecordFields.C_VID_ID)
 	private int videoId;
+
+	@Column(name = ActiveRecordFields.C_VID_CONV_ID)
+	private String mConvId;
+
+	public String getConversationId() {
+		return mConvId;
+	}
+
+	public void setConversationId(String mConvId) {
+		this.mConvId = mConvId;
+	}
+
 	private String fileUrl;
 	private String thumbUrl;
 
@@ -25,11 +48,11 @@ public class VideoModel extends BaseModel {
 	}
 
 	public String getFileName() {
-		return fileName;
+		return filename;
 	}
 
 	public void setFileName(String fileName) {
-		this.fileName = fileName;
+		this.filename = fileName;
 	}
 
 	public boolean isRead() {

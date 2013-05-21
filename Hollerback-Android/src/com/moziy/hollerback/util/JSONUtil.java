@@ -195,29 +195,50 @@ public class JSONUtil {
 
 	public static void processConversationVideos(JSONObject json) {
 		try {
+
+			ActiveAndroid.beginTransaction();
+
 			String conversationId = "";
 			JSONArray videosArray = json.getJSONArray("data");
 			ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
 
-			for (int j = 0; j < videosArray.length(); j++) {
+			if (videosArray != null) {
 
-				JSONObject videoItem = (JSONObject) videosArray.get(j);
-				conversationId = videoItem.getString("conversation_id");
-				VideoModel video = new VideoModel();
-				video.setFileName(videoItem.getString("filename"));
-				video.setVideoId(videoItem.getInt("id"));
+				try {
+					new Delete().from(VideoModel.class).execute();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				for (int j = 0; j < videosArray.length(); j++) {
 
-				video.setRead(videoItem.getBoolean("isRead"));
-				videos.add(video);
+					JSONObject videoItem = (JSONObject) videosArray.get(j);
+					conversationId = videoItem.getString("conversation_id");
+					VideoModel video = new VideoModel();
+					video.setFileName(videoItem.getString("filename"));
+					video.setVideoId(videoItem.getInt("id"));
+					video.setConversationId(videoItem
+							.getString("conversation_id"));
+
+					video.setRead(videoItem.getBoolean("isRead"));
+					video.save();
+					videos.add(video);
+				}
+
+				ActiveAndroid.setTransactionSuccessful();
+
+				Collections.reverse(videos);
+
+				TempMemoryStore.videos.put(conversationId, videos);
+				Intent intent = new Intent(
+						IABIntent.INTENT_GET_CONVERSATION_VIDEOS);
+				intent.putExtra(IABIntent.PARAM_ID, conversationId);
+				IABroadcastManager.sendLocalBroadcast(intent);
 			}
 
-			Collections.reverse(videos);
-
-			TempMemoryStore.videos.put(conversationId, videos);
-			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATION_VIDEOS);
-			intent.putExtra(IABIntent.PARAM_ID, conversationId);
-			IABroadcastManager.sendLocalBroadcast(intent);
 		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			ActiveAndroid.endTransaction();
 		}
 	}
 }

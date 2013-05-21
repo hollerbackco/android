@@ -27,6 +27,7 @@ import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.helper.ActiveRecordHelper;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.VideoModel;
@@ -153,6 +154,16 @@ public class ConversationFragment extends BaseFragment {
 		LogUtil.d("Get URLS for Index: " + Integer.toString(index));
 		// helper.getS3URLParams(generateUploadParams(index));
 
+		ArrayList<VideoModel> m = (ArrayList<VideoModel>) ActiveRecordHelper
+				.getVideosForConversation(mConversationId);
+
+		if (m != null && m.size() > 0) {
+			mVideoGalleryAdapter.setVideos(m);
+			mVideoGalleryAdapter.notifyDataSetChanged();
+			setGalleryToEnd();
+		} else {
+		}
+
 		HBRequestManager.getConversationVideos(mConversationId);
 
 	}
@@ -245,33 +256,36 @@ public class ConversationFragment extends BaseFragment {
 				mVideoGalleryAdapter.setVideos(TempMemoryStore.videos
 						.get(intent.getStringExtra(IABIntent.PARAM_ID)));
 
-				mVideoGallery.post(new Runnable() {
-					@Override
-					public void run() {
-						mVideoGallery.requestFocusFromTouch();
-						// mVideoGallery.setSelection(TempMemoryStore.conversations
-						// .get(index).getVideos().size() - 1);
-
-						mVideoGallery.setSelection(mVideoGallery.getRight());
-
-						int imageWidth = (int) ViewUtil.convertDpToPixel(80,
-								getActivity());
-
-						LogUtil.i("Image Width: " + imageWidth);
-
-						mVideoGallery.scrollToEnd(imageWidth
-								* mVideoGalleryAdapter.getCount());
-						LogUtil.i("Gallery x: "
-								+ (int) (ViewUtil.convertDpToPixel(80,
-										getActivity()) * mVideoGalleryAdapter
-										.getCount()));
-						mVideoGallery.requestFocus();
-					}
-				});
+				setGalleryToEnd();
 
 			}
 		}
 	};
+
+	private void setGalleryToEnd() {
+		mVideoGallery.post(new Runnable() {
+			@Override
+			public void run() {
+				mVideoGallery.requestFocusFromTouch();
+				// mVideoGallery.setSelection(TempMemoryStore.conversations
+				// .get(index).getVideos().size() - 1);
+
+				mVideoGallery.setSelection(mVideoGallery.getRight());
+
+				int imageWidth = (int) ViewUtil.convertDpToPixel(80,
+						getActivity());
+
+				LogUtil.i("Image Width: " + imageWidth);
+
+				mVideoGallery.scrollToEnd(imageWidth
+						* mVideoGalleryAdapter.getCount());
+				LogUtil.i("Gallery x: "
+						+ (int) (ViewUtil.convertDpToPixel(80, getActivity()) * mVideoGalleryAdapter
+								.getCount()));
+				mVideoGallery.requestFocus();
+			}
+		});
+	}
 
 	private void playVideo(String fileKey) {
 		String path = FileUtil.getLocalFile(fileKey);
