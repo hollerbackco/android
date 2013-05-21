@@ -34,7 +34,7 @@ public class ConversationModel extends BaseModel {
 	// this.mVideos = mVideos;
 	// }
 
-	public int getConversation_id() {
+	public int getConversation_Id() {
 		return conversation_id;
 	}
 

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.HollerbackCameraActivity;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
@@ -55,7 +56,7 @@ public class ConversationFragment extends BaseFragment {
 	private static final String IMAGE_CACHE_DIR = "thumbs";
 
 	// Image Loading
-	int index = -1;
+
 	// Video Playback Stuff
 	private VideoView mVideoView;
 	private TextView mProgressText;
@@ -73,6 +74,8 @@ public class ConversationFragment extends BaseFragment {
 	boolean urlLoaded = false;
 
 	S3RequestHelper helper = new S3RequestHelper();
+
+	private ArrayList<VideoModel> mVideos;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -130,15 +133,22 @@ public class ConversationFragment extends BaseFragment {
 	}
 
 	// TODO: Move out of here
-	private ArrayList<S3UploadParams> generateUploadParams(String conversationId) {
+	private ArrayList<S3UploadParams> generateUploadParams(String hash,
+			String conversationId) {
 
 		ArrayList<S3UploadParams> mGetUrls = new ArrayList<S3UploadParams>();
-		for (VideoModel video : TempMemoryStore.videos.get(conversationId)) {
-			S3UploadParams param = new S3UploadParams();
-			param.setFileName(video.getFileName());
-			param.setOnS3UploadListener(null);
-			param.mVideo = video;
-			mGetUrls.add(param);
+
+		ArrayList<VideoModel> videos = ((ArrayList<VideoModel>) HollerbackApplication
+				.getInstance().getDM().getObjectForToken(hash));
+
+		if (videos != null && videos.size() > 0) {
+			for (VideoModel video : videos) {
+				S3UploadParams param = new S3UploadParams();
+				param.setFileName(video.getFileName());
+				param.setOnS3UploadListener(null);
+				param.mVideo = video;
+				mGetUrls.add(param);
+			}
 		}
 
 		return mGetUrls;
@@ -146,25 +156,14 @@ public class ConversationFragment extends BaseFragment {
 
 	public void initializeArgs() {
 		Bundle bundle = getArguments();
-		index = bundle.getInt("index");
 		mConversationId = bundle.getString("conv_id");
 		LogUtil.i("Conversation Fragment: ID: " + mConversationId);
 		// mVideoGalleryAdapter.setVideos(TempMemoryStore.conversations.get(index)
 		// .getVideos());
-		LogUtil.d("Get URLS for Index: " + Integer.toString(index));
 		// helper.getS3URLParams(generateUploadParams(index));
 
-		ArrayList<VideoModel> m = (ArrayList<VideoModel>) ActiveRecordHelper
-				.getVideosForConversation(mConversationId);
-
-		if (m != null && m.size() > 0) {
-			mVideoGalleryAdapter.setVideos(m);
-			mVideoGalleryAdapter.notifyDataSetChanged();
-			setGalleryToEnd();
-		} else {
-		}
-
-		HBRequestManager.getConversationVideos(mConversationId);
+		HollerbackApplication.getInstance().getDM()
+				.getVideos(false, mConversationId);
 
 	}
 
@@ -220,14 +219,12 @@ public class ConversationFragment extends BaseFragment {
 	 * Create a new instance of CountingFragment, providing "num" as an
 	 * argument.
 	 */
-	public static ConversationFragment newInstance(String conversation_id,
-			int index) {
+	public static ConversationFragment newInstance(String conversation_id) {
 
 		ConversationFragment f = new ConversationFragment();
 
 		// Supply num input as an argument.
 		Bundle args = new Bundle();
-		args.putInt("index", index);
 		args.putString("conv_id", conversation_id);
 		f.setArguments(args);
 		return f;
@@ -250,11 +247,23 @@ public class ConversationFragment extends BaseFragment {
 
 			} else if (IABIntent.isIntent(intent,
 					IABIntent.INTENT_GET_CONVERSATION_VIDEOS)) {
-				LogUtil.d("Get URLS for Index: " + Integer.toString(index));
-				helper.getS3URLParams(generateUploadParams(intent
-						.getStringExtra(IABIntent.PARAM_ID)));
-				mVideoGalleryAdapter.setVideos(TempMemoryStore.videos
-						.get(intent.getStringExtra(IABIntent.PARAM_ID)));
+
+				String hash = intent
+						.getStringExtra(IABIntent.PARAM_INTENT_DATA);
+
+				mVideos = (ArrayList<VideoModel>) HollerbackApplication
+						.getInstance()
+						.getDM()
+						.getObjectForToken(
+								intent.getStringExtra(IABIntent.PARAM_INTENT_DATA));
+
+				helper.getS3URLParams(generateUploadParams(hash,
+						intent.getStringExtra(IABIntent.PARAM_ID)));
+
+				if (mVideos != null) {
+					mVideoGalleryAdapter.setVideos(mVideos);
+					LogUtil.d("Setting new Videos");
+				}
 
 				setGalleryToEnd();
 

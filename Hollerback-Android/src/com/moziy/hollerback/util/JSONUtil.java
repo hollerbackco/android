@@ -186,7 +186,7 @@ public class JSONUtil {
 			TempMemoryStore.conversations.add(conversationModel);
 
 			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATIONS);
-			intent.putExtra(IABIntent.PARAM_ID, model.getConversation_id());
+			intent.putExtra(IABIntent.PARAM_ID, model.getConversation_Id());
 			IABroadcastManager.sendLocalBroadcast(intent);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -228,9 +228,16 @@ public class JSONUtil {
 
 				Collections.reverse(videos);
 
+				String hash = HashUtil.generateHashFor(
+						IABIntent.ASYNC_REQ_VIDEOS, conversationId);
+
+				HollerbackApplication.getInstance().getDM()
+						.putIntoHash(conversationId, videos);
+
 				TempMemoryStore.videos.put(conversationId, videos);
 				Intent intent = new Intent(
 						IABIntent.INTENT_GET_CONVERSATION_VIDEOS);
+				intent.putExtra(IABIntent.PARAM_INTENT_DATA, hash);
 				intent.putExtra(IABIntent.PARAM_ID, conversationId);
 				IABroadcastManager.sendLocalBroadcast(intent);
 			}

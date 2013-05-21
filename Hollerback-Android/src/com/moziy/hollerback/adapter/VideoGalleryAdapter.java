@@ -73,6 +73,8 @@ public class VideoGalleryAdapter extends BaseAdapter {
 					.findViewById(R.id.iv_video_thumbnail);
 			viewHolder.videoThumbnail
 					.setScaleType(ImageView.ScaleType.CENTER_CROP);
+			viewHolder.unreadCircle = (ImageView) convertView
+					.findViewById(R.id.iv_unread_circle);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
@@ -89,11 +91,18 @@ public class VideoGalleryAdapter extends BaseAdapter {
 			mVideoWidth = viewHolder.videoThumbnail.getWidth();
 		}
 
+		if (mVideos.get(position).isRead()) {
+			viewHolder.unreadCircle.setVisibility(View.GONE);
+		} else {
+			viewHolder.unreadCircle.setVisibility(View.VISIBLE);
+		}
+
 		return convertView;
 	}
 
 	static class ViewHolder {
 		ImageView videoThumbnail;
+		ImageView unreadCircle;
 	}
 
 	public int getVideoImagePreviewWidth() {

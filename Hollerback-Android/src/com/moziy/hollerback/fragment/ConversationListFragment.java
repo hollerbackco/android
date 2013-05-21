@@ -77,7 +77,8 @@ public class ConversationListFragment extends BaseFragment {
 				long id) {
 			LogUtil.i("Starting Conversation: " + position + " id: " + id);
 
-			startConversationFragment((int) id);
+			startConversationFragment(Integer.toString(mConversationListAdapter
+					.getItem((int) id).getConversation_Id()));
 		}
 
 	};
@@ -109,15 +110,15 @@ public class ConversationListFragment extends BaseFragment {
 
 	}
 
-	public void startConversationFragment(int index) {
-		LogUtil.i("Start Conversation Index: " + index);
+	public void startConversationFragment(String conversationId) {
 		FragmentManager fragmentManager = getActivity()
 				.getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();
-		ConversationFragment fragment = ConversationFragment.newInstance(
-				Integer.toString(TempMemoryStore.conversations.get(index)
-						.getConversation_id()), index);
+
+		// TODO: Fetch data from API call
+		ConversationFragment fragment = ConversationFragment
+				.newInstance(conversationId);
 		fragmentTransaction.replace(R.id.fragment_holder, fragment);
 		fragmentTransaction.addToBackStack(ConversationFragment.class
 				.getSimpleName());

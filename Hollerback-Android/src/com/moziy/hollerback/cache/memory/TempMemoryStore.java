@@ -23,7 +23,7 @@ public class TempMemoryStore {
 	public static int getIndexForConversationId(int id) {
 		int i = 0;
 		for (ConversationModel conversation : conversations) {
-			if (conversation.getConversation_id() == id) {
+			if (conversation.getConversation_Id() == id) {
 				return i;
 			}
 			i++;

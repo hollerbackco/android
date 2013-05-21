@@ -48,7 +48,7 @@ public class ConversationListAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int position) {
+	public ConversationModel getItem(int position) {
 		// TODO Auto-generated method stub
 		return mConversations.get(position);
 	}

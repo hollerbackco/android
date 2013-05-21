@@ -20,6 +20,8 @@ public class VideoModel extends BaseModel {
 	@Column(name = ActiveRecordFields.C_VID_CONV_ID)
 	private String mConvId;
 
+	private boolean uploaded;
+
 	public String getConversationId() {
 		return mConvId;
 	}

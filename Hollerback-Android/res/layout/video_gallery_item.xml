@@ -16,4 +16,13 @@
         android:layout_height="80dp"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/iv_unread_circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/unread_circle"
+        android:visibility="gone" />
+
 </RelativeLayout>
