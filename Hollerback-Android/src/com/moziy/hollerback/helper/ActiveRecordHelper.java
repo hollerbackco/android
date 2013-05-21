@@ -8,6 +8,6 @@ import com.moziy.hollerback.model.ConversationModel;
 public class ActiveRecordHelper {
 
 	public static List<ConversationModel> getAllConversations() {
-		return new Select().from(ConversationModel.class).where("*").execute();
+		return new Select().from(ConversationModel.class).execute();
 	}
 }

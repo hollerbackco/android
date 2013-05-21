@@ -80,9 +80,8 @@ public class JSONUtil {
 	public static void processGetConversations(JSONObject object) {
 		ArrayList<ConversationModel> conversations = new ArrayList<ConversationModel>();
 		try {
-			//new Delete().from(ConversationModel.class).where("Id = *")
-			//		.execute();
 			ActiveAndroid.beginTransaction();
+			new Delete().from(ConversationModel.class).execute();
 
 			JSONObject dataObject = object.getJSONObject("data");
 			JSONArray conversationArray = dataObject

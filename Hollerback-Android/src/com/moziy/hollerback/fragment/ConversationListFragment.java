@@ -51,7 +51,7 @@ public class ConversationListFragment extends BaseFragment {
 		View fragmentView = inflater.inflate(R.layout.message_list_fragment,
 				null);
 		initializeView(fragmentView);
-
+		HBRequestManager.getConversations();
 		return fragmentView;
 	}
 
@@ -68,7 +68,6 @@ public class ConversationListFragment extends BaseFragment {
 		super.onResume();
 		IABroadcastManager.registerForLocalBroadcast(receiver,
 				IABIntent.INTENT_GET_CONVERSATIONS);
-		HBRequestManager.getConversations();
 	}
 
 	OnItemClickListener mOnListItemClickListener = new OnItemClickListener() {
@@ -101,7 +100,8 @@ public class ConversationListFragment extends BaseFragment {
 
 		mConversationListAdapter = new ConversationListAdapter(getActivity());
 		mConversationListAdapter
-				.setConversations(new ArrayList<ConversationModel>());
+				.setConversations((ArrayList<ConversationModel>) ActiveRecordHelper
+						.getAllConversations());
 
 		mConversationList.setAdapter(mConversationListAdapter);
 
