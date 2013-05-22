@@ -99,10 +99,13 @@ public class DataModelManager {
 
 			ArrayList<VideoModel> videos = (ArrayList<VideoModel>) ActiveRecordHelper
 					.getVideosForConversation(params[0]);
+			
+			if(videos!=null){				
+				Collections.reverse(videos);
+				h.put(params[0], videos);
+			}
 
-			Collections.reverse(videos);
 
-			h.put(params[0], videos);
 
 			return h;
 

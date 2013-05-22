@@ -133,7 +133,7 @@ public class ConversationFragment extends BaseFragment {
 				IABIntent.INTENT_GET_CONVERSATION_VIDEOS);
 
 	}
-
+										
 	// TODO: Move out of here
 	private ArrayList<S3UploadParams> generateUploadParams(String hash,
 			String conversationId) {

@@ -38,6 +38,8 @@ public class HollerbackAppState {
 	public static void logOut() {
 		PreferenceManagerUtil.setPreferenceValue(
 				HollerbackPreferences.ACCESS_TOKEN, null);
+		//Delete other preferences
+		//Delete databases
 	}
 
 }
