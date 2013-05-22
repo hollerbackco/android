@@ -55,12 +55,12 @@ public class ContactFetchAsyncTask extends AsyncTask<Void, Void, SortedArray> {
 
 			long _id = c.getLong(idColIndex);
 			UserModel contactItem = new UserModel();
-			contactItem.mId = _id;
-			contactItem.mContactId = contactId;
-			contactItem.mDisplayName = displayName;
+			//contactItem.userId = _id;
+			contactItem.contactId = contactId;
+			contactItem.name = displayName;
 
-			contactItem.mPhone = NumberUtil.getE164Number(phoneNumber);
-			if (contactItem.mPhone != null) {
+			contactItem.phone = NumberUtil.getE164Number(phoneNumber);
+			if (contactItem.phone != null) {
 				contactItemList.add(contactItem);
 			}
 			boolean b2 = c.moveToNext();

@@ -19,7 +19,7 @@ public class HBRequestUtil {
 			if (count > 0) {
 				start += ",";
 			}
-			start += item.mPhone;
+			start += item.phone;
 			count++;
 		}
 
@@ -34,7 +34,7 @@ public class HBRequestUtil {
 		ArrayList<String> numbers = new ArrayList<String>();
 
 		for (UserModel item : items) {
-			numbers.add(item.mPhone);
+			numbers.add(item.phone);
 		}
 		return numbers;
 	}

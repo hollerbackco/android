@@ -19,11 +19,13 @@ public class ActiveRecordFields {
 
 	// Users
 	public static final String C_USER_ID = "UserId";
-	public static final String C_USER_NAME = "";
-	public static final String C_USER_EMAIL = "";
-	public static final String C_USER_PHONE = "";
-	public static final String C_USER_PHONE_NORMALIZED = "";
-	public static final String C_USER_IS_VERIFIED = "";
+	public static final String C_USER_NAME = "UserName";
+	public static final String C_USER_USERNAME = "UserUserName";
+	public static final String C_USER_EMAIL = "UserEmail";
+	public static final String C_USER_PHONE = "UserPhone";
+	public static final String C_USER_PHONE_NORMALIZED = "UserPhoneNormalized";
+	public static final String C_USER_IS_VERIFIED = "UserIsVerified";
+	public static final String C_USER_HOLLERBACK_USER = "UserHollerbackUser";
 
 	// User Conversation Relationship
 

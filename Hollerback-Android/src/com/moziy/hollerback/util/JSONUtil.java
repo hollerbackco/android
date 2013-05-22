@@ -132,11 +132,11 @@ public class JSONUtil {
 				JSONObject userObject = dataObject.getJSONObject(i);
 				UserModel user = new UserModel();
 				user.name = userObject.getString("name");
-				user.mPhone = userObject.getString("phone_normalized");
+				user.phone = userObject.getString("phone_normalized");
 				users.add(user);
 				if (TempMemoryStore.users.mUserModelHash
-						.containsKey(user.mPhone)) {
-					TempMemoryStore.users.mUserModelHash.get(user.mPhone).isHollerbackUser = true;
+						.containsKey(user.phone)) {
+					TempMemoryStore.users.mUserModelHash.get(user.phone).isHollerbackUser = true;
 				}
 			}
 

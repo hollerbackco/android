@@ -85,7 +85,7 @@ public class ContactsListAdapter extends BaseAdapter implements
 				.get(position));
 		holder.text.setText(user.getName());
 
-		if (alreadyClickedUsers.contains(user.mPhone)) {
+		if (alreadyClickedUsers.contains(user.phone)) {
 			holder.text.setTextColor(Color.BLACK);
 		} else {
 			holder.text.setTextColor(Color.GRAY);
@@ -155,10 +155,10 @@ public class ContactsListAdapter extends BaseAdapter implements
 	}
 
 	public void addUser(UserModel user) {
-		alreadyClickedUsers.add(user.mPhone);
+		alreadyClickedUsers.add(user.phone);
 	}
 
 	public void removeUser(UserModel user) {
-		alreadyClickedUsers.remove(user.mPhone);
+		alreadyClickedUsers.remove(user.phone);
 	}
 }

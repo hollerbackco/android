@@ -1,22 +1,41 @@
 package com.moziy.hollerback.model;
 
-public class UserModel {
+import com.moziy.hollerback.database.ActiveRecordFields;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
+@Table(name = ActiveRecordFields.T_USERS)
+public class UserModel extends BaseModel {
 	// From Phone
-	public long mId;
-	public long mContactId;
-	public String mDisplayName;
-	public String mPhone;
+	
+	@Column(name = ActiveRecordFields.C_USER_ID)
+	public long userId;
+	
+	public long contactId;
+
+	@Column(name = ActiveRecordFields.C_USER_NAME)
+	public String name;
+	
+	@Column(name = ActiveRecordFields.C_USER_USERNAME)
+	public String userName;
+	
+	@Column(name = ActiveRecordFields.C_USER_PHONE)
+	public String phone;
+	
+	@Column(name = ActiveRecordFields.C_USER_PHONE_NORMALIZED)
+	public String phoneNormalized;
+	
+	@Column(name = ActiveRecordFields.C_USER_IS_VERIFIED)	
+	public boolean isVerified;
+
+	@Column(name = ActiveRecordFields.C_USER_HOLLERBACK_USER)
+	public boolean isHollerbackUser;
 
 	// From Server
-	public String name;
-	public boolean isHollerbackUser;
 	public boolean isRecentUser;
 
 	public String getName() {
-		if (name != null && !name.isEmpty()) {
-			return name;
-		}
-		return mDisplayName;
+		return name;
 	}
 
 }

@@ -44,6 +44,10 @@ public class HollerbackAPI {
 
 	public static final String PARAM_ACCESS_TOKEN = "access_token";
 
+	public static final String PARAM_PHONE = "phone";
+	
+	public static final String PARAM_NAME = "name";
+	
 	public static final String PARAM_FILENAME = "filename";
 
 	public static final String PARAM_NUMBERS = "numbers[]";

@@ -105,7 +105,7 @@ public class AddConversationFragment extends BaseFragment {
 								mEditText.getText().toString().lastIndexOf(",") + 1);
 			}
 
-			String c = (partial + user.mDisplayName.trim() + ",");
+			String c = (partial + user.name.trim() + ",");
 
 			mInvitesCount++;
 

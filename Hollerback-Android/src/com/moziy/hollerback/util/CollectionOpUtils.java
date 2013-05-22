@@ -32,8 +32,8 @@ public class CollectionOpUtils {
 
 		for (UserModel user : sortedArray.array) {
 
-			sortedArray.mUserModelHash.put(user.mPhone, user);
-			sortedArray.sortedKeys.add(user.mPhone);
+			sortedArray.mUserModelHash.put(user.phone, user);
+			sortedArray.sortedKeys.add(user.phone);
 		}
 
 		sortedArray.indexes.add(0);
@@ -48,7 +48,7 @@ public class CollectionOpUtils {
 		for (UserModel user : users) {
 			ChipsItem item = new ChipsItem();
 			item.setTitle(user.getName());
-			item.setUserHash(user.mPhone);
+			item.setUserHash(user.phone);
 			chips.add(item);
 		}
 		return chips;
