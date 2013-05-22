@@ -9,7 +9,10 @@ import android.os.AsyncTask;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
 
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.query.Delete;
 import com.moziy.hollerback.activity.HollerbackBaseActivity;
+import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
 import com.moziy.hollerback.util.CollectionOpUtils;
@@ -47,7 +50,12 @@ public class ContactFetchAsyncTask extends AsyncTask<Void, Void, SortedArray> {
 		int col4Index = c.getColumnIndex(columnNames[4]);
 
 		ArrayList<UserModel> contactItemList = new ArrayList<UserModel>();
+
+		ActiveAndroid.beginTransaction();
+		new Delete().from(ConversationModel.class).execute();
+
 		for (int i = 0; i < count; i++) {
+
 			String displayName = c.getString(displayNameColIndex);
 			String phoneNumber = c.getString(col2Index);
 			int contactId = c.getInt(col3Index);
@@ -55,7 +63,7 @@ public class ContactFetchAsyncTask extends AsyncTask<Void, Void, SortedArray> {
 
 			long _id = c.getLong(idColIndex);
 			UserModel contactItem = new UserModel();
-			//contactItem.userId = _id;
+			// contactItem.userId = _id;
 			contactItem.contactId = contactId;
 			contactItem.name = displayName;
 
@@ -63,8 +71,14 @@ public class ContactFetchAsyncTask extends AsyncTask<Void, Void, SortedArray> {
 			if (contactItem.phone != null) {
 				contactItemList.add(contactItem);
 			}
+
+			contactItem.save();
 			boolean b2 = c.moveToNext();
 		}
+
+		ActiveAndroid.setTransactionSuccessful();
+		ActiveAndroid.endTransaction();
+
 		c.close();
 
 		return CollectionOpUtils.sortContacts(contactItemList);

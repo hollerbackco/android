@@ -7,6 +7,8 @@ import com.moziy.hollerback.model.UserModel;
 public class HollerbackAppState {
 
 	private static HollerbackAppState sInstance;
+	
+	public boolean loadedContacts;
 
 	private HollerbackAppState() {
 	}

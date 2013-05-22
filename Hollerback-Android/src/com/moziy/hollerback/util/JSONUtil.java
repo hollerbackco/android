@@ -2,6 +2,7 @@ package com.moziy.hollerback.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,7 +12,9 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.Model;
 import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
@@ -128,17 +131,37 @@ public class JSONUtil {
 		try {
 			ArrayList<UserModel> users = new ArrayList<UserModel>();
 			JSONArray dataObject = json.getJSONArray("data");
+
+			ActiveAndroid.beginTransaction();
+
 			for (int i = 0; i < dataObject.length(); i++) {
 				JSONObject userObject = dataObject.getJSONObject(i);
 				UserModel user = new UserModel();
 				user.name = userObject.getString("name");
 				user.phone = userObject.getString("phone_normalized");
+				user.isHollerbackUser = true;
+
+				List<Model> userLocal = (List<Model>) new Select()
+						.from(UserModel.class)
+						.where(ActiveRecordFields.C_USER_PHONE + " = ?",
+								user.phone).execute();
+
+				if (userLocal == null || userLocal.size() < 1) {
+					user.save();
+				} else {
+					((UserModel)userLocal.get(0)).isHollerbackUser = true;
+					((UserModel)userLocal.get(0)).save();
+				}
+
 				users.add(user);
 				if (TempMemoryStore.users.mUserModelHash
 						.containsKey(user.phone)) {
 					TempMemoryStore.users.mUserModelHash.get(user.phone).isHollerbackUser = true;
 				}
 			}
+
+			ActiveAndroid.setTransactionSuccessful();
+			ActiveAndroid.endTransaction();
 
 			ArrayList<UserModel> valuesList = new ArrayList<UserModel>(
 					TempMemoryStore.users.mUserModelHash.values());
