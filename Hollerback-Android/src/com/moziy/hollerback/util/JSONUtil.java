@@ -107,11 +107,16 @@ public class JSONUtil {
 				ActiveAndroid.setTransactionSuccessful();
 
 			}
+
 			TempMemoryStore.conversations = conversations;
 			LogUtil.i("Model Size " + conversations.size());
 
 			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATIONS);
+			intent.putExtra(IABIntent.PARAM_INTENT_DATA, HashUtil
+					.generateHashFor(IABIntent.INTENT_GET_CONVERSATIONS,
+							IABIntent.VALUE_CONV_HASH));
 			IABroadcastManager.sendLocalBroadcast(intent);
+
 		} catch (Exception e) {
 			LogUtil.e(e.getMessage());
 		} finally {

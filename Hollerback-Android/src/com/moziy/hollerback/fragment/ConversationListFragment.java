@@ -14,26 +14,24 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
-import com.moziy.hollerback.activity.WelcomeFragmentActivity;
 import com.moziy.hollerback.adapter.ConversationListAdapter;
 import com.moziy.hollerback.background.ContactFetchAsyncTask;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
-import com.moziy.hollerback.helper.ActiveRecordHelper;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.ConversationModel;
+import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
-import com.moziy.hollerback.util.HollerbackAppState;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class ConversationListFragment extends BaseFragment {
@@ -51,7 +49,10 @@ public class ConversationListFragment extends BaseFragment {
 		View fragmentView = inflater.inflate(R.layout.message_list_fragment,
 				null);
 		initializeView(fragmentView);
-		HBRequestManager.getConversations();
+		// HBRequestManager.getConversations();
+
+		HollerbackApplication.getInstance().getDM().getConversations(false);
+
 		return fragmentView;
 	}
 
@@ -100,9 +101,9 @@ public class ConversationListFragment extends BaseFragment {
 		});
 
 		mConversationListAdapter = new ConversationListAdapter(getActivity());
-		mConversationListAdapter
-				.setConversations((ArrayList<ConversationModel>) ActiveRecordHelper
-						.getAllConversations());
+		// mConversationListAdapter
+		// .setConversations((ArrayList<ConversationModel>) ActiveRecordHelper
+		// .getAllConversations());
 
 		mConversationList.setAdapter(mConversationListAdapter);
 
@@ -169,8 +170,18 @@ public class ConversationListFragment extends BaseFragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_CONVERSATIONS)) {
-				mConversationListAdapter
-						.setConversations(TempMemoryStore.conversations);
+				// mConversationListAdapter
+				// .setConversations(TempMemoryStore.conversations);
+
+				String hash = intent
+						.getStringExtra(IABIntent.PARAM_INTENT_DATA);
+
+				ArrayList<ConversationModel> conversations = (ArrayList<ConversationModel>) HollerbackApplication
+						.getInstance().getDM().getObjectForToken(hash);
+
+				mConversationListAdapter.setConversations(conversations);
+				mConversationListAdapter.notifyDataSetChanged();
+
 				mConversationList.onRefreshComplete();
 			}
 

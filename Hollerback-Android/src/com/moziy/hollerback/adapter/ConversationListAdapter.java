@@ -23,6 +23,7 @@ public class ConversationListAdapter extends BaseAdapter {
 
 	public ConversationListAdapter(Context context) {
 		inflater = LayoutInflater.from(context);
+		mConversations = new ArrayList<ConversationModel>();
 	}
 
 	public void setConversations(ArrayList<ConversationModel> conversations) {

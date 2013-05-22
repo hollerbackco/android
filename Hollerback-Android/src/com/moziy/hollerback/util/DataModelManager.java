@@ -13,6 +13,7 @@ import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.helper.ActiveRecordHelper;
+import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
@@ -46,6 +47,47 @@ public class DataModelManager {
 			task.execute(conversationId);
 		}
 		HBRequestManager.getConversationVideos(conversationId);
+	}
+
+	public void getConversations(boolean populated) {
+		if (!populated) {
+
+			// return in memory or database store solution
+			GetConversationsAsyncTask task = new GetConversationsAsyncTask();
+			task.execute();
+		}
+		HBRequestManager.getConversations();
+	}
+
+	private class GetConversationsAsyncTask extends
+			AsyncTask<Void, Void, ArrayList<ConversationModel>> {
+
+		@Override
+		protected ArrayList<ConversationModel> doInBackground(Void... params) {
+
+			ArrayList<ConversationModel> conversationModel = (ArrayList<ConversationModel>) ActiveRecordHelper
+					.getAllConversations();
+
+			return conversationModel;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<ConversationModel> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+
+			String hash = HashUtil.generateHashFor(
+					IABIntent.INTENT_GET_CONVERSATIONS,
+					IABIntent.VALUE_CONV_HASH);
+
+			mObjectHash.put(hash, result);
+
+			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATIONS);
+			intent.putExtra(IABIntent.PARAM_INTENT_DATA, hash);
+			IABroadcastManager.sendLocalBroadcast(intent);
+
+		}
+
 	}
 
 	private class GetVideoAsyncTask extends
@@ -99,13 +141,11 @@ public class DataModelManager {
 
 			ArrayList<VideoModel> videos = (ArrayList<VideoModel>) ActiveRecordHelper
 					.getVideosForConversation(params[0]);
-			
-			if(videos!=null){				
+
+			if (videos != null) {
 				Collections.reverse(videos);
 				h.put(params[0], videos);
 			}
-
-
 
 			return h;
 

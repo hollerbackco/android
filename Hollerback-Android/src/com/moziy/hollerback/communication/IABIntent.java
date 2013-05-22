@@ -29,7 +29,9 @@ public class IABIntent {
 	public static final int VALUE_MEM = 1;
 	public static final int VALUE_DB = 2;
 	public static final int VALUE_API = 3;
-
+	public static final String VALUE_CONV_HASH = "ConvHash";
+	
+	
 	public static boolean isIntent(Intent intent, String action) {
 		return intent.getAction().equals(action);
 	}

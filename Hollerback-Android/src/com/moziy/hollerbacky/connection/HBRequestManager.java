@@ -271,7 +271,8 @@ public class HBRequestManager {
 									// TODO Auto-generated method stub
 									super.onSuccess(arg0, arg1);
 									LogUtil.i("ON SUCCESS API CONTACTS");
-									JSONUtil.processConversationVideos(conversationId, arg1);
+									JSONUtil.processConversationVideos(
+											conversationId, arg1);
 								}
 
 							});
