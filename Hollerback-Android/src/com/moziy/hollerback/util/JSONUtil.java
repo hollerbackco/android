@@ -111,13 +111,18 @@ public class JSONUtil {
 
 			}
 
+			String hash = HashUtil.generateHashFor(
+					IABIntent.INTENT_GET_CONVERSATIONS,
+					IABIntent.VALUE_CONV_HASH);
+
+			HollerbackApplication.getInstance().getDM()
+					.putIntoHash(hash, conversations);
+
 			TempMemoryStore.conversations = conversations;
 			LogUtil.i("Model Size " + conversations.size());
 
 			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATIONS);
-			intent.putExtra(IABIntent.PARAM_INTENT_DATA, HashUtil
-					.generateHashFor(IABIntent.INTENT_GET_CONVERSATIONS,
-							IABIntent.VALUE_CONV_HASH));
+			intent.putExtra(IABIntent.PARAM_INTENT_DATA, hash);
 			IABroadcastManager.sendLocalBroadcast(intent);
 
 		} catch (Exception e) {
@@ -149,8 +154,8 @@ public class JSONUtil {
 				if (userLocal == null || userLocal.size() < 1) {
 					user.save();
 				} else {
-					((UserModel)userLocal.get(0)).isHollerbackUser = true;
-					((UserModel)userLocal.get(0)).save();
+					((UserModel) userLocal.get(0)).isHollerbackUser = true;
+					((UserModel) userLocal.get(0)).save();
 				}
 
 				users.add(user);
