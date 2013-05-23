@@ -227,20 +227,26 @@ public class JSONUtil {
 			ArrayList<ConversationModel> conversations = (ArrayList<ConversationModel>) QU
 					.getDM().getObjectForToken(HashUtil.getConvHash());
 
-			int i = -1;
-			for (ConversationModel convo : conversations) {
-				i++;
-				if (convo.getConversation_Id() == model.getConversation_Id()) {
-					idToReplace = i;
+			if (conversations != null) {
+				int i = -1;
+				for (ConversationModel convo : conversations) {
+					i++;
+					if (convo.getConversation_Id() == model
+							.getConversation_Id()) {
+						idToReplace = i;
 
+					}
 				}
-			}
 
-			if (idToReplace != -1) {
-				conversations.remove(idToReplace);
-				conversations.add(0, model);
-				LogUtil.i("Removing conversation: " + idToReplace);
+				if (idToReplace != -1) {
+					conversations.remove(idToReplace);
+					conversations.add(0, model);
+					LogUtil.i("Removing conversation: " + idToReplace);
+				} else {
+					conversations.add(0, model);
+				}
 			} else {
+				conversations = new ArrayList<ConversationModel>();
 				conversations.add(0, model);
 			}
 
