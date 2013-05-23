@@ -76,7 +76,7 @@ public class ChipsAdapter extends BaseAdapter implements Filterable {
 		}
 
 		Log.i(TAG, suggestions.get(position).getTitle() +  " = " + suggestions.get(position).getImageid());
-		vh.img.setImageResource(suggestions.get(position).getImageid());
+		//vh.img.setImageResource(suggestions.get(position).getImageid());
 		vh.tv.setText(suggestions.get(position).getTitle());
 
 		return view;
