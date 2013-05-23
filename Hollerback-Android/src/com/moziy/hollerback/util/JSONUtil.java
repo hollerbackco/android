@@ -190,12 +190,10 @@ public class JSONUtil {
 
 	public static void processPostConversations(JSONObject json) {
 
-		ConversationModel conversationModel = new ConversationModel();
-
 		try {
 
 			JSONObject conversation = json.getJSONObject("data");
-			JSONArray videosArray = conversation.getJSONArray("videos");
+			// JSONArray videosArray = conversation.getJSONArray("videos");
 			ConversationModel model = new ConversationModel();
 			model.setConversation_id(conversation.getInt("id"));
 			model.setConversation_name(conversation.getString("name"));
@@ -217,10 +215,28 @@ public class JSONUtil {
 			// model.setVideos(videos);
 			// LogUtil.i("Video Size " + videos.size());
 
-			TempMemoryStore.conversations.add(conversationModel);
+			int idToReplace = -1;
 
-			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATIONS);
-			intent.putExtra(IABIntent.PARAM_ID, model.getConversation_Id());
+			int i = -1;
+			for (ConversationModel convo : TempMemoryStore.conversations) {
+				i++;
+				if (convo.getConversation_Id() == model.getConversation_Id()) {
+					idToReplace = i;
+					
+				}
+			}
+
+			if (idToReplace != -1) {
+				TempMemoryStore.conversations.remove(idToReplace);
+				TempMemoryStore.conversations.add(0, model);
+				LogUtil.i("Removing conversation: " + idToReplace);
+			} else {
+				TempMemoryStore.conversations.add(0, model);
+			}
+
+			Intent intent = new Intent(IABIntent.INTENT_POST_CONVERSATIONS);
+			intent.putExtra(IABIntent.PARAM_ID, Integer.toString(model.getConversation_Id()));
+			LogUtil.i("Sending Broadcast: " + model.getConversation_Id());
 			IABroadcastManager.sendLocalBroadcast(intent);
 		} catch (Exception e) {
 			e.printStackTrace();

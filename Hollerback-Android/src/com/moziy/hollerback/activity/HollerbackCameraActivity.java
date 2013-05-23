@@ -293,6 +293,8 @@ public class HollerbackCameraActivity extends Activity {
 
 		IABroadcastManager.registerForLocalBroadcast(receiver,
 				IABIntent.INTENT_UPLOAD_VIDEO);
+		IABroadcastManager.registerForLocalBroadcast(receiver,
+				IABIntent.INTENT_POST_CONVERSATIONS);
 	}
 
 	@Override
@@ -573,6 +575,10 @@ public class HollerbackCameraActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_POST_CONVERSATIONS)) {
 				mConversationId = intent.getStringExtra(IABIntent.PARAM_ID);
+
+				LogUtil.i("Uploading Video ID: " + mConversationId + " fn: "
+						+ mFileDataName + " im: " + mFileDataName);
+
 				mS3RequestHelper.uploadNewVideo(mConversationId, mFileDataName,
 						FileUtil.getImageUploadName(mFileDataName),
 						mOnS3UploadListener);
