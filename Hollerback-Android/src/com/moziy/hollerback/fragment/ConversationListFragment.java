@@ -32,6 +32,7 @@ import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
+import com.moziy.hollerback.util.QU;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class ConversationListFragment extends BaseFragment {
@@ -51,7 +52,7 @@ public class ConversationListFragment extends BaseFragment {
 		initializeView(fragmentView);
 		// HBRequestManager.getConversations();
 
-		HollerbackApplication.getInstance().getDM().getConversations(false);
+		QU.getDM().getConversations(false);
 
 		return fragmentView;
 	}
@@ -176,8 +177,8 @@ public class ConversationListFragment extends BaseFragment {
 				String hash = intent
 						.getStringExtra(IABIntent.PARAM_INTENT_DATA);
 
-				ArrayList<ConversationModel> conversations = (ArrayList<ConversationModel>) HollerbackApplication
-						.getInstance().getDM().getObjectForToken(hash);
+				ArrayList<ConversationModel> conversations = (ArrayList<ConversationModel>) QU
+						.getDM().getObjectForToken(hash);
 
 				mConversationListAdapter.setConversations(conversations);
 				mConversationListAdapter.notifyDataSetChanged();

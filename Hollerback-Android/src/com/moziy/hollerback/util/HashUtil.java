@@ -3,6 +3,8 @@ package com.moziy.hollerback.util;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 
+import com.moziy.hollerback.communication.IABIntent;
+
 public class HashUtil {
 
 	/**
@@ -48,5 +50,10 @@ public class HashUtil {
 		HashUtil.getSHA256(hash);
 
 		return hash;
+	}
+
+	public static String getConvHash() {
+		return HashUtil.generateHashFor(IABIntent.INTENT_GET_CONVERSATIONS,
+				IABIntent.VALUE_CONV_HASH);
 	}
 }

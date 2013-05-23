@@ -76,9 +76,7 @@ public class DataModelManager {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 
-			String hash = HashUtil.generateHashFor(
-					IABIntent.INTENT_GET_CONVERSATIONS,
-					IABIntent.VALUE_CONV_HASH);
+			String hash = HashUtil.getConvHash();
 
 			mObjectHash.put(hash, result);
 

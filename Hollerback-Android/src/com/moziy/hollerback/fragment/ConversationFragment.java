@@ -34,6 +34,7 @@ import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.FileUtil;
+import com.moziy.hollerback.util.QU;
 import com.moziy.hollerback.util.ViewUtil;
 import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerback.view.HorizontalListView;
@@ -133,15 +134,15 @@ public class ConversationFragment extends BaseFragment {
 				IABIntent.INTENT_GET_CONVERSATION_VIDEOS);
 
 	}
-										
+
 	// TODO: Move out of here
 	private ArrayList<S3UploadParams> generateUploadParams(String hash,
 			String conversationId) {
 
 		ArrayList<S3UploadParams> mGetUrls = new ArrayList<S3UploadParams>();
 
-		ArrayList<VideoModel> videos = ((ArrayList<VideoModel>) HollerbackApplication
-				.getInstance().getDM().getObjectForToken(hash));
+		ArrayList<VideoModel> videos = ((ArrayList<VideoModel>) QU.getDM()
+				.getObjectForToken(hash));
 
 		if (videos != null && videos.size() > 0) {
 			for (VideoModel video : videos) {
@@ -164,8 +165,7 @@ public class ConversationFragment extends BaseFragment {
 		// .getVideos());
 		// helper.getS3URLParams(generateUploadParams(index));
 
-		HollerbackApplication.getInstance().getDM()
-				.getVideos(false, mConversationId);
+		QU.getDM().getVideos(false, mConversationId);
 
 	}
 
@@ -253,11 +253,8 @@ public class ConversationFragment extends BaseFragment {
 				String hash = intent
 						.getStringExtra(IABIntent.PARAM_INTENT_DATA);
 
-				mVideos = (ArrayList<VideoModel>) HollerbackApplication
-						.getInstance()
-						.getDM()
-						.getObjectForToken(
-								intent.getStringExtra(IABIntent.PARAM_INTENT_DATA));
+				mVideos = (ArrayList<VideoModel>) QU.getDM().getObjectForToken(
+						intent.getStringExtra(IABIntent.PARAM_INTENT_DATA));
 
 				helper.getS3URLParams(generateUploadParams(hash,
 						intent.getStringExtra(IABIntent.PARAM_ID)));

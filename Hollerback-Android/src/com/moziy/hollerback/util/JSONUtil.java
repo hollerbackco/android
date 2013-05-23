@@ -62,8 +62,19 @@ public class JSONUtil {
 			video.setVideoId(videoObject.getInt("id"));
 			video.setRead(videoObject.getBoolean("isRead"));
 
-			TempMemoryStore.videos
-					.get(videoObject.getString("conversation_id")).add(video);
+			String hash = HashUtil.generateHashFor(IABIntent.ASYNC_REQ_VIDEOS,
+					videoObject.getString("conversation_id"));
+
+			ArrayList<VideoModel> videos = (ArrayList<VideoModel>) QU.getDM()
+					.getObjectForToken(hash);
+
+			if (videos == null) {
+				videos = new ArrayList<VideoModel>();
+			}
+
+			videos.add(video);
+
+			QU.getDM().putIntoHash(hash, videos);
 
 			// videos.add(video);
 
@@ -111,14 +122,10 @@ public class JSONUtil {
 
 			}
 
-			String hash = HashUtil.generateHashFor(
-					IABIntent.INTENT_GET_CONVERSATIONS,
-					IABIntent.VALUE_CONV_HASH);
+			String hash = HashUtil.getConvHash();
 
-			HollerbackApplication.getInstance().getDM()
-					.putIntoHash(hash, conversations);
+			QU.getDM().putIntoHash(hash, conversations);
 
-			TempMemoryStore.conversations = conversations;
 			LogUtil.i("Model Size " + conversations.size());
 
 			Intent intent = new Intent(IABIntent.INTENT_GET_CONVERSATIONS);
@@ -217,25 +224,31 @@ public class JSONUtil {
 
 			int idToReplace = -1;
 
+			ArrayList<ConversationModel> conversations = (ArrayList<ConversationModel>) QU
+					.getDM().getObjectForToken(HashUtil.getConvHash());
+
 			int i = -1;
-			for (ConversationModel convo : TempMemoryStore.conversations) {
+			for (ConversationModel convo : conversations) {
 				i++;
 				if (convo.getConversation_Id() == model.getConversation_Id()) {
 					idToReplace = i;
-					
+
 				}
 			}
 
 			if (idToReplace != -1) {
-				TempMemoryStore.conversations.remove(idToReplace);
-				TempMemoryStore.conversations.add(0, model);
+				conversations.remove(idToReplace);
+				conversations.add(0, model);
 				LogUtil.i("Removing conversation: " + idToReplace);
 			} else {
-				TempMemoryStore.conversations.add(0, model);
+				conversations.add(0, model);
 			}
 
+			QU.getDM().putIntoHash(HashUtil.getConvHash(), conversations);
+
 			Intent intent = new Intent(IABIntent.INTENT_POST_CONVERSATIONS);
-			intent.putExtra(IABIntent.PARAM_ID, Integer.toString(model.getConversation_Id()));
+			intent.putExtra(IABIntent.PARAM_ID,
+					Integer.toString(model.getConversation_Id()));
 			LogUtil.i("Sending Broadcast: " + model.getConversation_Id());
 			IABroadcastManager.sendLocalBroadcast(intent);
 		} catch (Exception e) {
@@ -284,10 +297,8 @@ public class JSONUtil {
 				String hash = HashUtil.generateHashFor(
 						IABIntent.ASYNC_REQ_VIDEOS, conversationId);
 
-				HollerbackApplication.getInstance().getDM()
-						.putIntoHash(hash, videos);
+				QU.getDM().putIntoHash(hash, videos);
 
-				TempMemoryStore.videos.put(conversationId, videos);
 				Intent intent = new Intent(
 						IABIntent.INTENT_GET_CONVERSATION_VIDEOS);
 				intent.putExtra(IABIntent.PARAM_INTENT_DATA, hash);
