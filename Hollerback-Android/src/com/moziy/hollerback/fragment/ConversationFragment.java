@@ -100,6 +100,9 @@ public class ConversationFragment extends BaseFragment {
 
 		mVideoGallery.setVisibility(View.INVISIBLE);
 
+		initializeArgs();
+		mVideoGalleryAdapter.notifyDataSetChanged();
+
 		return fragmentView;
 	}
 
@@ -123,9 +126,8 @@ public class ConversationFragment extends BaseFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		initializeArgs();
+
 		mImageFetcher.setExitTasksEarly(false);
-		mVideoGalleryAdapter.notifyDataSetChanged();
 		IABroadcastManager.registerForLocalBroadcast(receiver,
 				IABIntent.INTENT_REQUEST_VIDEO);
 		IABroadcastManager.registerForLocalBroadcast(receiver,
