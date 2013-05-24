@@ -21,8 +21,11 @@ public class IABIntent {
 	public static final String PARAM_ID = "ID";
 	public static final String PARAM_DATA_TYPE = "DT";
 	public static final String PARAM_INTENT_DATA = "idata";
+	public static final String PARAM_INTENT_MSG = "imsg";
 
 	public static final String ASYNC_REQ_VIDEOS = "vvideos";
+
+	public static final String MSG_CONVERSATION_ID = "msgconvid";
 
 	public static final boolean VALUE_TRUE = true;
 	public static final boolean VALUE_FALSE = false;
@@ -30,8 +33,9 @@ public class IABIntent {
 	public static final int VALUE_DB = 2;
 	public static final int VALUE_API = 3;
 	public static final String VALUE_CONV_HASH = "ConvHash";
-	
-	
+
+	public static final int REQUEST_NEW_CONVERSATION = 6728;
+
 	public static boolean isIntent(Intent intent, String action) {
 		return intent.getAction().equals(action);
 	}

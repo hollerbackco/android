@@ -16,6 +16,8 @@ public class S3UploadParams {
 	public VideoModel mVideo;
 	public String conversationId;
 
+	public String customMessage;
+	
 	public String getFileType() {
 		return mFileType;
 	}

@@ -326,11 +326,6 @@ public class ConversationFragment extends BaseFragment {
 	};
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	@Override
 	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
 
 	}

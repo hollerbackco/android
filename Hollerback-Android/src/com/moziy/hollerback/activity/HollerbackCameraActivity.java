@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore.Video.Thumbnails;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -40,6 +42,7 @@ import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.fragment.ConversationListFragment;
 import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
@@ -179,7 +182,7 @@ public class HollerbackCameraActivity extends Activity {
 				} else {
 					mS3RequestHelper.uploadNewVideo(mConversationId,
 							mFileDataName,
-							FileUtil.getImageUploadName(mFileDataName),
+							FileUtil.getImageUploadName(mFileDataName), null,
 							mOnS3UploadListener);
 				}
 			}
@@ -581,11 +584,17 @@ public class HollerbackCameraActivity extends Activity {
 
 				mS3RequestHelper.uploadNewVideo(mConversationId, mFileDataName,
 						FileUtil.getImageUploadName(mFileDataName),
-						mOnS3UploadListener);
+						IABIntent.MSG_CONVERSATION_ID, mOnS3UploadListener);
 			} else if (IABIntent
 					.isIntent(intent, IABIntent.INTENT_UPLOAD_VIDEO)) {
 				dialog.dismiss();
+
+				if (intent.hasExtra(IABIntent.PARAM_INTENT_MSG)) {
+					LogUtil.i("Setting result: ");
+					HollerbackCameraActivity.this.setResult(RESULT_OK, intent);
+				}
 				HollerbackCameraActivity.this.finish();
+
 			}
 
 		}

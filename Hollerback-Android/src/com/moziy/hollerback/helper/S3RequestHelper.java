@@ -59,7 +59,7 @@ public class S3RequestHelper {
 	}
 
 	public void uploadNewVideo(final String conversationId,
-			final String videoName, String imageName,
+			final String videoName, String imageName, String customMessage,
 			OnS3UploadListener onS3UploadListener) {
 		S3UploadParams video = new S3UploadParams();
 		S3UploadParams thumb = new S3UploadParams();
@@ -69,6 +69,7 @@ public class S3RequestHelper {
 		video.conversationId = conversationId;
 		thumb.setFileName(imageName);
 		thumb.setFilePath(FileUtil.getLocalFile(imageName));
+		video.customMessage = customMessage;
 
 		video.setOnS3UploadListener(onS3UploadListener);
 
@@ -151,7 +152,8 @@ public class S3RequestHelper {
 				if (AppEnvironment.ALLOW_UPLOAD_VIDEOS) {
 					HBRequestManager.postVideo(
 							result.getS3UploadParams().conversationId, result
-									.getS3UploadParams().getFileName());
+									.getS3UploadParams().getFileName(), result
+									.getS3UploadParams().customMessage);
 					LogUtil.i("LOL CATWALK");
 				}
 			}
@@ -280,12 +282,13 @@ public class S3RequestHelper {
 					urlImageRequest.setExpiration(expirationDate);
 					urlImageRequest.setResponseHeaders(override);
 
-					//LogUtil.i("Creating Request: " + uploadParams.getFileName());
+					// LogUtil.i("Creating Request: " +
+					// uploadParams.getFileName());
 
 					URL imageUrl = s3Client
 							.generatePresignedUrl(urlImageRequest);
 
-					//LogUtil.i("Calling URLS " + uploadParams.getFileName());
+					// LogUtil.i("Calling URLS " + uploadParams.getFileName());
 
 					result.setUri(Uri.parse(videoUrl.toURI().toString()));
 
@@ -293,8 +296,8 @@ public class S3RequestHelper {
 					uploadParams.mVideo
 							.setThumbUrl(imageUrl.toURI().toString());
 
-					//LogUtil.i("VID: " + videoUrl.toURI().toString());
-					//LogUtil.i("IMG: " + imageUrl.toURI().toString());
+					// LogUtil.i("VID: " + videoUrl.toURI().toString());
+					// LogUtil.i("IMG: " + imageUrl.toURI().toString());
 
 					// updateTextView.obtainMessage(VIDEO_SENT).sendToTarget();
 

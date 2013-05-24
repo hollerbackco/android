@@ -32,7 +32,7 @@ public class HBRequestManager {
 	// return true;
 	// }
 
-	public static void postVideo(String conversation_id, String filename) {
+	public static void postVideo(String conversation_id, String filename, final String customMessage) {
 		RequestParams params = new RequestParams();
 
 		LogUtil.i("PostVideo", conversation_id);
@@ -56,7 +56,7 @@ public class HBRequestManager {
 					public void onSuccess(int arg0, JSONObject arg1) {
 						// TODO Auto-generated method stub
 						super.onSuccess(arg0, arg1);
-						JSONUtil.processVideoPost(arg1);
+						JSONUtil.processVideoPost(arg1, customMessage);
 					}
 
 					@Override

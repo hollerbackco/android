@@ -52,7 +52,10 @@ public class JSONUtil {
 
 	}
 
-	public static void processVideoPost(JSONObject object) {
+	public static void processVideoPost(JSONObject object, String customMessage) {
+
+		String conversationId = null;
+
 		try {
 			LogUtil.i(object.toString());
 			JSONObject videoObject = object.getJSONObject("data");
@@ -61,6 +64,8 @@ public class JSONUtil {
 			video.setFileName(videoObject.getString("filename"));
 			video.setVideoId(videoObject.getInt("id"));
 			video.setRead(videoObject.getBoolean("isRead"));
+
+			conversationId = videoObject.getString("conversation_id");
 
 			String hash = HashUtil.generateHashFor(IABIntent.ASYNC_REQ_VIDEOS,
 					videoObject.getString("conversation_id"));
@@ -83,11 +88,15 @@ public class JSONUtil {
 			e.printStackTrace();
 		}
 
-		Toast.makeText(HollerbackApplication.getInstance(), "DONE",
-				Toast.LENGTH_LONG).show();
-
 		Intent intent = new Intent(IABIntent.INTENT_UPLOAD_VIDEO);
 		intent.putExtra(IABIntent.PARAM_AUTHENTICATED, IABIntent.VALUE_TRUE);
+		if (customMessage != null && !customMessage.isEmpty()) {
+			if (customMessage.equals(IABIntent.MSG_CONVERSATION_ID)) {
+				intent.putExtra(IABIntent.PARAM_INTENT_MSG, conversationId);
+			} else {
+				intent.putExtra(IABIntent.PARAM_INTENT_MSG, customMessage);
+			}
+		}
 		IABroadcastManager.sendLocalBroadcast(intent);
 
 	}

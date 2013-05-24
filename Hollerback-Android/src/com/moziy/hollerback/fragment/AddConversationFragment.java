@@ -233,7 +233,8 @@ public class AddConversationFragment extends BaseFragment {
 		TempMemoryStore.invitedUsers = mInvites;
 		Intent intent = new Intent(getActivity(),
 				HollerbackCameraActivity.class);
-		startActivityForResult(intent, 3);
+		getActivity().startActivityForResult(intent,
+				IABIntent.REQUEST_NEW_CONVERSATION);
 	}
 
 }
