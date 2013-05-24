@@ -48,7 +48,7 @@ public class SettingsFragment extends BaseFragment {
 	@Override
 	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
 		// TODO Auto-generated method stub
-
+		viewHelper.setSettingsFragmentSettings();
 	}
 
 }

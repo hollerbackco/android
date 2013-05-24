@@ -56,9 +56,12 @@ public class CustomActionBarHelper {
 	}
 
 	public void setSettingsFragmentSettings() {
-		mImageLeftBtn.setVisibility(View.GONE);
+		mImageLeftBtn.setVisibility(View.INVISIBLE);
+		mImageLeftBtn.setOnClickListener(null);
+
+		// TODO: Save Setting Button Here
+		mImageRightBtn.setVisibility(View.INVISIBLE);
+		mImageRightBtn.setOnClickListener(null);
 	}
 
-	
-	
 }
