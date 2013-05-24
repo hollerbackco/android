@@ -23,4 +23,17 @@ public class NumberUtil {
 		return null;
 	}
 
+	public static PhoneNumber getPhoneNumber(String number) {
+		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+		if (number != null && !number.isEmpty()) {
+			try {
+				return phoneUtil.parse(number, "US");
+			} catch (NumberParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
 }

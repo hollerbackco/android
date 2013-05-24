@@ -1,5 +1,7 @@
 package com.moziy.hollerback.model;
 
+import com.moziy.hollerback.debug.LogUtil;
+
 public class Country {
 	@Override
 	public boolean equals(Object o) {
@@ -13,9 +15,9 @@ public class Country {
 		return false;
 	}
 
-	private String iso;
+	public String iso;
 
-	private String code;
+	public String code;
 
 	public String name;
 

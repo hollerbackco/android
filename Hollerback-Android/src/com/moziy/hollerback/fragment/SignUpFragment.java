@@ -1,9 +1,5 @@
 package com.moziy.hollerback.fragment;
 
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -21,11 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.Country;
 import com.moziy.hollerback.util.ISOUtil;
+import com.moziy.hollerback.util.NumberUtil;
 import com.moziy.hollerback.validator.TextValidator;
 
 public class SignUpFragment extends BaseFragment implements OnClickListener {
@@ -37,7 +35,7 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 
 	private View mRLCountrySelector;
 
-	private TextView mCountryText;
+	private TextView mCountryText, mPhoneNumberCode;
 
 	private AlertDialog countriesDialog;
 
@@ -46,6 +44,8 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 	private CharSequence[] mCharCountries;
 
 	private Country mSelectedCountry;
+
+	private PhoneNumberUtil util;
 
 	@Override
 	protected void initializeView(View view) {
@@ -63,6 +63,8 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 
 		mCountryText = (TextView) view.findViewById(R.id.tv_country_selector);
 		mRLCountrySelector.setOnClickListener(this);
+		mPhoneNumberCode = (TextView) view
+				.findViewById(R.id.tv_phone_number_code);
 	}
 
 	@Override
@@ -72,7 +74,7 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 		View fragmentView = inflater.inflate(R.layout.signup_fragment, null);
 		initializeView(fragmentView);
 
-		PhoneNumberUtil util = PhoneNumberUtil.getInstance();
+		util = PhoneNumberUtil.getInstance();
 		Set<String> set = util.getSupportedRegions();
 
 		mCountries = ISOUtil.getCountries(set.toArray(new String[set.size()]));
@@ -81,10 +83,13 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 
 		Locale locale = Locale.getDefault();
 
-		mSelectedCountry = new Country(locale.getCountry(),
+		mSelectedCountry = new Country(locale.getISO3Country(),
 				locale.getCountry(), locale.getDisplayCountry());
 
 		mCountryText.setText(mSelectedCountry.name);
+
+		mPhoneNumberCode.setText(Integer.toString(util
+				.getCountryCodeForRegion(mSelectedCountry.code)));
 
 		for (int i = 0; i < mCountries.size(); i++) {
 			mCharCountries[i] = mCountries.get(i).name;
@@ -116,15 +121,11 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 		return f;
 	}
 
-	public boolean processSubmit() {
+	public void processSubmit() {
 
-		if (TextValidator.isValidEmailAddress(mEmailField.getText().toString())) {
-		} else {
-			Toast.makeText(getActivity(), "Invalid Email", Toast.LENGTH_SHORT)
-					.show();
+		if (verifyFields()) {
+
 		}
-
-		return false;
 	}
 
 	@Override
@@ -155,11 +156,44 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 					public void onClick(DialogInterface dialog, int item) {
 						mSelectedCountry = mCountries.get(item);
 						mCountryText.setText(mCountries.get(item).name);
+						mPhoneNumberCode.setText(Integer.toString(util
+								.getCountryCodeForRegion(mSelectedCountry.code)));
 						countriesDialog.dismiss();
 					}
 				});
 		countriesDialog = builder.create();
 		countriesDialog.show();
+
+	}
+
+	private PhoneNumber getPhoneNumber() {
+		return NumberUtil.getPhoneNumber(util
+				.getCountryCodeForRegion(mSelectedCountry.code)
+				+ mPhoneNumberField.getText().toString());
+	}
+
+	public boolean verifyFields() {
+		String validEmail = TextValidator.isValidEmailAddress(mEmailField
+				.getText().toString());
+		String validPhone = TextValidator.isValidPhone(getPhoneNumber());
+		String validPassword = TextValidator.isValidPassword(mPasswordField
+				.getText().toString());
+		String validName = TextValidator.isValidName(mNameField.getText()
+				.toString());
+
+		boolean valid = (validEmail == null && validPhone == null
+				&& validPassword == null && validName == null);
+
+		if (!valid) {
+			String message = (validName != null ? validName + "\n" : "")
+					+ (validEmail != null ? validEmail + "\n" : "")
+					+ (validPassword != null ? validPassword + "\n" : "")
+					+ (validPhone != null ? validPhone : "");
+
+			Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+		}
+
+		return valid;
 
 	}
 }
