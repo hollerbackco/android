@@ -39,23 +39,58 @@
         android:inputType="textPassword"
         android:padding="10dp" />
 
-    <EditText
-        android:id="@+id/textfield_phonenumber"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_header_counter_phone"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textfield_password"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:text="@string/header_country_code_phone" />
+
+    <RelativeLayout
+        android:id="@+id/rl_country_selector"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tv_phone_number_code_height"
+        android:layout_below="@+id/tv_header_counter_phone"
         android:background="#fff"
-        android:hint="@string/number"
-        android:inputType="number"
-        android:padding="10dp" />
+        android:clickable="true" >
+
+        <TextView
+            android:id="@+id/tv_country_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_phone_number_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tv_phone_number_code_height"
+        android:layout_below="@+id/rl_country_selector"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" >
+
+        <TextView
+            android:id="@+id/tv_phone_number_code"
+            android:layout_width="@dimen/tv_phone_number_code_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true" />
+
+        <EditText
+            android:id="@+id/textfield_phonenumber"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/tv_phone_number_code"
+            android:background="#fff"
+            android:hint="@string/number"
+            android:inputType="number"
+            android:padding="10dp" />
+    </RelativeLayout>
 
     <Button
         android:id="@+id/register_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textfield_phonenumber"
+        android:layout_below="@+id/rl_phone_number_container"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
         android:text="Submit" />
