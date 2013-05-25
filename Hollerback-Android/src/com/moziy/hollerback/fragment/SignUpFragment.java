@@ -88,8 +88,9 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 
 		mCountryText.setText(mSelectedCountry.name);
 
-		mPhoneNumberCode.setText(Integer.toString(util
-				.getCountryCodeForRegion(mSelectedCountry.code)));
+		mPhoneNumberCode.setText("+"
+				+ Integer.toString(util
+						.getCountryCodeForRegion(mSelectedCountry.code)));
 
 		for (int i = 0; i < mCountries.size(); i++) {
 			mCharCountries[i] = mCountries.get(i).name;
@@ -156,8 +157,9 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 					public void onClick(DialogInterface dialog, int item) {
 						mSelectedCountry = mCountries.get(item);
 						mCountryText.setText(mCountries.get(item).name);
-						mPhoneNumberCode.setText(Integer.toString(util
-								.getCountryCodeForRegion(mSelectedCountry.code)));
+						mPhoneNumberCode.setText("+"
+								+ Integer.toString(util
+										.getCountryCodeForRegion(mSelectedCountry.code)));
 						countriesDialog.dismiss();
 					}
 				});
@@ -167,8 +169,8 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 	}
 
 	private PhoneNumber getPhoneNumber() {
-		return NumberUtil.getPhoneNumber(util
-				.getCountryCodeForRegion(mSelectedCountry.code)
+		return NumberUtil.getPhoneNumber("+"
+				+ util.getCountryCodeForRegion(mSelectedCountry.code)
 				+ mPhoneNumberField.getText().toString());
 	}
 

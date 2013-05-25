@@ -35,7 +35,7 @@ public class TextValidator {
 	}
 
 	public static String isValidName(String name) {
-		if (name != null && !name.isEmpty()) {
+		if (name == null || name.isEmpty() || name.trim().length() == 0) {
 			return QU.s(R.string.error_name_null);
 		}
 		return null;
