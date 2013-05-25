@@ -56,8 +56,16 @@ public class JSONUtil {
 		try {
 			LogUtil.i(object.toString());
 
+			JSONObject user = object.getJSONObject("user");
+
+			PreferenceManagerUtil.setPreferenceValue(
+					HollerbackPreferences.ACCESS_TOKEN,
+					user.getString("access_token"));
 			Intent intent = new Intent(IABIntent.INTENT_REGISTER_REQUEST);
-			intent.putExtra(IABIntent.PARAM_AUTHENTICATED, IABIntent.VALUE_TRUE);
+			if (user != null) {
+				intent.putExtra(IABIntent.PARAM_AUTHENTICATED,
+						IABIntent.VALUE_TRUE);
+			}
 			IABroadcastManager.sendLocalBroadcast(intent);
 
 		} catch (Exception exception) {

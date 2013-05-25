@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.activity.HollerbackBaseActivity;
+import com.moziy.hollerback.activity.SplashScreenActivity;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
@@ -30,6 +32,7 @@ import com.moziy.hollerback.model.Country;
 import com.moziy.hollerback.util.ISOUtil;
 import com.moziy.hollerback.util.NumberUtil;
 import com.moziy.hollerback.validator.TextValidator;
+import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class SignUpFragment extends BaseFragment implements OnClickListener {
 
@@ -47,6 +50,11 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 	private List<Country> mCountries;
 
 	private CharSequence[] mCharCountries;
+
+	private String mRegistrationName;
+	private String mRegistrationEmail;
+	private String mRegistrationPassword;
+	private String mRegistrationPhone;
 
 	@Override
 	public void onDestroy() {
@@ -145,7 +153,9 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 	public void processSubmit() {
 
 		if (verifyFields()) {
-
+			HBRequestManager.postRegistration(mRegistrationName,
+					mRegistrationEmail, mRegistrationPassword,
+					mRegistrationPhone);
 		}
 	}
 
@@ -218,6 +228,13 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 					+ (validPhone != null ? "\n" + validPhone : "");
 
 			Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+		} else {
+			mRegistrationName = mNameField.getText().toString();
+			mRegistrationEmail = mEmailField.getText().toString();
+			mRegistrationPassword = mPasswordField.getText().toString();
+			mRegistrationPhone = "+"
+					+ util.getCountryCodeForRegion(mSelectedCountry.code)
+					+ mPhoneNumberField.getText().toString();
 		}
 
 		return valid;
@@ -229,7 +246,14 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (IABIntent.isIntent(intent, IABIntent.INTENT_REGISTER_REQUEST)) {
-
+				if (intent.hasExtra(IABIntent.PARAM_AUTHENTICATED)) {
+					// Toast.makeText(getActivity(), "Registration Successful",
+					// Toast.LENGTH_LONG).show();
+					Intent i = new Intent(getActivity(),
+							HollerbackBaseActivity.class);
+					getActivity().startActivity(i);
+					getActivity().finish();
+				}
 			}
 		}
 	};
