@@ -65,6 +65,16 @@ public class CustomActionBarHelper {
 		mImageRightBtn.setVisibility(View.INVISIBLE);
 		mImageRightBtn.setOnClickListener(null);
 	}
+	
+	public void hideSideButtons() {
+		mImageLeftBtn.setVisibility(View.INVISIBLE);
+		mImageLeftBtn.setOnClickListener(null);
+
+		// TODO: Save Setting Button Here
+		mImageRightBtn.setVisibility(View.INVISIBLE);
+		mImageRightBtn.setOnClickListener(null);
+	}
+	
 
 	public void setVisible(boolean visible) {
 		if (visible) {

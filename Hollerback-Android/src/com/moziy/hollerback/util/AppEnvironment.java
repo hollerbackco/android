@@ -27,7 +27,7 @@ public class AppEnvironment {
 	public static final int ENV_PRODUCTION = 0x9999;
 	public static final int ENV_DEVELOPMENT = 0x1234;
 
-	private int ENV = ENV_DEVELOPMENT;
+	private int ENV = ENV_PRODUCTION;
 
 	public final String IMAGE_THUMB_SUFFIX = "-thumb.png";
 
