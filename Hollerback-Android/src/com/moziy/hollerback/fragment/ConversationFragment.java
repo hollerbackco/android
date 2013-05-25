@@ -212,7 +212,7 @@ public class ConversationFragment extends BaseFragment {
 				long id) {
 			LogUtil.i("Clicked ON: " + position);
 			VideoModel model = mVideoGalleryAdapter.getVideos().get(position);
-			mS3RequestHelper.downloadS3(AppEnvironment.PICTURE_BUCKET,
+			mS3RequestHelper.downloadS3(AppEnvironment.getInstance().PICTURE_BUCKET,
 					model.getFileName());
 			mProgressText.setVisibility(View.VISIBLE);
 

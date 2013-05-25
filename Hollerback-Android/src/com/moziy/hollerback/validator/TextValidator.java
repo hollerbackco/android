@@ -3,6 +3,7 @@ package com.moziy.hollerback.validator;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.QU;
 
 public class TextValidator {
@@ -43,7 +44,9 @@ public class TextValidator {
 
 	public static String isValidPhone(PhoneNumber phone) {
 		PhoneNumberUtil util = PhoneNumberUtil.getInstance();
-		if (phone != null && util.isValidNumber(phone)) {
+		if (phone != null
+				&& AppEnvironment.getInstance().FORCE_PHONE_NUMBER_CHECK ? util
+				.isValidNumber(phone) : true) {
 			return null;
 		}
 		return QU.s(R.string.error_phone);

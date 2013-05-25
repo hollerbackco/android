@@ -32,7 +32,8 @@ public class HBRequestManager {
 	// return true;
 	// }
 
-	public static void postVideo(String conversation_id, String filename, final String customMessage) {
+	public static void postVideo(String conversation_id, String filename,
+			final String customMessage) {
 		RequestParams params = new RequestParams();
 
 		LogUtil.i("PostVideo", conversation_id);
@@ -65,6 +66,42 @@ public class HBRequestManager {
 						// TODO Auto-generated method stub
 						LogUtil.i(arg0);
 						return super.parseResponse(arg0);
+					}
+				});
+
+	}
+
+	public static void postRegistration(String name, String email,
+			String password, String phone) {
+		RequestParams params = null;
+
+		params.put(HollerbackAPI.PARAM_NAME, name);
+		params.put(HollerbackAPI.PARAM_EMAIL, email);
+		params.put(HollerbackAPI.PARAM_PASSWORD, password);
+		params.put(HollerbackAPI.PARAM_PHONE, phone);
+
+		HollerbackAsyncClient.getInstance().post(HollerbackAPI.API_REGISTER,
+				params, new JsonHttpResponseHandler() {
+					@Override
+					protected Object parseResponse(String arg0)
+							throws JSONException {
+						LogUtil.i(arg0);
+						return super.parseResponse(arg0);
+
+					}
+
+					@Override
+					public void onFailure(Throwable arg0, JSONObject arg1) {
+						// TODO Auto-generated method stub
+						super.onFailure(arg0, arg1);
+						LogUtil.i("LOGIN FAILURE");
+					}
+
+					@Override
+					public void onSuccess(int arg0, JSONObject arg1) {
+						// TODO Auto-generated method stub
+						super.onSuccess(arg0, arg1);
+						JSONUtil.processSignUp(arg1);
 					}
 				});
 

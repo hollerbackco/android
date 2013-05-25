@@ -41,7 +41,8 @@ public class S3RequestHelper {
 	public S3RequestHelper() {
 		if (s3Client == null) {
 			s3Client = new AmazonS3Client(new BasicAWSCredentials(
-					AppEnvironment.ACCESS_KEY_ID, AppEnvironment.SECRET_KEY));
+					AppEnvironment.getInstance().ACCESS_KEY_ID,
+					AppEnvironment.getInstance().SECRET_KEY));
 		}
 
 	}
@@ -113,12 +114,12 @@ public class S3RequestHelper {
 
 				// Content type is determined by file extension.
 				PutObjectRequest videoUploadRequest = new PutObjectRequest(
-						AppEnvironment.UPLOAD_BUCKET,
+						AppEnvironment.getInstance().UPLOAD_BUCKET,
 						videoRequestParam.getFileName(), new java.io.File(
 								videoRequestParam.getFilePath()));
 
 				PutObjectRequest thumbUploadRequest = new PutObjectRequest(
-						AppEnvironment.UPLOAD_BUCKET,
+						AppEnvironment.getInstance().UPLOAD_BUCKET,
 						thumbRequestParam.getFileName(), new java.io.File(
 								thumbRequestParam.getFilePath()));
 
@@ -149,7 +150,7 @@ public class S3RequestHelper {
 							.onComplete();
 				}
 
-				if (AppEnvironment.ALLOW_UPLOAD_VIDEOS) {
+				if (AppEnvironment.getInstance().ALLOW_UPLOAD_VIDEOS) {
 					HBRequestManager.postVideo(
 							result.getS3UploadParams().conversationId, result
 									.getS3UploadParams().getFileName(), result
@@ -203,7 +204,7 @@ public class S3RequestHelper {
 				Date expirationDate = new Date(
 						System.currentTimeMillis() + 3600000);
 				GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(
-						AppEnvironment.getPictureBucket(),
+						AppEnvironment.getInstance().PICTURE_BUCKET,
 						uploadParams.getFileName());
 				urlRequest.setExpiration(expirationDate);
 				urlRequest.setResponseHeaders(override);
@@ -267,7 +268,7 @@ public class S3RequestHelper {
 							System.currentTimeMillis() + 3600000);
 
 					GeneratePresignedUrlRequest urlVideoRequest = new GeneratePresignedUrlRequest(
-							AppEnvironment.getPictureBucket(),
+							AppEnvironment.getInstance().PICTURE_BUCKET,
 							uploadParams.getFileName());
 					urlVideoRequest.setExpiration(expirationDate);
 					urlVideoRequest.setResponseHeaders(override);
@@ -277,7 +278,7 @@ public class S3RequestHelper {
 
 					override.setContentType("image/jpeg");
 					GeneratePresignedUrlRequest urlImageRequest = new GeneratePresignedUrlRequest(
-							AppEnvironment.getPictureBucket(),
+							AppEnvironment.getInstance().PICTURE_BUCKET,
 							uploadParams.getThumbnailName());
 					urlImageRequest.setExpiration(expirationDate);
 					urlImageRequest.setResponseHeaders(override);

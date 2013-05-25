@@ -52,6 +52,19 @@ public class JSONUtil {
 
 	}
 
+	public static void processSignUp(JSONObject object) {
+		try {
+			LogUtil.i(object.toString());
+
+			Intent intent = new Intent(IABIntent.INTENT_REGISTER_REQUEST);
+			intent.putExtra(IABIntent.PARAM_AUTHENTICATED, IABIntent.VALUE_TRUE);
+			IABroadcastManager.sendLocalBroadcast(intent);
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+
 	public static void processVideoPost(JSONObject object, String customMessage) {
 
 		String conversationId = null;

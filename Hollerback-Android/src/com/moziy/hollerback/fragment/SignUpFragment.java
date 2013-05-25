@@ -5,7 +5,10 @@ import java.util.Locale;
 import java.util.Set;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,8 @@ import android.widget.Toast;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.communication.IABIntent;
+import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.Country;
@@ -42,6 +47,19 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 	private List<Country> mCountries;
 
 	private CharSequence[] mCharCountries;
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		IABroadcastManager.unregisterLocalReceiver(receiver);
+	}
+
+	@Override
+	public void onDestroyView() {
+		// TODO Auto-generated method stub
+		super.onDestroyView();
+	}
 
 	private Country mSelectedCountry;
 
@@ -109,6 +127,8 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		IABroadcastManager.registerForLocalBroadcast(receiver,
+				IABIntent.INTENT_REGISTER_REQUEST);
 	}
 
 	public static SignUpFragment newInstance(int num) {
@@ -169,6 +189,11 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 	}
 
 	private PhoneNumber getPhoneNumber() {
+		if (mPhoneNumberField.getText().toString() == null
+				|| mPhoneNumberField.getText().toString().trim().isEmpty()
+				|| mPhoneNumberField.getText().toString().trim().length() < 3) {
+			return null;
+		}
 		return NumberUtil.getPhoneNumber("+"
 				+ util.getCountryCodeForRegion(mSelectedCountry.code)
 				+ mPhoneNumberField.getText().toString());
@@ -189,8 +214,8 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 		if (!valid) {
 			String message = (validName != null ? validName + "\n" : "")
 					+ (validEmail != null ? validEmail + "\n" : "")
-					+ (validPassword != null ? validPassword + "\n" : "")
-					+ (validPhone != null ? validPhone : "");
+					+ (validPassword != null ? validPassword : "")
+					+ (validPhone != null ? "\n" + validPhone : "");
 
 			Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
 		}
@@ -198,4 +223,14 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 		return valid;
 
 	}
+
+	BroadcastReceiver receiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (IABIntent.isIntent(intent, IABIntent.INTENT_REGISTER_REQUEST)) {
+
+			}
+		}
+	};
 }

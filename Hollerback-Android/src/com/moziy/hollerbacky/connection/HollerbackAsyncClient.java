@@ -58,7 +58,8 @@ public class HollerbackAsyncClient {
 	}
 
 	private static String getAbsoluteUrl(String relativeUrl) {
-		return HollerbackAPI.BASE_URL + HollerbackAPI.API_SUFFIX + relativeUrl;
+		return AppEnvironment.getInstance().BASE_URL + HollerbackAPI.API_SUFFIX
+				+ relativeUrl;
 	}
 
 	private static void setHeaders() {

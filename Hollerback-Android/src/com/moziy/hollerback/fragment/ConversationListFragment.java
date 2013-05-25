@@ -41,7 +41,8 @@ public class ConversationListFragment extends BaseFragment {
 	ConversationListAdapter mConversationListAdapter;
 
 	AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(
-			AppEnvironment.ACCESS_KEY_ID, AppEnvironment.SECRET_KEY));
+			AppEnvironment.getInstance().ACCESS_KEY_ID,
+			AppEnvironment.getInstance().SECRET_KEY));
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
