@@ -23,6 +23,8 @@ public class VideoGalleryAdapter extends BaseAdapter {
 
 	int mVideoWidth;
 
+	public int selectedIndex;
+
 	public VideoGalleryAdapter(ImageFetcher imageFetcher, Context context) {
 		mImageFetcher = imageFetcher;
 		inflater = LayoutInflater.from(context);
@@ -75,6 +77,8 @@ public class VideoGalleryAdapter extends BaseAdapter {
 					.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			viewHolder.unreadCircle = (ImageView) convertView
 					.findViewById(R.id.iv_unread_circle);
+			viewHolder.selectedBorder = (ImageView) convertView
+					.findViewById(R.id.iv_selected_video);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
@@ -97,12 +101,19 @@ public class VideoGalleryAdapter extends BaseAdapter {
 			viewHolder.unreadCircle.setVisibility(View.VISIBLE);
 		}
 
+		if (selectedIndex == position) {
+			viewHolder.selectedBorder.setVisibility(View.VISIBLE);
+		} else {
+			viewHolder.selectedBorder.setVisibility(View.GONE);
+		}
+
 		return convertView;
 	}
 
 	static class ViewHolder {
 		ImageView videoThumbnail;
 		ImageView unreadCircle;
+		ImageView selectedBorder;
 	}
 
 	public int getVideoImagePreviewWidth() {

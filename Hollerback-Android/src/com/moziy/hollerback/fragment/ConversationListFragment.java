@@ -82,6 +82,7 @@ public class ConversationListFragment extends BaseFragment {
 
 			startConversationFragment(Integer.toString(mConversationListAdapter
 					.getItem((int) id).getConversation_Id()));
+
 		}
 
 	};

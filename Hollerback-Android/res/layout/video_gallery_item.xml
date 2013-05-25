@@ -14,6 +14,7 @@
         android:id="@+id/iv_selected_video"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:background="@drawable/video_selected_border"
         android:visibility="gone" />
 
     <ImageView

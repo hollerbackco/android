@@ -216,6 +216,8 @@ public class ConversationFragment extends BaseFragment {
 					AppEnvironment.getInstance().PICTURE_BUCKET,
 					model.getFileName());
 			mProgressText.setVisibility(View.VISIBLE);
+			mVideoGalleryAdapter.selectedIndex = position;
+			mVideoGalleryAdapter.notifyDataSetChanged();
 
 		}
 	};
