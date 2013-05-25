@@ -3,11 +3,13 @@ package com.moziy.hollerback.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.fragment.WelcomeFragment;
+import com.moziy.hollerback.helper.CustomActionBarHelper;
 
 public class WelcomeFragmentActivity extends HollerbackBaseFragmentActivity {
 
@@ -22,7 +24,9 @@ public class WelcomeFragmentActivity extends HollerbackBaseFragmentActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(bundle);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
 		setContentView(R.layout.welcome_fragment_activity);
+
 		initFragment();
 	}
 

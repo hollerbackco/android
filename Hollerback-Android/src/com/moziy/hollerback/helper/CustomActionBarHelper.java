@@ -12,6 +12,7 @@ public class CustomActionBarHelper {
 	private ImageButton mImageLeftBtn, mImageRightBtn;
 	private TextView mHeaderText;
 	private ImageView mHeaderLogo;
+	private View mActionBar;
 
 	public CustomActionBarHelper(View actionbar) {
 		mImageLeftBtn = (ImageButton) actionbar
@@ -20,6 +21,7 @@ public class CustomActionBarHelper {
 				.findViewById(R.id.ib_action_right);
 		mHeaderLogo = (ImageView) actionbar.findViewById(R.id.iv_action_logo);
 		mHeaderText = (TextView) actionbar.findViewById(R.id.tv_action_name);
+		mActionBar = actionbar;
 	}
 
 	public ImageButton getLeftBtn() {
@@ -62,6 +64,15 @@ public class CustomActionBarHelper {
 		// TODO: Save Setting Button Here
 		mImageRightBtn.setVisibility(View.INVISIBLE);
 		mImageRightBtn.setOnClickListener(null);
+	}
+
+	public void setVisible(boolean visible) {
+		if (visible) {
+			mActionBar.setVisibility(View.VISIBLE);
+		} else {
+			mActionBar.setVisibility(View.INVISIBLE);
+		}
+
 	}
 
 }

@@ -12,7 +12,7 @@
     <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="number">Number</string>
+    <string name="number">555&#8211;555&#8211;5555</string>
     <string name="header_country_code_phone">Country Code and Phone Number</string>
     <string name="header_account">Account</string>
     <string name="no_network_connection_toast">Not connected to Internet</string>
