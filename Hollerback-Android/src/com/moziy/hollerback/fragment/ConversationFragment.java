@@ -13,22 +13,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.HollerbackCameraActivity;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
 import com.moziy.hollerback.bitmap.ImageCache;
 import com.moziy.hollerback.bitmap.ImageFetcher;
-import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
-import com.moziy.hollerback.helper.ActiveRecordHelper;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.VideoModel;
@@ -38,7 +34,6 @@ import com.moziy.hollerback.util.QU;
 import com.moziy.hollerback.util.ViewUtil;
 import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerback.view.HorizontalListView;
-import com.moziy.hollerbacky.connection.HBRequestManager;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 
 public class ConversationFragment extends BaseFragment {
@@ -127,6 +122,9 @@ public class ConversationFragment extends BaseFragment {
 	public void onResume() {
 		super.onResume();
 
+		//TODO: Do this less often
+		QU.getDM().getVideos(false, mConversationId);
+
 		mImageFetcher.setExitTasksEarly(false);
 		IABroadcastManager.registerForLocalBroadcast(receiver,
 				IABIntent.INTENT_REQUEST_VIDEO);
@@ -166,8 +164,6 @@ public class ConversationFragment extends BaseFragment {
 		// mVideoGalleryAdapter.setVideos(TempMemoryStore.conversations.get(index)
 		// .getVideos());
 		// helper.getS3URLParams(generateUploadParams(index));
-
-		QU.getDM().getVideos(false, mConversationId);
 
 	}
 
