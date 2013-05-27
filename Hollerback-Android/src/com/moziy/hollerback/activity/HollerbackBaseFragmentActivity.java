@@ -1,7 +1,7 @@
 package com.moziy.hollerback.activity;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import android.support.v4.app.FragmentActivity;
 
-public class HollerbackBaseFragmentActivity extends SherlockFragmentActivity {
+public class HollerbackBaseFragmentActivity extends FragmentActivity {
 
 }

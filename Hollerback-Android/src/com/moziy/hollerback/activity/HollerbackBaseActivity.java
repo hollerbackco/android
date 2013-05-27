@@ -1,13 +1,10 @@
 package com.moziy.hollerback.activity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
+import android.view.Window;
 
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
@@ -18,7 +15,7 @@ import com.moziy.hollerback.fragment.ConversationFragment;
 import com.moziy.hollerback.fragment.ConversationListFragment;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.SortedArray;
-import com.moziy.hollerback.model.UserModel;
+import com.moziy.hollerback.util.HollerbackAppState;
 
 /**
  * Main Activity that gets initiated when user is signed in
@@ -40,20 +37,22 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
-
-		getSupportActionBar().setDisplayShowCustomEnabled(true);
-		View view = getLayoutInflater().inflate(R.layout.action_bar_layout,
-				null);
-		getSupportActionBar().setDisplayShowHomeEnabled(false);
-		getSupportActionBar().setCustomView(view);
-		getSupportActionBar().setDisplayShowTitleEnabled(false);
-		getSupportActionBar().setBackgroundDrawable(
-				getResources().getDrawable(
-						R.drawable.ad_action_bar_gradient_bak));
-		mActionBarView = new CustomActionBarHelper(view);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.hollerback_main);
+		mActionBarView = new CustomActionBarHelper(
+				findViewById(R.id.action_bar_parent));
+
+		LogUtil.i("Starting BaseActivity");
+
+		if (!HollerbackAppState.isValidSession()) {
+			Intent i = new Intent(HollerbackBaseActivity.this,
+					WelcomeFragmentActivity.class);
+			startActivity(i);
+			this.finish();
+		}
 
 		initFragment();
+		LogUtil.i("Completed BaseActivity");
 	}
 
 	public static CustomActionBarHelper getCustomActionBar() {

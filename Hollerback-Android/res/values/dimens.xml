@@ -5,7 +5,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="image_thumbnail_size">100dp</dimen>
     <dimen name="image_thumbnail_spacing">1dp</dimen>
-    <dimen name="action_bar_height">64dp</dimen>
+    <dimen name="action_bar_height">48dp</dimen>
     <dimen name="et_add_contacts_height">100dp</dimen>
     <dimen name="tv_phone_number_code_width">40dp</dimen>
     <dimen name="tv_phone_number_code_height">48dp</dimen>

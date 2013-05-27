@@ -3,23 +3,23 @@ package com.moziy.hollerback.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.Time;
 import android.view.Window;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.util.HollerbackAppState;
-import com.moziy.hollerback.util.HollerbackPreferences;
-import com.moziy.hollerback.util.PreferenceManagerUtil;
 
 public class SplashScreenActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.splash_screen);
+		LogUtil.i("Starting SplashScreenActivity");
 		initializeApplication();
+		LogUtil.i("Completed SplashScreenActivity");
 	}
 
 	@Override
@@ -41,9 +41,9 @@ public class SplashScreenActivity extends Activity {
 		// startActivity(i);
 		// this.finish();
 
-		Time time = new Time();
-		PreferenceManagerUtil.setPreferenceValue(
-				HollerbackPreferences.LAST_LOGIN, time.toString());
+		//Time time = new Time();
+		//PreferenceManagerUtil.setPreferenceValue(
+		//		HollerbackPreferences.LAST_LOGIN, time.toString());
 
 		Intent i = null;
 		if (HollerbackAppState.isValidSession()) {
