@@ -104,6 +104,10 @@ public class ConversationFragment extends BaseFragment {
 
 		return fragmentView;
 	}
+	
+	public void playNewestVideo(){
+		
+	}
 
 	@Override
 	public void onPause() {

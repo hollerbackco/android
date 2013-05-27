@@ -2,6 +2,7 @@ package com.moziy.hollerback.model;
 
 import com.activeandroid.annotation.Table;
 import com.activeandroid.annotation.Column;
+import com.amazonaws.util.json.JSONObject;
 
 import com.moziy.hollerback.database.ActiveRecordFields;
 

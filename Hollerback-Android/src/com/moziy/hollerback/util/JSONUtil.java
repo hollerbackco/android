@@ -237,21 +237,6 @@ public class JSONUtil {
 			model.setConversation_unread_count(conversation
 					.getInt("unread_count"));
 
-			// ArrayList<VideoModel> videos = new ArrayList<VideoModel>();
-			// for (int j = 0; j < videosArray.length(); j++) {
-			//
-			// JSONObject videoItem = (JSONObject) videosArray.get(j);
-			//
-			// VideoModel video = new VideoModel();
-			// video.setFileName(videoItem.getString("filename"));
-			// video.setId(videoItem.getInt("id"));
-			// video.setRead(videoItem.getBoolean("isRead"));
-			// videos.add(video);
-			// }
-			//
-			// model.setVideos(videos);
-			// LogUtil.i("Video Size " + videos.size());
-
 			int idToReplace = -1;
 
 			ArrayList<ConversationModel> conversations = (ArrayList<ConversationModel>) QU
@@ -313,15 +298,9 @@ public class JSONUtil {
 				}
 				for (int j = 0; j < videosArray.length(); j++) {
 
-					JSONObject videoItem = (JSONObject) videosArray.get(j);
-					conversationId = videoItem.getString("conversation_id");
-					VideoModel video = new VideoModel();
-					video.setFileName(videoItem.getString("filename"));
-					video.setVideoId(videoItem.getInt("id"));
-					video.setConversationId(videoItem
-							.getString("conversation_id"));
-
-					video.setRead(videoItem.getBoolean("isRead"));
+					VideoModel video = JsonModelUtil
+							.createVideo((JSONObject) videosArray.get(j));
+					conversationId = video.getConversationId();
 					video.save();
 					videos.add(video);
 				}
@@ -347,6 +326,21 @@ public class JSONUtil {
 			e.printStackTrace();
 		} finally {
 			ActiveAndroid.endTransaction();
+		}
+	}
+
+	public static void processVideoRead(JSONObject jsonObject) {
+		try {
+			JSONObject videoJSONObject = jsonObject.getJSONObject("data");
+
+			VideoModel video = JsonModelUtil.createVideo(videoJSONObject);
+			QU.updateConversationVideo(video);
+
+			Intent intent = new Intent(IABIntent.INTENT_POST_READ_VIDEO);
+			IABroadcastManager.sendLocalBroadcast(intent);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

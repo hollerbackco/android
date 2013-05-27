@@ -71,6 +71,42 @@ public class HBRequestManager {
 
 	}
 
+	public static void postVideoRead(String videoId) {
+		RequestParams params = new RequestParams();
+
+		LogUtil.i("Post Read " + videoId);
+
+		params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
+				HollerbackAppState.getValidToken());
+
+		HollerbackAsyncClient.getInstance().post(
+				String.format(HollerbackAPI.API_VIDEO_READ_FORMAT, videoId),
+				params, new JsonHttpResponseHandler() {
+					@Override
+					protected Object parseResponse(String arg0)
+							throws JSONException {
+						LogUtil.i(arg0);
+						return super.parseResponse(arg0);
+
+					}
+
+					@Override
+					public void onFailure(Throwable arg0, JSONObject arg1) {
+						// TODO Auto-generated method stub
+						super.onFailure(arg0, arg1);
+						LogUtil.i("LOGIN FAILURE");
+					}
+
+					@Override
+					public void onSuccess(int arg0, JSONObject arg1) {
+						// TODO Auto-generated method stub
+						super.onSuccess(arg0, arg1);
+						JSONUtil.processSignUp(arg1);
+					}
+				});
+
+	}
+
 	public static void postRegistration(String name, String email,
 			String password, String phone) {
 		RequestParams params = new RequestParams();

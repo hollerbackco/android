@@ -15,6 +15,7 @@ import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
+import android.media.MediaRecorder.OnInfoListener;
 import android.media.MediaRecorder.OutputFormat;
 import android.media.ThumbnailUtils;
 import android.os.Bundle;
@@ -317,6 +318,15 @@ public class HollerbackCameraActivity extends Activity {
 		mSendButton.setVisibility(View.GONE);
 
 		// initialize video camera
+		recorder.setOnInfoListener(new OnInfoListener() {
+
+			@Override
+			public void onInfo(MediaRecorder mr, int what, int extra) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
 		if (prepareVideoRecorder()) {
 			mTimer.setText("00:00");
 			// Camera is available and unlocked, MediaRecorder is

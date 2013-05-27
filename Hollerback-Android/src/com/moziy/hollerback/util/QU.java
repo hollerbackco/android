@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.model.ConversationModel;
+import com.moziy.hollerback.model.VideoModel;
 
 /**
  * Access a lot of things in the app stands for quickutil
@@ -30,6 +31,11 @@ public class QU {
 
 		}
 		return null;
+	}
+
+	public static void updateConversationVideo(VideoModel video) {
+		ArrayList<ConversationModel> models = ((ArrayList<ConversationModel>) getDM()
+				.getObjectForToken(HashUtil.getConvHash()));
 	}
 
 	/**
