@@ -1,6 +1,9 @@
 package com.moziy.hollerback.util;
 
+import java.util.ArrayList;
+
 import com.moziy.hollerback.HollerbackApplication;
+import com.moziy.hollerback.model.ConversationModel;
 
 /**
  * Access a lot of things in the app stands for quickutil
@@ -15,6 +18,18 @@ public class QU {
 	 */
 	public static DataModelManager getDM() {
 		return HollerbackApplication.getInstance().getDM();
+	}
+
+	public static ConversationModel getConv(String id) {
+		ArrayList<ConversationModel> models = ((ArrayList<ConversationModel>) getDM()
+				.getObjectForToken(HashUtil.getConvHash()));
+		for (ConversationModel model : models) {
+			if (model.getConversation_Id() == Integer.parseInt(id)) {
+				return model;
+			}
+
+		}
+		return null;
 	}
 
 	/**

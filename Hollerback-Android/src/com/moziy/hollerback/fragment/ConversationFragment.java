@@ -18,6 +18,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.moziy.hollerback.R;
+import com.moziy.hollerback.activity.HollerbackBaseActivity;
 import com.moziy.hollerback.activity.HollerbackCameraActivity;
 import com.moziy.hollerback.adapter.VideoGalleryAdapter;
 import com.moziy.hollerback.bitmap.ImageCache;
@@ -27,6 +28,7 @@ import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.helper.S3RequestHelper;
+import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.VideoModel;
 import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.FileUtil;
@@ -70,6 +72,8 @@ public class ConversationFragment extends BaseFragment {
 	boolean urlLoaded = false;
 
 	S3RequestHelper helper = new S3RequestHelper();
+
+	private ConversationModel conversation;
 
 	private ArrayList<VideoModel> mVideos;
 
@@ -122,7 +126,7 @@ public class ConversationFragment extends BaseFragment {
 	public void onResume() {
 		super.onResume();
 
-		//TODO: Do this less often
+		// TODO: Do this less often
 		QU.getDM().getVideos(false, mConversationId);
 
 		mImageFetcher.setExitTasksEarly(false);
@@ -160,6 +164,11 @@ public class ConversationFragment extends BaseFragment {
 	public void initializeArgs() {
 		Bundle bundle = getArguments();
 		mConversationId = bundle.getString("conv_id");
+
+		conversation = QU.getConv(mConversationId);
+
+		HollerbackBaseActivity.getCustomActionBar().setHeaderText(
+				conversation.getConversationName());
 		LogUtil.i("Conversation Fragment: ID: " + mConversationId);
 		// mVideoGalleryAdapter.setVideos(TempMemoryStore.conversations.get(index)
 		// .getVideos());
@@ -328,7 +337,6 @@ public class ConversationFragment extends BaseFragment {
 
 	@Override
 	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
-		viewHelper.setHeaderText("Conversation");
 		viewHelper.hideSideButtons();
 	}
 
