@@ -9,5 +9,6 @@
     <dimen name="et_add_contacts_height">100dp</dimen>
     <dimen name="tv_phone_number_code_width">40dp</dimen>
     <dimen name="tv_phone_number_code_height">48dp</dimen>
+    <dimen name="action_bar_item_width">56dp</dimen>
 
 </resources>

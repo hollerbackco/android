@@ -3,14 +3,15 @@
     xmlns:custom="http://schemas.android.com/apk/res/com.moziy.hollerback"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#696969"
+    android:background="#fff"
     android:orientation="vertical" >
 
     <com.moziy.hollerback.view.HorizontalListView
         android:id="@+id/hlz_video_gallery"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:background="#fff" />
 
     <Button
         android:id="@+id/btn_video_reply"
