@@ -256,7 +256,6 @@ public class ConversationFragment extends BaseFragment {
 				playVideo(intent.getStringExtra(IABIntent.PARAM_ID));
 
 			} else if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_URLS)) {
-				Toast.makeText(getActivity(), "URLs Done", 3000).show();
 				mVideoGalleryAdapter.notifyDataSetChanged();
 
 				mVideoGallery.clearFocus();

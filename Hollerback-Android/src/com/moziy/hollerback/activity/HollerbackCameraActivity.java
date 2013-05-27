@@ -355,8 +355,6 @@ public class HollerbackCameraActivity extends Activity {
 		// inform the user that recording has stopped
 		mRecordButton.setImageResource(R.drawable.record_button);
 		isRecording = false;
-		Toast.makeText(getApplicationContext(), "Saved to: " + mFileDataPath,
-				5000).show();
 
 		if (mFileDataPath != null) {
 			mRecordButton.setVisibility(View.GONE);
@@ -442,7 +440,6 @@ public class HollerbackCameraActivity extends Activity {
 		mFileDataName = FileUtil.generateRandomFileName() + "."
 				+ targetExtension;
 		mFileDataPath = FileUtil.getOutputVideoFile(mFileDataName).toString();
-		Toast.makeText(this, mFileDataName, 3000).show();
 
 		return mFileDataPath;
 	}
@@ -545,8 +542,6 @@ public class HollerbackCameraActivity extends Activity {
 				m.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 			} catch (Throwable t) {
 				Log.e("SurfaceCallback", "Exception in setPreviewDisplay()", t);
-				Toast.makeText(HollerbackCameraActivity.this, t.getMessage(),
-						Toast.LENGTH_LONG).show();
 			}
 		}
 

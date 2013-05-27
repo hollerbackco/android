@@ -43,9 +43,6 @@ public class JSONUtil {
 			e.printStackTrace();
 		}
 
-		Toast.makeText(HollerbackApplication.getInstance(), "DONE",
-				Toast.LENGTH_LONG).show();
-
 		Intent intent = new Intent(IABIntent.INTENT_SESSION_REQUEST);
 		intent.putExtra(IABIntent.PARAM_AUTHENTICATED, IABIntent.VALUE_TRUE);
 		IABroadcastManager.sendLocalBroadcast(intent);

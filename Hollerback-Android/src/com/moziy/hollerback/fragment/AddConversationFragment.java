@@ -90,9 +90,6 @@ public class AddConversationFragment extends BaseFragment {
 
 			mInvites.add(user);
 
-			Toast.makeText(getActivity(), user.getName(), Toast.LENGTH_LONG)
-					.show();
-
 			String partial = "";
 
 			if (!mEditText.getText().toString().trim().isEmpty()) {
