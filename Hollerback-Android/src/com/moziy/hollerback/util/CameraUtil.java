@@ -8,9 +8,9 @@ import com.moziy.hollerback.debug.LogUtil;
 public class CameraUtil {
 
 	public static final int AUDIO_SAMPLE_RATE = 32000;
-	public static final int AUDIO_ENCODING_BIT_RATE = 128000;
+	public static final int AUDIO_ENCODING_BIT_RATE = 96000;
 	public static final int AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC;
-	public static final int VIDEO_ENCODING_RATE = 500000;
+	public static final int VIDEO_ENCODING_RATE = 512000;
 	public static final int VIDEO_OUTPUT_FORMAT = MediaRecorder.OutputFormat.MPEG_4;
 	public static final int VIDEO_OUTPUT_ENCODER = MediaRecorder.VideoEncoder.MPEG_4_SP;
 

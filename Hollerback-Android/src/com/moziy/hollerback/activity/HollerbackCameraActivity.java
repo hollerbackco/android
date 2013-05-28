@@ -317,16 +317,6 @@ public class HollerbackCameraActivity extends Activity {
 	private void startRecording() {
 		mSendButton.setVisibility(View.GONE);
 
-		// initialize video camera
-		recorder.setOnInfoListener(new OnInfoListener() {
-
-			@Override
-			public void onInfo(MediaRecorder mr, int what, int extra) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
 		if (prepareVideoRecorder()) {
 			mTimer.setText("00:00");
 			// Camera is available and unlocked, MediaRecorder is
