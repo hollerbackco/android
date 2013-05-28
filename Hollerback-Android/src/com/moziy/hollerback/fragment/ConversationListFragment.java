@@ -37,6 +37,14 @@ import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class ConversationListFragment extends BaseFragment {
 
+	@Override
+	public void onDestroyView() {
+		// TODO Auto-generated method stub
+		super.onDestroyView();
+		IABroadcastManager.unregisterLocalReceiver(receiver);
+
+	}
+
 	PullToRefreshListView mConversationList;
 	ConversationListAdapter mConversationListAdapter;
 
@@ -62,7 +70,6 @@ public class ConversationListFragment extends BaseFragment {
 	public void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		IABroadcastManager.unregisterLocalReceiver(receiver);
 	}
 
 	@Override
