@@ -115,6 +115,12 @@ public class ConversationFragment extends BaseFragment {
 
 	public void playNewestVideo() {
 		if (playStartInitialized) {
+			if (mVideoGalleryAdapter.getCount() > 0) {
+				mVideoGalleryAdapter.selectedIndex = mVideoGalleryAdapter
+						.getCount() - 1;
+				mVideoGalleryAdapter.notifyDataSetChanged();
+
+			}
 			setGalleryToEnd();
 			return;
 		}
@@ -273,8 +279,8 @@ public class ConversationFragment extends BaseFragment {
 			mVideoGalleryAdapter.selectedIndex = position;
 			if (!model.isRead()) {
 				model.setRead(true);
-				mVideoGalleryAdapter.notifyDataSetChanged();
 			}
+			mVideoGalleryAdapter.notifyDataSetChanged();
 
 			HBRequestManager
 					.postVideoRead(Integer.toString(model.getVideoId()));
@@ -330,7 +336,7 @@ public class ConversationFragment extends BaseFragment {
 					mVideoGalleryAdapter.notifyDataSetChanged();
 					LogUtil.d("Setting new Videos size: " + mVideos.size());
 
-					setGalleryToEnd();
+					playNewestVideo();
 
 				}
 
@@ -346,6 +352,8 @@ public class ConversationFragment extends BaseFragment {
 				// mVideoGallery.setSelection(TempMemoryStore.conversations
 				// .get(index).getVideos().size() - 1);
 
+				mVideoGallery.setSelection(mVideoGallery.getRight());
+
 				if (getActivity() != null && !getActivity().isFinishing()) {
 					int imageWidth = (int) ViewUtil.convertDpToPixel(80,
 							getActivity());
@@ -360,6 +368,9 @@ public class ConversationFragment extends BaseFragment {
 									.getCount()));
 					mVideoGallery.requestFocus();
 					mVideoGallery.setVisibility(View.VISIBLE);
+
+
+
 				}
 
 			}
