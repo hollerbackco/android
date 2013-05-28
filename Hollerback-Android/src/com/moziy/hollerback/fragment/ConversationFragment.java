@@ -83,6 +83,8 @@ public class ConversationFragment extends BaseFragment {
 
 	private ArrayList<VideoModel> mVideos;
 
+	boolean playStartInitialized;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -93,7 +95,7 @@ public class ConversationFragment extends BaseFragment {
 				getActivity(), IMAGE_CACHE_DIR);
 
 		mImageFetcher = new ImageFetcher(getActivity(), mImageThumbSize);
-		mImageFetcher.setLoadingImage(R.drawable.test_thumb);
+		mImageFetcher.setLoadingImage(R.drawable.placeholder_sq);
 		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(),
 				cacheParams);
 
@@ -112,7 +114,25 @@ public class ConversationFragment extends BaseFragment {
 	}
 
 	public void playNewestVideo() {
+		if (playStartInitialized) {
+			setGalleryToEnd();
+			return;
+		}
 
+		if (mVideoGalleryAdapter.getVideos().size() < 1) {
+			return;
+		}
+
+		for (int i = mVideoGalleryAdapter.getVideos().size() - 1; i >= 0; i--) {
+			if (mVideoGalleryAdapter.getVideos().get(i).isRead() == false) {
+				mVideoGalleryAdapter.selectedIndex = i;
+				// model.setRead(true);
+				mVideoGalleryAdapter.notifyDataSetChanged();
+				// }
+			}
+		}
+
+		playStartInitialized = true;
 	}
 
 	@Override
@@ -309,7 +329,9 @@ public class ConversationFragment extends BaseFragment {
 					mVideoGalleryAdapter.setVideos(mVideos);
 					mVideoGalleryAdapter.notifyDataSetChanged();
 					LogUtil.d("Setting new Videos size: " + mVideos.size());
-					setGalleryToEnd();
+
+					playNewestVideo();
+
 				}
 
 			}

@@ -7,8 +7,7 @@
     <com.moziy.hollerback.view.RecyclingImageView
         android:id="@+id/iv_video_thumbnail"
         android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/test_thumb" />
+        android:layout_height="80dp" />
 
     <ImageView
         android:id="@+id/iv_selected_video"
