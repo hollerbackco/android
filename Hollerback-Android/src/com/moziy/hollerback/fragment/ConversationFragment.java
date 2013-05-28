@@ -39,6 +39,7 @@ import com.moziy.hollerback.util.QU;
 import com.moziy.hollerback.util.ViewUtil;
 import com.moziy.hollerback.video.S3UploadParams;
 import com.moziy.hollerback.view.HorizontalListView;
+import com.moziy.hollerbacky.connection.HBRequestManager;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 
 public class ConversationFragment extends BaseFragment {
@@ -250,7 +251,13 @@ public class ConversationFragment extends BaseFragment {
 					model.getFileName());
 			mProgressText.setVisibility(View.VISIBLE);
 			mVideoGalleryAdapter.selectedIndex = position;
+			model.setRead(true);
 			mVideoGalleryAdapter.notifyDataSetChanged();
+			
+			
+			
+			HBRequestManager
+					.postVideoRead(Integer.toString(model.getVideoId()));
 
 		}
 	};
@@ -271,7 +278,7 @@ public class ConversationFragment extends BaseFragment {
 	}
 
 	String currentVideo;
-	
+
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 
 		@Override
@@ -342,9 +349,9 @@ public class ConversationFragment extends BaseFragment {
 		LogUtil.i("Play video: " + path);
 		mVideoView.setVisibility(View.VISIBLE);
 		mPlayBtn.setVisibility(View.GONE);
-		
+
 		currentVideo = fileKey;
-		
+
 		mVideoView.setVideoPath(path);
 		mVideoView.requestFocus();
 		mVideoView.start();
