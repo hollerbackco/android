@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -68,6 +71,8 @@ public class ConversationFragment extends BaseFragment {
 
 	private String mConversationId;
 
+	private ImageButton mPlayBtn;
+
 	// state
 	boolean urlLoaded = false;
 
@@ -104,9 +109,9 @@ public class ConversationFragment extends BaseFragment {
 
 		return fragmentView;
 	}
-	
-	public void playNewestVideo(){
-		
+
+	public void playNewestVideo() {
+
 	}
 
 	@Override
@@ -182,6 +187,9 @@ public class ConversationFragment extends BaseFragment {
 
 	@Override
 	protected void initializeView(View view) {
+
+		mPlayBtn = (ImageButton) view.findViewById(R.id.ib_play_btn);
+
 		mVideoGallery = (HorizontalListView) view
 				.findViewById(R.id.hlz_video_gallery);
 		mVideoGalleryAdapter = new VideoGalleryAdapter(mImageFetcher,
@@ -189,6 +197,7 @@ public class ConversationFragment extends BaseFragment {
 		mVideoGallery.setAdapter(mVideoGalleryAdapter);
 		mVideoView = (VideoView) view
 				.findViewById(R.id.vv_conversation_playback);
+
 		mVideoGallery.setOnItemClickListener(mListener);
 		// mVideoGallery.setOnScrollListener(mOnScrollListener);
 		mProgressText = (TextView) view.findViewById(R.id.tv_progress);
@@ -210,6 +219,21 @@ public class ConversationFragment extends BaseFragment {
 
 				// intent.putExtra(IABIntent.PARAM_ID, mConversationId);
 				startActivity(intent);
+			}
+		});
+
+		mVideoView.setOnCompletionListener(new OnCompletionListener() {
+
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				mPlayBtn.setVisibility(View.VISIBLE);
+				mPlayBtn.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						playVideo(currentVideo);
+					}
+				});
 			}
 		});
 	}
@@ -246,6 +270,8 @@ public class ConversationFragment extends BaseFragment {
 		return f;
 	}
 
+	String currentVideo;
+	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 
 		@Override
@@ -315,7 +341,10 @@ public class ConversationFragment extends BaseFragment {
 
 		LogUtil.i("Play video: " + path);
 		mVideoView.setVisibility(View.VISIBLE);
-
+		mPlayBtn.setVisibility(View.GONE);
+		
+		currentVideo = fileKey;
+		
 		mVideoView.setVideoPath(path);
 		mVideoView.requestFocus();
 		mVideoView.start();
