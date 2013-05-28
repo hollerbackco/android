@@ -314,6 +314,7 @@ public class ConversationFragment extends BaseFragment {
 		String path = FileUtil.getLocalFile(fileKey);
 
 		LogUtil.i("Play video: " + path);
+		mVideoView.setVisibility(View.VISIBLE);
 
 		mVideoView.setVideoPath(path);
 		mVideoView.requestFocus();

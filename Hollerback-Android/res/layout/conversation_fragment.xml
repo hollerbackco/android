@@ -27,11 +27,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/btn_video_reply"
-        android:layout_below="@+id/hlz_video_gallery" >
+        android:layout_below="@+id/hlz_video_gallery"
+        android:background="#fff" >
 
         <VideoView
             android:id="@+id/vv_conversation_playback"
             android:layout_width="match_parent"
+            android:visibility="invisible"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
 
@@ -40,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="#fafafa"
+            android:textColor="#545454"
             android:textSize="36sp"
             android:textStyle="bold" />
     </RelativeLayout>
