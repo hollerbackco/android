@@ -124,22 +124,11 @@ public class ConversationFragment extends BaseFragment {
 		}
 
 		playStartInitialized = true;
-
 		for (int i = mVideoGalleryAdapter.getVideos().size() - 1; i >= 0; i--) {
 			if (mVideoGalleryAdapter.getVideos().get(i).isRead() == false) {
-				VideoModel model = mVideoGalleryAdapter.getVideos().get(i);
-				mS3RequestHelper.downloadS3(
-						AppEnvironment.getInstance().PICTURE_BUCKET,
-						model.getFileName());
-				mProgressText.setVisibility(View.VISIBLE);
 				mVideoGalleryAdapter.selectedIndex = i;
-				if (!model.isRead()) {
-					model.setRead(true);
-					mVideoGalleryAdapter.notifyDataSetChanged();
-				}
-
-				HBRequestManager
-						.postVideoRead(Integer.toString(model.getVideoId()));
+				// model.setRead(true);
+				mVideoGalleryAdapter.notifyDataSetChanged();
 				// }
 			}
 		}
@@ -341,7 +330,8 @@ public class ConversationFragment extends BaseFragment {
 					mVideoGalleryAdapter.notifyDataSetChanged();
 					LogUtil.d("Setting new Videos size: " + mVideos.size());
 
-					playNewestVideo();
+					setGalleryToEnd();
+
 				}
 
 			}
