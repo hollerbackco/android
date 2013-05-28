@@ -105,8 +105,6 @@ public class ConversationFragment extends BaseFragment {
 
 		initializeView(fragmentView);
 
-		mVideoGallery.setVisibility(View.INVISIBLE);
-
 		initializeArgs();
 		mVideoGalleryAdapter.notifyDataSetChanged();
 
@@ -130,13 +128,26 @@ public class ConversationFragment extends BaseFragment {
 		}
 
 		playStartInitialized = true;
+		boolean set = false;
+
 		for (int i = mVideoGalleryAdapter.getVideos().size() - 1; i >= 0; i--) {
 			if (mVideoGalleryAdapter.getVideos().get(i).isRead() == false) {
 				mVideoGalleryAdapter.selectedIndex = i;
 				// model.setRead(true);
+				set = true;
 				mVideoGalleryAdapter.notifyDataSetChanged();
 				// }
 			}
+		}
+
+		if (!set) {
+			if (mVideoGalleryAdapter.getCount() > 0) {
+				mVideoGalleryAdapter.selectedIndex = mVideoGalleryAdapter
+						.getCount() - 1;
+				mVideoGalleryAdapter.notifyDataSetChanged();
+
+			}
+			setGalleryToEnd();
 		}
 
 	}
@@ -314,11 +325,6 @@ public class ConversationFragment extends BaseFragment {
 						+ intent.getStringExtra(IABIntent.PARAM_ID));
 				playVideo(intent.getStringExtra(IABIntent.PARAM_ID));
 
-			} else if (IABIntent.isIntent(intent, IABIntent.INTENT_GET_URLS)) {
-				mVideoGalleryAdapter.notifyDataSetChanged();
-
-				mVideoGallery.clearFocus();
-
 			} else if (IABIntent.isIntent(intent,
 					IABIntent.INTENT_GET_CONVERSATION_VIDEOS)) {
 
@@ -328,14 +334,14 @@ public class ConversationFragment extends BaseFragment {
 				mVideos = (ArrayList<VideoModel>) QU.getDM().getObjectForToken(
 						intent.getStringExtra(IABIntent.PARAM_INTENT_DATA));
 
-				helper.getS3URLParams(generateUploadParams(hash,
-						intent.getStringExtra(IABIntent.PARAM_ID)));
+				// helper.getS3URLParams(generateUploadParams(hash,
+				// intent.getStringExtra(IABIntent.PARAM_ID)));
 
 				if (mVideos != null) {
+					mVideoGallery.requestFocusFromTouch();
 					mVideoGalleryAdapter.setVideos(mVideos);
 					mVideoGalleryAdapter.notifyDataSetChanged();
 					LogUtil.d("Setting new Videos size: " + mVideos.size());
-
 					playNewestVideo();
 
 				}
@@ -368,8 +374,6 @@ public class ConversationFragment extends BaseFragment {
 									.getCount()));
 					mVideoGallery.requestFocus();
 					mVideoGallery.setVisibility(View.VISIBLE);
-
-
 
 				}
 

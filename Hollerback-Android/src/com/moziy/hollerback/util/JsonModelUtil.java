@@ -15,6 +15,8 @@ public class JsonModelUtil {
 			video.setVideoId(videoItem.getInt("id"));
 			video.setConversationId(videoItem.getString("conversation_id"));
 			video.setRead(videoItem.getBoolean("isRead"));
+			video.setFileUrl(videoItem.getString("url"));
+			video.setThumbUrl(videoItem.getString("thumb_url"));
 			return video;
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

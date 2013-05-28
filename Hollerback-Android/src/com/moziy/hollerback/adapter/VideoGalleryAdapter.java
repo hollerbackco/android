@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.bitmap.ImageFetcher;
+import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.VideoModel;
 
@@ -83,6 +84,8 @@ public class VideoGalleryAdapter extends BaseAdapter {
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
+		
+		LogUtil.i("Loading Thumb: " + mVideos.get(position).getThumbUrl());
 
 		if (mVideos.get(position).getThumbUrl() != null
 				&& mImageFetcher != null) {
