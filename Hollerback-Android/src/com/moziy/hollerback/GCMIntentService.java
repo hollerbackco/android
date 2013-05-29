@@ -142,6 +142,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		}
 		Intent notificationIntent = new Intent(context,
 				HollerbackBaseActivity.class);
+
 		// set intent so it does not start a new activity
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);

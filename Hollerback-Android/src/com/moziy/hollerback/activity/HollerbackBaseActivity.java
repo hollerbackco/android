@@ -69,6 +69,13 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 		if (initFrag) {
 			startConversationFragment(convId);
 			initFrag = false;
+		} else if (getIntent().getStringExtra(IABIntent.PARAM_CONVERSATION_ID) != null) {
+
+			// TODO: to get this correctly implemented, you need to make sure
+			// that the converastion model already exists, if not fetch it
+			startConversationFragment(getIntent().getStringExtra(
+					IABIntent.PARAM_CONVERSATION_ID));
+			getIntent().removeExtra(IABIntent.PARAM_CONVERSATION_ID);
 		}
 	}
 

@@ -29,6 +29,8 @@ public class IABIntent {
 	public static final String PARAM_INTENT_DATA = "idata";
 	public static final String PARAM_INTENT_MSG = "imsg";
 	public static final String PARAM_GCM_REGISTRATION_ID = "gcmregid";
+	public static final String PARAM_CONVERSATION_ID = "converstionId";
+	
 
 	public static final String ASYNC_REQ_VIDEOS = "vvideos";
 

@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.HollerbackBaseActivity;
 import com.moziy.hollerback.activity.SplashScreenActivity;
@@ -153,9 +154,16 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 	public void processSubmit() {
 
 		if (verifyFields()) {
-			HBRequestManager.postRegistration(mRegistrationName,
-					mRegistrationEmail, mRegistrationPassword,
-					mRegistrationPhone);
+			if (HollerbackApplication.getInstance().regId != null) {
+
+				HBRequestManager.postRegistration(mRegistrationName,
+						mRegistrationEmail, mRegistrationPassword,
+						mRegistrationPhone,
+						HollerbackApplication.getInstance().regId);
+			} else {
+				Toast.makeText(getActivity(), "Try again in a few seconds",
+						Toast.LENGTH_LONG).show();
+			}
 		}
 	}
 

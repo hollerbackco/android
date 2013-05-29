@@ -368,12 +368,9 @@ public class ConversationFragment extends BaseFragment {
 
 					mVideoGallery.scrollToEnd(imageWidth
 							* mVideoGalleryAdapter.getCount());
-					LogUtil.i("Gallery x: "
-							+ (int) (ViewUtil.convertDpToPixel(80,
-									getActivity()) * mVideoGalleryAdapter
-									.getCount()));
+					LogUtil.i("Gallery x: " + imageWidth
+							* mVideoGalleryAdapter.getCount());
 					mVideoGallery.requestFocus();
-					mVideoGallery.setVisibility(View.VISIBLE);
 
 				}
 

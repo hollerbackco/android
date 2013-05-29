@@ -109,7 +109,7 @@ public class HBRequestManager {
 	}
 
 	public static void postRegistration(String name, String email,
-			String password, String phone) {
+			String password, String phone, String token) {
 		RequestParams params = new RequestParams();
 
 		params.put(HollerbackAPI.PARAM_NAME, name);
@@ -117,6 +117,9 @@ public class HBRequestManager {
 		params.put(HollerbackAPI.PARAM_PASSWORD, password);
 		params.put(HollerbackAPI.PARAM_PHONE, phone);
 
+		params.put(HollerbackAPI.PARAM_PLATFORM, HollerbackConstants.PLATFORM);
+
+		params.put(HollerbackAPI.PARAM_DEVICE_TOKEN, token);
 		HollerbackAsyncClient.getInstance().post(HollerbackAPI.API_REGISTER,
 				params, new JsonHttpResponseHandler() {
 					@Override
