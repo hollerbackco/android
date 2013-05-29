@@ -6,5 +6,7 @@ public class HollerbackPreferences {
 	public static final String LAST_LOGIN = "Last Login";
 
 	public static final String SAVED_EMAIL = "SavedEmail";
+	
+	public static final String GCM_ID = "GCM_ID";
 
 }

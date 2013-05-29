@@ -7,11 +7,16 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.fragment.WelcomeFragment;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
+import com.moziy.hollerbacky.connection.RequestCallbacks.OnGCMReceivedListener;
 
 public class WelcomeFragmentActivity extends HollerbackBaseFragmentActivity {
+
+	public static boolean GCM_RECEIVED;
+	public static String GCM_TOKEN;
 
 	@Override
 	protected void onPause() {
@@ -28,7 +33,18 @@ public class WelcomeFragmentActivity extends HollerbackBaseFragmentActivity {
 		setContentView(R.layout.welcome_fragment_activity);
 
 		initFragment();
+
+		HollerbackApplication.getInstance().registerGCM();
 	}
+
+	OnGCMReceivedListener mGCMListener = new OnGCMReceivedListener() {
+
+		@Override
+		public void onGCMReceived(String token) {
+			GCM_RECEIVED = true;
+			GCM_TOKEN = token;
+		}
+	};
 
 	@Override
 	protected void onResume() {

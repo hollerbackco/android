@@ -33,6 +33,8 @@ public class AppEnvironment {
 
 	public boolean ALLOW_UPLOAD_VIDEOS = true;
 	public boolean FORCE_PHONE_NUMBER_CHECK;
+	
+	public static String GOOGLE_PROJECT_NUMBER;
 
 	public static AppEnvironment sInstance;
 
@@ -51,11 +53,13 @@ public class AppEnvironment {
 			LogUtil.d("Setting Development Environment");
 			BASE_URL = "http://lit-sea-1934.herokuapp.com";
 			FORCE_PHONE_NUMBER_CHECK = false;
+			GOOGLE_PROJECT_NUMBER = "69406303235";
 			break;
 		case ENV_PRODUCTION:
 			LogUtil.d("Setting Production Environment");
 			BASE_URL = "https://calm-peak-4397.herokuapp.com";
 			FORCE_PHONE_NUMBER_CHECK = true;
+			GOOGLE_PROJECT_NUMBER = "69406303235";
 			break;
 		}
 	}

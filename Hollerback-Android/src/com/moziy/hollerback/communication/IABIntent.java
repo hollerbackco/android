@@ -14,6 +14,11 @@ public class IABIntent {
 	public static final String INTENT_GET_URLS = "GetUrls";
 	public static final String INTENT_GET_CONVERSATION_VIDEOS = "GetConvVideos";
 	public static final String INTENT_POST_READ_VIDEO = "PostReadVideo";
+	
+	public static final String INTENT_GCM_REGISTERED = "gcmregistered";
+	
+	public static final String GCM_MESSAGE = "gcmmsg";
+
 
 	public static final String PARAM_SUCCESS = "200";
 	public static final String PARAM_FAILURE = "500";
@@ -23,6 +28,7 @@ public class IABIntent {
 	public static final String PARAM_DATA_TYPE = "DT";
 	public static final String PARAM_INTENT_DATA = "idata";
 	public static final String PARAM_INTENT_MSG = "imsg";
+	public static final String PARAM_GCM_REGISTRATION_ID = "gcmregid";
 
 	public static final String ASYNC_REQ_VIDEOS = "vvideos";
 

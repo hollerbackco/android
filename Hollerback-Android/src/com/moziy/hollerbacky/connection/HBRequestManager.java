@@ -12,6 +12,7 @@ import com.moziy.hollerback.model.UserModel;
 import com.moziy.hollerback.util.HBRequestUtil;
 import com.moziy.hollerback.util.HollerbackAPI;
 import com.moziy.hollerback.util.HollerbackAppState;
+import com.moziy.hollerback.util.HollerbackConstants;
 import com.moziy.hollerback.util.JSONUtil;
 
 /**
@@ -143,7 +144,7 @@ public class HBRequestManager {
 
 	}
 
-	public static void postLogin(String email, String password) {
+	public static void postLogin(String email, String password, String token) {
 
 		RequestParams params = null;
 
@@ -151,6 +152,10 @@ public class HBRequestManager {
 			params = new RequestParams();
 			params.put(HollerbackAPI.PARAM_EMAIL, email);
 			params.put(HollerbackAPI.PARAM_PASSWORD, password);
+			params.put(HollerbackAPI.PARAM_PLATFORM,
+					HollerbackConstants.PLATFORM);
+
+			params.put(HollerbackAPI.PARAM_DEVICE_TOKEN, token);
 		}
 
 		HollerbackAsyncClient.getInstance().post(HollerbackAPI.API_SESSION,

@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 
+import com.google.android.gcm.GCMRegistrar;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
@@ -15,6 +16,7 @@ import com.moziy.hollerback.fragment.ConversationFragment;
 import com.moziy.hollerback.fragment.ConversationListFragment;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.SortedArray;
+import com.moziy.hollerback.util.AppEnvironment;
 import com.moziy.hollerback.util.HollerbackAppState;
 
 /**
@@ -39,6 +41,7 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 		super.onCreate(arg0);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.hollerback_main);
+
 		mActionBarView = new CustomActionBarHelper(
 				findViewById(R.id.action_bar_parent));
 

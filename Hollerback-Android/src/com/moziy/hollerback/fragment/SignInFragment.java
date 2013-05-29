@@ -1,8 +1,10 @@
 package com.moziy.hollerback.fragment;
 
+import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.HollerbackBaseActivity;
 import com.moziy.hollerback.activity.SplashScreenActivity;
+import com.moziy.hollerback.activity.WelcomeFragmentActivity;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
@@ -73,11 +75,19 @@ public class SignInFragment extends BaseFragment implements OnClickListener {
 	}
 
 	private void processLogin() {
+		if (HollerbackApplication.getInstance().regId == null) {
+			Toast.makeText(getActivity(), "Try again in a few seconds",
+					Toast.LENGTH_LONG).show();
+			return;
+		}
+
 		LogUtil.i("Logging in with: " + mTextFieldEmail.getText().toString()
-				+ " " + mTextFieldPassword.getText().toString());
+				+ " " + mTextFieldPassword.getText().toString() + " token: "
+				+ HollerbackApplication.getInstance().regId);
 
 		HBRequestManager.postLogin(mTextFieldEmail.getText().toString(),
-				mTextFieldPassword.getText().toString());
+				mTextFieldPassword.getText().toString(),
+				HollerbackApplication.getInstance().regId);
 
 	}
 
