@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -373,28 +374,34 @@ public class ImageCache {
 	protected Bitmap getBitmapFromReusableSet(BitmapFactory.Options options) {
 		Bitmap bitmap = null;
 
-		if (mReusableBitmaps != null && !mReusableBitmaps.isEmpty()) {
-			final Iterator<SoftReference<Bitmap>> iterator = mReusableBitmaps
-					.iterator();
-			Bitmap item;
+		try {
+			if (mReusableBitmaps != null && !mReusableBitmaps.isEmpty()) {
+				final Iterator<SoftReference<Bitmap>> iterator = mReusableBitmaps
+						.iterator();
+				Bitmap item;
 
-			while (iterator.hasNext()) {
-				item = iterator.next().get();
+				while (iterator.hasNext()) {
+					item = iterator.next().get();
 
-				if (null != item && item.isMutable()) {
-					// Check to see it the item can be used for inBitmap
-					if (canUseForInBitmap(item, options)) {
-						bitmap = item;
+					if (null != item && item.isMutable()) {
+						// Check to see it the item can be used for inBitmap
+						if (canUseForInBitmap(item, options)) {
+							bitmap = item;
 
-						// Remove from reusable set so it can't be used again
+							// Remove from reusable set so it can't be used
+							// again
+							iterator.remove();
+							break;
+						}
+					} else {
+						// Remove from the set if the reference has been
+						// cleared.
 						iterator.remove();
-						break;
 					}
-				} else {
-					// Remove from the set if the reference has been cleared.
-					iterator.remove();
 				}
 			}
+		} catch (ConcurrentModificationException e) {
+			e.printStackTrace();
 		}
 
 		return bitmap;
