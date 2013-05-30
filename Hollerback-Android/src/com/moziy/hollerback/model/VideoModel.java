@@ -78,4 +78,13 @@ public class VideoModel extends BaseModel {
 	public static String getURLPath() {
 		return null;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		VideoModel video = (VideoModel) obj;
+		if (videoId == video.videoId) {
+			return true;
+		}
+		return false;
+	}
 }

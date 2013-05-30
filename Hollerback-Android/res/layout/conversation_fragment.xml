@@ -25,10 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="5dp"
-        android:background="#0da0e7"
-        android:gravity="center"
-        android:padding="15dp"
-        android:text="Hollerback" />
+        android:background="@drawable/conv_hollerback_replay"
+        android:gravity="center" />
 
     <RelativeLayout
         android:id="@+id/rr_video_playback_container"

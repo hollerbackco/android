@@ -334,13 +334,20 @@ public class ConversationFragment extends BaseFragment {
 				String hash = intent
 						.getStringExtra(IABIntent.PARAM_INTENT_DATA);
 
-				mVideos = (ArrayList<VideoModel>) QU.getDM().getObjectForToken(
-						intent.getStringExtra(IABIntent.PARAM_INTENT_DATA));
+				ArrayList<VideoModel> tempVideos = (ArrayList<VideoModel>) QU
+						.getDM()
+						.getObjectForToken(
+								intent.getStringExtra(IABIntent.PARAM_INTENT_DATA));
 
 				// helper.getS3URLParams(generateUploadParams(hash,
 				// intent.getStringExtra(IABIntent.PARAM_ID)));
 
-				mVideos = (ArrayList<VideoModel>) mVideos.clone();
+				if (mVideos != null && mVideos.equals(tempVideos)) {
+					LogUtil.i("Setting: same data set");
+					return;
+				}
+
+				mVideos = (ArrayList<VideoModel>) tempVideos.clone();
 
 				if (mVideos != null) {
 
@@ -364,8 +371,7 @@ public class ConversationFragment extends BaseFragment {
 						// mVideoGalleryAdapter
 						// .getCount() - 1;
 						// mVideoGalleryAdapter.notifyDataSetChanged();
-						mVideoGallery.snapCenter(mVideos.size() - 1);
-
+						setGalleryToEnd();
 					}
 					// setGalleryToEnd();
 
@@ -379,25 +385,8 @@ public class ConversationFragment extends BaseFragment {
 		mVideoGallery.post(new Runnable() {
 			@Override
 			public void run() {
-				mVideoGallery.requestFocusFromTouch();
-				// mVideoGallery.setSelection(TempMemoryStore.conversations
-				// .get(index).getVideos().size() - 1);
-
-				// mVideoGallery.setSelection(mVideoGallery.getRight());
-
-				if (getActivity() != null && !getActivity().isFinishing()) {
-					int imageWidth = (int) ViewUtil.convertDpToPixel(80,
-							getActivity());
-
-					LogUtil.i("Image Width: " + imageWidth);
-
-					// mVideoGallery.scrollToEnd(imageWidth
-					// * mVideoGalleryAdapter.getCount());
-					LogUtil.i("Gallery x: " + imageWidth
-							* mVideoGalleryAdapter.getCount());
-					mVideoGallery.requestFocus();
-
-				}
+				
+				mVideoGallery.snapCenter(mVideos.size() - 1);
 
 			}
 		});
@@ -421,7 +410,7 @@ public class ConversationFragment extends BaseFragment {
 
 		@Override
 		public void onProgress(long amount, long total) {
-			String percent = Long.toString((amount * 100 / total)) + "%";
+			String percent = Long.toString((amount * 100 / total));
 			if (!percent.equals(mProgressText.getText().toString())) {
 				mProgressText.setText(percent);
 			}

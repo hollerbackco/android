@@ -135,20 +135,22 @@ public class CenterLockHorizontalScrollview extends HorizontalScrollView {
 				.getDefaultDisplay().getWidth();
 
 		if (view != null) {
-//			LogUtil.i("View Left: " + view.getLeft() + " view right: "
-//					+ view.getRight());
+			LogUtil.i("View Left: " + view.getLeft() + " view right: "
+					+ view.getRight());
 //			int scrollX = (view.getLeft() - (screenWidth / 2))
 //					+ (view.getWidth() / 2);
 //			// this.smoothScrollTo(scrollX, 0);
 //			this.setScrollX(scrollX);
 //			prevIndex = index;
-			LogUtil.i("View is null!!!");
+			LogUtil.i("View is not null!!!");
 			int scrollX = ((imageWidth * index) - (screenWidth / 2))
 					+ ((imageWidth * (index + 1)) / 2);
 			// this.smoothScrollTo(scrollX, 0);
+			LogUtil.i("View set scrollx " + scrollX);
 			this.setScrollX(scrollX);
 			prevIndex = index;
 		} else {
+
 			LogUtil.i("View is null!!!");
 			int scrollX = ((imageWidth * index) - (screenWidth / 2))
 					+ ((imageWidth * (index + 1)) / 2);
