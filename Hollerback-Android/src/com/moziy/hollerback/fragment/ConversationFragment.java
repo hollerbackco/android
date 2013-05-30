@@ -22,6 +22,7 @@ import android.widget.VideoView;
 
 import com.krish.horizontalscrollview.CenterLockHorizontalScrollview;
 import com.krish.horizontalscrollview.CustomListAdapter;
+import com.krish.horizontalscrollview.CustomListBaseAdapter;
 import com.moziy.hollerback.HollerbackInterfaces.OnCustomItemClickListener;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.HollerbackBaseActivity;
@@ -51,7 +52,7 @@ public class ConversationFragment extends BaseFragment {
 	 * This piece of shit takes up 100% height unless you restrict it
 	 */
 	private CenterLockHorizontalScrollview mVideoGallery;
-	private CustomListAdapter mVideoGalleryAdapter;
+	private CustomListBaseAdapter mVideoGalleryAdapter;
 
 	// Image Loading
 	private ImageFetcher mImageFetcher;
@@ -234,6 +235,11 @@ public class ConversationFragment extends BaseFragment {
 		mVideoView = (VideoView) view
 				.findViewById(R.id.vv_conversation_playback);
 
+		mVideoGalleryAdapter = new CustomListBaseAdapter(getActivity(),
+				mImageFetcher);
+		mVideoGallery.setAdapter(getActivity(), mVideoGalleryAdapter);
+		mVideoGalleryAdapter.setOnCustomItemClickListener(mListener);
+
 		// mVideoGallery.setOnItemClickListener(mListener);
 		// mVideoGallery.setOnScrollListener(mOnScrollListener);
 		mProgressText = (TextView) view.findViewById(R.id.tv_progress);
@@ -340,23 +346,19 @@ public class ConversationFragment extends BaseFragment {
 
 					LogUtil.i("Setting Received videos: " + mVideos.size());
 
-					if (mVideoGalleryAdapter == null) {
-						mVideoGalleryAdapter = new CustomListAdapter(
-								getActivity(), mImageFetcher, mVideos);
-						mVideoGallery.setAdapter(getActivity(),
-								mVideoGalleryAdapter);
-						mVideoGalleryAdapter
-								.setOnCustomItemClickListener(mListener);
-					} else {
-						mVideoGalleryAdapter.setListItems(mVideos);
-						mVideoGalleryAdapter.notifyDataSetChanged();
-					}
+					mVideoGalleryAdapter.setListItems(mVideos);
+					mVideoGalleryAdapter.notifyDataSetChanged();
+
+					mVideoGallery.setAdapter(getActivity(),
+							mVideoGalleryAdapter);
 
 					LogUtil.d("Setting new Videos size: " + mVideos.size());
 
 					// TODO: Fix issues here
 					// playNewestVideo();
 					LogUtil.i("Setting center index: " + mVideos.size());
+					LogUtil.i("Setting count index: "
+							+ mVideoGalleryAdapter.getCount());
 					if (mVideoGalleryAdapter.getCount() > 0) {
 						// mVideoGalleryAdapter.selectedIndex =
 						// mVideoGalleryAdapter

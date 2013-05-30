@@ -1,7 +1,9 @@
 package com.krish.horizontalscrollview;
 
+import com.moziy.hollerback.HollerbackApplication;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.util.ViewUtil;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,8 +16,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
-public class CenterLockHorizontalScrollview extends HorizontalScrollView
-		implements OnItemClickListener {
+public class CenterLockHorizontalScrollview extends HorizontalScrollView {
 	Context context;
 	int prevIndex = 0;
 
@@ -26,8 +27,7 @@ public class CenterLockHorizontalScrollview extends HorizontalScrollView
 
 	}
 
-	public void setAdapter(Context context, CustomListAdapter mAdapter) {
-
+	public void setAdapter(Context context, CustomListBaseAdapter mAdapter) {
 		try {
 			fillViewWithAdapter(mAdapter);
 		} catch (ZeroChildException e) {
@@ -36,7 +36,7 @@ public class CenterLockHorizontalScrollview extends HorizontalScrollView
 		}
 	}
 
-	private void fillViewWithAdapter(CustomListAdapter mAdapter)
+	private void fillViewWithAdapter(CustomListBaseAdapter mAdapter)
 			throws ZeroChildException {
 		if (getChildCount() == 0) {
 			throw new ZeroChildException(
@@ -88,6 +88,9 @@ public class CenterLockHorizontalScrollview extends HorizontalScrollView
 	}
 
 	public void snapCenter(int index) {
+		int imageWidth = (int) ViewUtil.convertDpToPixel(80,
+				HollerbackApplication.getInstance().getApplicationContext());
+
 		ViewGroup parent = (ViewGroup) getChildAt(0);
 
 		View preView;
@@ -132,19 +135,27 @@ public class CenterLockHorizontalScrollview extends HorizontalScrollView
 				.getDefaultDisplay().getWidth();
 
 		if (view != null) {
-			int scrollX = (view.getLeft() - (screenWidth / 2))
-					+ (view.getWidth() / 2);
+//			LogUtil.i("View Left: " + view.getLeft() + " view right: "
+//					+ view.getRight());
+//			int scrollX = (view.getLeft() - (screenWidth / 2))
+//					+ (view.getWidth() / 2);
+//			// this.smoothScrollTo(scrollX, 0);
+//			this.setScrollX(scrollX);
+//			prevIndex = index;
+			LogUtil.i("View is null!!!");
+			int scrollX = ((imageWidth * index) - (screenWidth / 2))
+					+ ((imageWidth * (index + 1)) / 2);
+			// this.smoothScrollTo(scrollX, 0);
+			this.setScrollX(scrollX);
+			prevIndex = index;
+		} else {
+			LogUtil.i("View is null!!!");
+			int scrollX = ((imageWidth * index) - (screenWidth / 2))
+					+ ((imageWidth * (index + 1)) / 2);
 			// this.smoothScrollTo(scrollX, 0);
 			this.setScrollX(scrollX);
 			prevIndex = index;
 		}
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		LogUtil.i("Clicked: " + position);
-
 	}
 
 }

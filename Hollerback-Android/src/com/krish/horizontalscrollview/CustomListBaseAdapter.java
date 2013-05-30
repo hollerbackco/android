@@ -33,6 +33,7 @@ public class CustomListBaseAdapter extends BaseAdapter {
 	public CustomListBaseAdapter(Context context, ImageFetcher imageFetcher) {
 		mImageFetcher = imageFetcher;
 		this.context = context;
+		mVideoModels = new ArrayList<VideoModel>();
 	}
 
 	public void setOnCustomItemClickListener(OnCustomItemClickListener listener) {
@@ -46,7 +47,6 @@ public class CustomListBaseAdapter extends BaseAdapter {
 
 	public void setListItems(ArrayList<VideoModel> videos) {
 		mVideoModels = videos;
-		this.notifyDataSetChanged();
 	}
 
 	@Override
