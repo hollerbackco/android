@@ -30,6 +30,7 @@ import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.Country;
+import com.moziy.hollerback.util.FontUtil;
 import com.moziy.hollerback.util.ISOUtil;
 import com.moziy.hollerback.util.NumberUtil;
 import com.moziy.hollerback.validator.TextValidator;
@@ -92,6 +93,29 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 		mRLCountrySelector.setOnClickListener(this);
 		mPhoneNumberCode = (TextView) view
 				.findViewById(R.id.tv_phone_number_code);
+
+		TextView title = (TextView) view.findViewById(R.id.tv_action_name);
+		title.setTypeface(FontUtil.MuseoSans_500);
+		title.setText("Sign Up");
+
+		TextView headerAccount = (TextView) view
+				.findViewById(R.id.tv_header_account);
+		TextView headerCPhone = (TextView) view
+				.findViewById(R.id.tv_header_counter_phone);
+		TextView signupAgreement = (TextView) view
+				.findViewById(R.id.tv_signup_agreement);
+
+		mNameField.setTypeface(FontUtil.MuseoSans_500);
+		mEmailField.setTypeface(FontUtil.MuseoSans_500);
+		mPasswordField.setTypeface(FontUtil.MuseoSans_500);
+		mPhoneNumberField.setTypeface(FontUtil.MuseoSans_500);
+		mCountryText.setTypeface(FontUtil.MuseoSans_500);
+		mPhoneNumberCode.setTypeface(FontUtil.MuseoSans_500);
+
+		headerAccount.setTypeface(FontUtil.MuseoSans_500);
+		headerCPhone.setTypeface(FontUtil.MuseoSans_500);
+		signupAgreement.setTypeface(FontUtil.MuseoSans_500);
+
 	}
 
 	@Override

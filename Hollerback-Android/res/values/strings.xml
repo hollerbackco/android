@@ -17,10 +17,10 @@
     <string name="header_account">Account</string>
     <string name="no_network_connection_toast">Not connected to Internet</string>
     <string name="new_conversation">New Conversation</string>
-
     <string name="error_name_null">Name is not valid</string>
     <string name="error_email">Email not valid</string>
     <string name="error_phone">Phone number is not valid</string>
     <string name="error_password">Password not valid</string>
-    
+    <string name="signup_agreement">By clicking Submit you are indicating that you have read and agree to the Privacy Policy and Terms of Service</string>
+
 </resources>

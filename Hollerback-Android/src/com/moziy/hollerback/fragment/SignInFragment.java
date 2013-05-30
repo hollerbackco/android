@@ -9,6 +9,7 @@ import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
+import com.moziy.hollerback.util.FontUtil;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 import android.content.BroadcastReceiver;
@@ -21,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SignInFragment extends BaseFragment implements OnClickListener {
@@ -62,6 +64,13 @@ public class SignInFragment extends BaseFragment implements OnClickListener {
 		mLoginBtn = (Button) view.findViewById(R.id.submit_login);
 
 		mLoginBtn.setOnClickListener(this);
+		
+		TextView title = (TextView) view.findViewById(R.id.tv_action_name);
+		title.setTypeface(FontUtil.MuseoSans_500);
+		mTextFieldEmail.setTypeface(FontUtil.MuseoSans_500);
+		mTextFieldPassword.setTypeface(FontUtil.MuseoSans_500);
+		
+		title.setText("Log In");
 	}
 
 	@Override
@@ -118,8 +127,7 @@ public class SignInFragment extends BaseFragment implements OnClickListener {
 
 	@Override
 	protected void onActionBarIntialized(CustomActionBarHelper viewHelper) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 }
