@@ -20,6 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.krish.horizontalscrollview.CenterLockHorizontalScrollview;
+import com.krish.horizontalscrollview.CustomListAdapter;
+import com.moziy.hollerback.HollerbackInterfaces.OnCustomItemClickListener;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.activity.HollerbackBaseActivity;
 import com.moziy.hollerback.activity.HollerbackCameraActivity;
@@ -47,8 +50,8 @@ public class ConversationFragment extends BaseFragment {
 	/**
 	 * This piece of shit takes up 100% height unless you restrict it
 	 */
-	private HorizontalListView mVideoGallery;
-	private VideoGalleryAdapter mVideoGalleryAdapter;
+	private CenterLockHorizontalScrollview mVideoGallery;
+	private CustomListAdapter mVideoGalleryAdapter;
 
 	// Image Loading
 	private ImageFetcher mImageFetcher;
@@ -106,7 +109,6 @@ public class ConversationFragment extends BaseFragment {
 		initializeView(fragmentView);
 
 		initializeArgs();
-		mVideoGalleryAdapter.notifyDataSetChanged();
 
 		return fragmentView;
 	}
@@ -114,8 +116,7 @@ public class ConversationFragment extends BaseFragment {
 	public void playNewestVideo() {
 		if (playStartInitialized) {
 			if (mVideoGalleryAdapter.getCount() > 0) {
-				mVideoGalleryAdapter.selectedIndex = mVideoGalleryAdapter
-						.getCount() - 1;
+
 				mVideoGalleryAdapter.notifyDataSetChanged();
 
 			}
@@ -123,16 +124,16 @@ public class ConversationFragment extends BaseFragment {
 			return;
 		}
 
-		if (mVideoGalleryAdapter.getVideos().size() < 1) {
+		if (mVideoGalleryAdapter.getCount() < 1) {
 			return;
 		}
 
 		playStartInitialized = true;
 		boolean set = false;
 
-		for (int i = mVideoGalleryAdapter.getVideos().size() - 1; i >= 0; i--) {
-			if (mVideoGalleryAdapter.getVideos().get(i).isRead() == false) {
-				mVideoGalleryAdapter.selectedIndex = i;
+		for (int i = mVideoGalleryAdapter.getCount() - 1; i >= 0; i--) {
+			if (mVideoGalleryAdapter.getItem(i).isRead() == false) {
+
 				// model.setRead(true);
 				set = true;
 				mVideoGalleryAdapter.notifyDataSetChanged();
@@ -142,8 +143,7 @@ public class ConversationFragment extends BaseFragment {
 
 		if (!set) {
 			if (mVideoGalleryAdapter.getCount() > 0) {
-				mVideoGalleryAdapter.selectedIndex = mVideoGalleryAdapter
-						.getCount() - 1;
+
 				mVideoGalleryAdapter.notifyDataSetChanged();
 
 			}
@@ -228,15 +228,13 @@ public class ConversationFragment extends BaseFragment {
 
 		mPlayBtn = (ImageButton) view.findViewById(R.id.ib_play_btn);
 
-		mVideoGallery = (HorizontalListView) view
+		mVideoGallery = (CenterLockHorizontalScrollview) view
 				.findViewById(R.id.hlz_video_gallery);
-		mVideoGalleryAdapter = new VideoGalleryAdapter(mImageFetcher,
-				getActivity());
-		mVideoGallery.setAdapter(mVideoGalleryAdapter);
+
 		mVideoView = (VideoView) view
 				.findViewById(R.id.vv_conversation_playback);
 
-		mVideoGallery.setOnItemClickListener(mListener);
+		// mVideoGallery.setOnItemClickListener(mListener);
 		// mVideoGallery.setOnScrollListener(mOnScrollListener);
 		mProgressText = (TextView) view.findViewById(R.id.tv_progress);
 
@@ -276,23 +274,22 @@ public class ConversationFragment extends BaseFragment {
 		});
 	}
 
-	OnItemClickListener mListener = new OnItemClickListener() {
+	OnCustomItemClickListener mListener = new OnCustomItemClickListener() {
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
+		public void onItemClicked(int position) {
 			LogUtil.i("Clicked ON: " + position);
-			VideoModel model = mVideoGalleryAdapter.getVideos().get(position);
+			VideoModel model = mVideoGalleryAdapter.getItem(position);
 			mS3RequestHelper.downloadS3(
 					AppEnvironment.getInstance().PICTURE_BUCKET,
 					model.getFileName());
 			mProgressText.setVisibility(View.VISIBLE);
-			mVideoGalleryAdapter.selectedIndex = position;
 			if (!model.isRead()) {
 				model.setRead(true);
 			}
 			mVideoGalleryAdapter.notifyDataSetChanged();
 
+			mVideoGallery.setCenter(position);
 			HBRequestManager
 					.postVideoRead(Integer.toString(model.getVideoId()));
 
@@ -337,12 +334,38 @@ public class ConversationFragment extends BaseFragment {
 				// helper.getS3URLParams(generateUploadParams(hash,
 				// intent.getStringExtra(IABIntent.PARAM_ID)));
 
+				mVideos = (ArrayList<VideoModel>) mVideos.clone();
+
 				if (mVideos != null) {
-					mVideoGallery.requestFocusFromTouch();
-					mVideoGalleryAdapter.setVideos(mVideos);
-					mVideoGalleryAdapter.notifyDataSetChanged();
+
+					LogUtil.i("Setting Received videos: " + mVideos.size());
+
+					if (mVideoGalleryAdapter == null) {
+						mVideoGalleryAdapter = new CustomListAdapter(
+								getActivity(), mImageFetcher, mVideos);
+						mVideoGallery.setAdapter(getActivity(),
+								mVideoGalleryAdapter);
+						mVideoGalleryAdapter
+								.setOnCustomItemClickListener(mListener);
+					} else {
+						mVideoGalleryAdapter.setListItems(mVideos);
+						mVideoGalleryAdapter.notifyDataSetChanged();
+					}
+
 					LogUtil.d("Setting new Videos size: " + mVideos.size());
-					playNewestVideo();
+
+					// TODO: Fix issues here
+					// playNewestVideo();
+					LogUtil.i("Setting center index: " + mVideos.size());
+					if (mVideoGalleryAdapter.getCount() > 0) {
+						// mVideoGalleryAdapter.selectedIndex =
+						// mVideoGalleryAdapter
+						// .getCount() - 1;
+						// mVideoGalleryAdapter.notifyDataSetChanged();
+						mVideoGallery.snapCenter(mVideos.size() - 1);
+
+					}
+					// setGalleryToEnd();
 
 				}
 
@@ -358,7 +381,7 @@ public class ConversationFragment extends BaseFragment {
 				// mVideoGallery.setSelection(TempMemoryStore.conversations
 				// .get(index).getVideos().size() - 1);
 
-				mVideoGallery.setSelection(mVideoGallery.getRight());
+				// mVideoGallery.setSelection(mVideoGallery.getRight());
 
 				if (getActivity() != null && !getActivity().isFinishing()) {
 					int imageWidth = (int) ViewUtil.convertDpToPixel(80,
@@ -366,8 +389,8 @@ public class ConversationFragment extends BaseFragment {
 
 					LogUtil.i("Image Width: " + imageWidth);
 
-					mVideoGallery.scrollToEnd(imageWidth
-							* mVideoGalleryAdapter.getCount());
+					// mVideoGallery.scrollToEnd(imageWidth
+					// * mVideoGalleryAdapter.getCount());
 					LogUtil.i("Gallery x: " + imageWidth
 							* mVideoGalleryAdapter.getCount());
 					mVideoGallery.requestFocus();
