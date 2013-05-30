@@ -47,9 +47,14 @@
 
         <TextView
             android:id="@+id/tv_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/circle"
+            android:gravity="center"
+            android:padding="15dp"
             android:textColor="#545454"
             android:textSize="36sp"
             android:textStyle="bold" />
