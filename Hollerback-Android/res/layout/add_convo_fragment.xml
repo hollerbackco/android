@@ -6,16 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.kpbird.chipsedittextlibrary.ChipsMultiAutoCompleteTextview
+    <EditText
         android:id="@+id/et_add_contacts"
         android:layout_width="match_parent"
         android:layout_height="@dimen/et_add_contacts_height"
-        android:layout_alignParentTop="true"
-        android:ems="10"
-        android:text="" >
-
-        <requestFocus />
-    </com.kpbird.chipsedittextlibrary.ChipsMultiAutoCompleteTextview>
+        android:layout_alignParentTop="true" >
+    </EditText>
 
     <RelativeLayout
         android:id="@+id/rr_bottom_bar"

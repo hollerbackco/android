@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
@@ -30,6 +31,7 @@ import com.moziy.hollerback.cache.memory.TempMemoryStore;
 import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
+import com.moziy.hollerback.helper.ContactSpannableHelper;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
@@ -40,8 +42,8 @@ public class AddConversationFragment extends BaseFragment {
 
 	StickyListHeadersListView stickyList;
 	ContactsListAdapter mAdapter;
-	ChipsMultiAutoCompleteTextview mEditText;
-	ChipsAdapter mContactChipsAdapter;
+
+	EditText mEditText;
 
 	ArrayList<UserModel> mInvites;
 
@@ -52,6 +54,8 @@ public class AddConversationFragment extends BaseFragment {
 	private int mInvitesCount;
 
 	HashMap<String, String> nameKeys;
+
+	ContactSpannableHelper mContactSpannableHelper;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,11 +74,11 @@ public class AddConversationFragment extends BaseFragment {
 
 		// CollectionOpUtils.setChipItems(TempMemoryStore.users.array);
 
-		mContactChipsAdapter = new ChipsAdapter(getActivity(),
-				CollectionOpUtils.setChipItems(TempMemoryStore.users.array));
 		// mEditText.setAdapter(mContactChipsAdapter);
 
 		mInvites = new ArrayList<UserModel>();
+
+		mContactSpannableHelper = new ContactSpannableHelper();
 
 		return fragmentView;
 	}
@@ -90,41 +94,27 @@ public class AddConversationFragment extends BaseFragment {
 
 			mInvites.add(user);
 
-			String partial = "";
+			int start = mEditText.getText().toString().lastIndexOf("^");
 
-			if (!mEditText.getText().toString().trim().isEmpty()) {
-
-				partial = mEditText
-						.getText()
-						.toString()
-						.substring(
-								0,
-								mEditText.getText().toString().lastIndexOf(",") + 1);
+			LogUtil.i("last index of " + start);
+			if (start > 0 && mEditText.getText().length() > start) {
+				mEditText.getEditableText().delete(start + 1,
+						mEditText.getText().length());
 			}
+	
+			LogUtil.i("Cursor: " + mEditText.getSelectionEnd() + " length: " + mEditText.getText().length());
+//			
+//			if(mEditText.getSelectionEnd()!=mEditText.getText().length()){
+//				
+//				mEditText.getEditableText().insert(where, text);
+//			} else {
+//				
+//			}
 
-			String c = (partial + user.name.trim() + ",");
+			mContactSpannableHelper.addContactName(mEditText, getActivity(),
+					user.name, null);
 
-			mInvitesCount++;
-
-			String[] chips = new String[mInvitesCount];
-			String[] contacts = c.toString().trim().split(",");
-			for (int i = 0; i < mInvitesCount - 1; i++) {
-
-				chips[i] = contacts[i];
-			}
-			chips[mInvitesCount - 1] = contacts[contacts.length - 1];
-
-			c = "";
-			for (String s : chips) {
-				c += (s + ",");
-			}
-
-			LogUtil.i("Running Chips for: " + c);
-
-			mEditText.setText(c);
-			mEditText.setSelection(c.length());
-			mEditText.setChips();
-			searchForContact("");
+			// searchForContact("");
 
 		}
 	};
@@ -141,8 +131,7 @@ public class AddConversationFragment extends BaseFragment {
 	protected void initializeView(View view) {
 		mAdapter = new ContactsListAdapter(getActivity());
 		stickyList.setAdapter(mAdapter);
-		mEditText = (ChipsMultiAutoCompleteTextview) view
-				.findViewById(R.id.et_add_contacts);
+		mEditText = (EditText) view.findViewById(R.id.et_add_contacts);
 
 		mEditText.addTextChangedListener(new TextWatcher() {
 
@@ -155,8 +144,9 @@ public class AddConversationFragment extends BaseFragment {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				String[] last = s.toString().split(",");
-				searchForContact(last[last.length - 1]);
+				// String[] last = s.toString().split(",");
+				// searchForContact(last[last.length - 1]);
+				LogUtil.i(s.toString());
 			}
 
 			@Override
