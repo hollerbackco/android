@@ -2,6 +2,7 @@ package com.moziy.hollerback.helper;
 
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.util.FontUtil;
+import com.moziy.hollerback.util.HollerbackConstants;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -43,9 +44,13 @@ public class ContactSpannableHelper {
 	public SpannableStringBuilder addNameDrawable(Drawable dd, String phone) {
 		dd.setBounds(0, 0, dd.getIntrinsicWidth(), dd.getIntrinsicHeight());
 		SpannableStringBuilder builder = new SpannableStringBuilder();
-		builder.append("<" + phone + "^");
-		builder.setSpan(new ImageSpan(dd), builder.length()
-				- ("<" + phone + "^").length(), builder.length(),
+		builder.append(HollerbackConstants.PHONE_PRE + phone
+				+ HollerbackConstants.PHONE_SUF);
+		builder.setSpan(
+				new ImageSpan(dd),
+				builder.length()
+						- (HollerbackConstants.PHONE_PRE + phone + HollerbackConstants.PHONE_SUF)
+								.length(), builder.length(),
 				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 		return builder;

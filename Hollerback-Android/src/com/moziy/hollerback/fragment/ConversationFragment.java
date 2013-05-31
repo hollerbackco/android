@@ -165,7 +165,9 @@ public class ConversationFragment extends BaseFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mImageFetcher.closeCache();
+		if (mImageFetcher != null) {
+			mImageFetcher.closeCache();
+		}
 		IABroadcastManager.unregisterLocalReceiver(receiver);
 		mS3RequestHelper.clearOnProgressListener();
 	}
@@ -385,7 +387,7 @@ public class ConversationFragment extends BaseFragment {
 		mVideoGallery.post(new Runnable() {
 			@Override
 			public void run() {
-				
+
 				mVideoGallery.snapCenter(mVideos.size() - 1);
 
 			}

@@ -230,14 +230,13 @@ public class HBRequestManager {
 
 	}
 
-	public static void postConversations(ArrayList<UserModel> contacts) {
+	public static void postConversations(ArrayList<String> contacts) {
 		if (HollerbackAppState.isValidSession()) {
 			RequestParams params = new RequestParams();
 			params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
 					HollerbackAppState.getValidToken());
 
-			params.put(HollerbackAPI.PARAM_INVITES,
-					HBRequestUtil.generateStringArray(contacts));
+			params.put(HollerbackAPI.PARAM_INVITES, contacts);
 
 			HollerbackAsyncClient.getInstance().post(
 					HollerbackAPI.API_CONVERSATION, params,

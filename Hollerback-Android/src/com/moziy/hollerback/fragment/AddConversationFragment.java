@@ -2,6 +2,8 @@ package com.moziy.hollerback.fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,6 +38,7 @@ import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.SortedArray;
 import com.moziy.hollerback.model.UserModel;
 import com.moziy.hollerback.util.CollectionOpUtils;
+import com.moziy.hollerback.util.HollerbackConstants;
 import com.moziy.hollerbacky.connection.HBRequestManager;
 
 public class AddConversationFragment extends BaseFragment {
@@ -44,8 +47,6 @@ public class AddConversationFragment extends BaseFragment {
 	ContactsListAdapter mAdapter;
 
 	EditText mEditText;
-
-	ArrayList<UserModel> mInvites;
 
 	ArrayList<ChipsItem> mContactChips;
 
@@ -76,8 +77,6 @@ public class AddConversationFragment extends BaseFragment {
 
 		// mEditText.setAdapter(mContactChipsAdapter);
 
-		mInvites = new ArrayList<UserModel>();
-
 		mContactSpannableHelper = new ContactSpannableHelper();
 
 		return fragmentView;
@@ -96,9 +95,8 @@ public class AddConversationFragment extends BaseFragment {
 				return;
 			}
 
-			mInvites.add(user);
-
-			int start = mEditText.getText().toString().lastIndexOf("^");
+			int start = mEditText.getText().toString()
+					.lastIndexOf(HollerbackConstants.PHONE_SUF);
 
 			LogUtil.i("last index of " + start);
 			if (start > 0 && mEditText.getText().length() > start
@@ -122,7 +120,7 @@ public class AddConversationFragment extends BaseFragment {
 
 			mAdapter.updateInvitedUsers(mEditText.getText().toString());
 
-			// searchForContact("");
+			searchForContact("");
 
 		}
 	};
@@ -153,7 +151,8 @@ public class AddConversationFragment extends BaseFragment {
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 
-				int indexChar = mEditText.getText().toString().lastIndexOf("^");
+				int indexChar = mEditText.getText().toString()
+						.lastIndexOf(HollerbackConstants.PHONE_SUF);
 
 				LogUtil.i("last index of " + start);
 				if (indexChar > 0
@@ -241,18 +240,34 @@ public class AddConversationFragment extends BaseFragment {
 
 	public void createNewConversation() {
 
-		generateInvitedUsers();
-
-		TempMemoryStore.invitedUsers = mInvites;
-		// Intent intent = new Intent(getActivity(),
-		// HollerbackCameraActivity.class);
-		// getActivity().startActivityForResult(intent,
-		// IABIntent.REQUEST_NEW_CONVERSATION);
+		if (generateInvitedUsers().size() > 0) {
+			Intent intent = new Intent(getActivity(),
+					HollerbackCameraActivity.class);
+			getActivity().startActivityForResult(intent,
+					IABIntent.REQUEST_NEW_CONVERSATION);
+		} else {
+			Toast.makeText(getActivity(),
+					"Add some contacts to start a conversation",
+					Toast.LENGTH_SHORT).show();
+		}
 	}
 
-	public void generateInvitedUsers() {
+	public ArrayList<String> generateInvitedUsers() {
 		String text = mEditText.getText().toString();
 		LogUtil.i("invited users: " + text);
-	}
+		ArrayList<String> mPhoneNumbers = new ArrayList<String>();
 
+		Pattern p = Pattern.compile(Pattern.quote("@") + "(.*?)"
+				+ Pattern.quote("^"));
+		Matcher m = p.matcher(text);
+		while (m.find()) {
+			String number = m.group(1);
+			LogUtil.i("phone: " + number);
+			mPhoneNumbers.add(number);
+		}
+
+		TempMemoryStore.invitedUsers = mPhoneNumbers;
+		return mPhoneNumbers;
+
+	}
 }

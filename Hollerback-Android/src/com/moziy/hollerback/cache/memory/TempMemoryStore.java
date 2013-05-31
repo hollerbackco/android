@@ -18,7 +18,7 @@ public class TempMemoryStore {
 
 	public static SortedArray users;
 
-	public static ArrayList<UserModel> invitedUsers;
+	public static ArrayList<String> invitedUsers;
 
 	public static int getIndexForConversationId(int id) {
 		int i = 0;
