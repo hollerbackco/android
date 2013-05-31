@@ -24,12 +24,12 @@ public class ContactsListAdapter extends BaseAdapter implements
 	private LayoutInflater inflater;
 	private int[] sectionId;
 	public ArrayList<String> contactitems;
-	public ArrayList<String> alreadyClickedUsers;
 	public ArrayList<Integer> indexes;
+	public String invitedUsers;
 
 	public ContactsListAdapter(Context context) {
 		contactitems = new ArrayList<String>();
-		alreadyClickedUsers = new ArrayList<String>();
+		invitedUsers = "";
 		inflater = LayoutInflater.from(context);
 		sectionId = new int[2];
 		sectionId[0] = 0;
@@ -85,10 +85,10 @@ public class ContactsListAdapter extends BaseAdapter implements
 				.get(position));
 		holder.text.setText(user.getName());
 
-		if (alreadyClickedUsers.contains(user.phone)) {
-			holder.text.setTextColor(Color.BLACK);
-		} else {
+		if (invitedUsers.contains(user.phone)) {
 			holder.text.setTextColor(Color.GRAY);
+		} else {
+			holder.text.setTextColor(Color.BLACK);
 		}
 
 		holder.mContactStateImage
@@ -154,11 +154,8 @@ public class ContactsListAdapter extends BaseAdapter implements
 		notifyDataSetChanged();
 	}
 
-	public void addUser(UserModel user) {
-		alreadyClickedUsers.add(user.phone);
-	}
-
-	public void removeUser(UserModel user) {
-		alreadyClickedUsers.remove(user.phone);
+	public void updateInvitedUsers(String invites) {
+		invitedUsers = invites;
+		this.notifyDataSetChanged();
 	}
 }

@@ -92,27 +92,35 @@ public class AddConversationFragment extends BaseFragment {
 			UserModel user = TempMemoryStore.users.mUserModelHash
 					.get(mAdapter.contactitems.get(position));
 
+			if (mEditText.getText().toString().contains(user.phone)) {
+				return;
+			}
+
 			mInvites.add(user);
 
 			int start = mEditText.getText().toString().lastIndexOf("^");
 
 			LogUtil.i("last index of " + start);
-			if (start > 0 && mEditText.getText().length() > start) {
+			if (start > 0 && mEditText.getText().length() > start
+					|| start == -1) {
 				mEditText.getEditableText().delete(start + 1,
 						mEditText.getText().length());
 			}
-	
-			LogUtil.i("Cursor: " + mEditText.getSelectionEnd() + " length: " + mEditText.getText().length());
-//			
-//			if(mEditText.getSelectionEnd()!=mEditText.getText().length()){
-//				
-//				mEditText.getEditableText().insert(where, text);
-//			} else {
-//				
-//			}
+
+			LogUtil.i("Cursor: " + mEditText.getSelectionEnd() + " length: "
+					+ mEditText.getText().length());
+			//
+			// if(mEditText.getSelectionEnd()!=mEditText.getText().length()){
+			//
+			// mEditText.getEditableText().insert(where, text);
+			// } else {
+			//
+			// }
 
 			mContactSpannableHelper.addContactName(mEditText, getActivity(),
-					user.name, null);
+					user.name, user.phone);
+
+			mAdapter.updateInvitedUsers(mEditText.getText().toString());
 
 			// searchForContact("");
 
@@ -144,14 +152,29 @@ public class AddConversationFragment extends BaseFragment {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				// String[] last = s.toString().split(",");
-				// searchForContact(last[last.length - 1]);
+
+				int indexChar = mEditText.getText().toString().lastIndexOf("^");
+
+				LogUtil.i("last index of " + start);
+				if (indexChar > 0
+						&& mEditText.getText().toString().trim().length() > indexChar
+						|| indexChar == -1) {
+					searchForContact(mEditText
+							.getText()
+							.toString()
+							.subSequence(indexChar + 1,
+									mEditText.getText().toString().length())
+							.toString());
+				} else {
+					searchForContact("");
+				}
+
 				LogUtil.i(s.toString());
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
-
+				mAdapter.updateInvitedUsers(mEditText.getText().toString());
 			}
 		});
 
@@ -217,11 +240,19 @@ public class AddConversationFragment extends BaseFragment {
 	};
 
 	public void createNewConversation() {
+
+		generateInvitedUsers();
+
 		TempMemoryStore.invitedUsers = mInvites;
-		Intent intent = new Intent(getActivity(),
-				HollerbackCameraActivity.class);
-		getActivity().startActivityForResult(intent,
-				IABIntent.REQUEST_NEW_CONVERSATION);
+		// Intent intent = new Intent(getActivity(),
+		// HollerbackCameraActivity.class);
+		// getActivity().startActivityForResult(intent,
+		// IABIntent.REQUEST_NEW_CONVERSATION);
+	}
+
+	public void generateInvitedUsers() {
+		String text = mEditText.getText().toString();
+		LogUtil.i("invited users: " + text);
 	}
 
 }

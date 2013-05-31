@@ -20,7 +20,7 @@ import android.widget.TextView;
 public class ContactSpannableHelper {
 
 	public void addContactName(EditText editText, Context context, String name,
-			String textToRemove) {
+			String phoneNumber) {
 		View parent = LayoutInflater.from(context).inflate(
 				R.layout.contact_item_chip, null);
 		TextView textView = (TextView) parent.findViewById(R.id.tv_chips_name);
@@ -33,18 +33,20 @@ public class ContactSpannableHelper {
 		BitmapDrawable dd = (BitmapDrawable) getDrawableFromTextView(textView);
 		// editText.setText(addSmily(dd));
 		// editText.append(addNameDrawable(dd));
-		//editText.append(addNameDrawable(dd));
-		
-		editText.getEditableText().insert(editText.getSelectionStart(), addNameDrawable(dd));
+		// editText.append(addNameDrawable(dd));
+
+		editText.getEditableText().insert(editText.getSelectionStart(),
+				addNameDrawable(dd, phoneNumber));
 	}
 
 	// convert image to spannableString
-	public SpannableStringBuilder addNameDrawable(Drawable dd) {
+	public SpannableStringBuilder addNameDrawable(Drawable dd, String phone) {
 		dd.setBounds(0, 0, dd.getIntrinsicWidth(), dd.getIntrinsicHeight());
 		SpannableStringBuilder builder = new SpannableStringBuilder();
-		builder.append("#^");
-		builder.setSpan(new ImageSpan(dd), builder.length() - "#^".length(),
-				builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		builder.append("<" + phone + "^");
+		builder.setSpan(new ImageSpan(dd), builder.length()
+				- ("<" + phone + "^").length(), builder.length(),
+				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 		return builder;
 	}
