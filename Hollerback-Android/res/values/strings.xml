@@ -22,5 +22,6 @@
     <string name="error_phone">Phone number is not valid</string>
     <string name="error_password">Password not valid</string>
     <string name="signup_agreement">By clicking Submit you are indicating that you have read and agree to the Privacy Policy and Terms of Service</string>
+    <string name="empty_conversation_list">Start using Hollerback by sending a video message to your friends!</string>
 
 </resources>

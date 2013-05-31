@@ -25,14 +25,6 @@ public class HBRequestManager {
 
 	static boolean isS3Upload;
 
-	// public static boolean postVideo(JSONObject jsonObject, String filePath,
-	// String fileName) {
-	// if (isS3Upload) {
-	//
-	// }
-	// return true;
-	// }
-
 	public static void postVideo(String conversation_id, String filename,
 			final String customMessage) {
 		RequestParams params = new RequestParams();
@@ -195,6 +187,8 @@ public class HBRequestManager {
 			RequestParams params = new RequestParams();
 			params.put(HollerbackAPI.PARAM_ACCESS_TOKEN,
 					HollerbackAppState.getValidToken());
+
+			LogUtil.i("Sending token: " + HollerbackAppState.getValidToken());
 
 			HollerbackAsyncClient.getInstance().get(
 					HollerbackAPI.API_CONVERSATION, params,

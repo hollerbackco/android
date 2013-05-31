@@ -55,6 +55,13 @@ public class JSONUtil {
 
 			JSONObject user = object.getJSONObject("user");
 
+			String accessToken = user.getString("access_token");
+			if (object.has("access_token")) {
+				accessToken = user.getString("access_token");
+			} else if (user.has("access_token")) {
+				accessToken = user.getString("access_token");
+			}
+
 			PreferenceManagerUtil.setPreferenceValue(
 					HollerbackPreferences.ACCESS_TOKEN,
 					user.getString("access_token"));

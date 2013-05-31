@@ -267,6 +267,9 @@ public class SignUpFragment extends BaseFragment implements OnClickListener {
 			mRegistrationPhone = "+"
 					+ util.getCountryCodeForRegion(mSelectedCountry.code)
 					+ mPhoneNumberField.getText().toString();
+			LogUtil.i("Signing up with: " + mRegistrationName + " "
+					+ mRegistrationEmail + " " + mRegistrationPassword + " "
+					+ mRegistrationPhone);
 		}
 
 		return valid;

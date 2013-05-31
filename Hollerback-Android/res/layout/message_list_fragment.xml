@@ -19,4 +19,6 @@
         android:layout_above="@+id/debug_panel"
         android:cacheColorHint="#00000000" />
 
+    <include layout="@layout/conversation_empty" />
+
 </RelativeLayout>

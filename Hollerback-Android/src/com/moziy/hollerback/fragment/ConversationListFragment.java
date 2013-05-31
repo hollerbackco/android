@@ -99,6 +99,8 @@ public class ConversationListFragment extends BaseFragment {
 		mConversationList = (PullToRefreshListView) view
 				.findViewById(R.id.message_listview);
 
+		mConversationList.setEmptyView(view.findViewById(R.id.empty));
+
 		mConversationList.setShowIndicator(false);
 
 		mConversationList.setOnRefreshListener(new OnRefreshListener() {
