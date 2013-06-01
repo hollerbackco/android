@@ -36,6 +36,7 @@ public class CameraUtil {
 	}
 
 	public static void setFrontFacingParams(MediaRecorder recorder) {
+
 		recorder.setOutputFormat(VIDEO_OUTPUT_FORMAT);
 		recorder.setVideoEncoder(VIDEO_OUTPUT_ENCODER);
 		recorder.setAudioSamplingRate(AUDIO_SAMPLE_RATE);

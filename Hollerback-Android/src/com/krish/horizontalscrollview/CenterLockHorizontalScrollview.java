@@ -8,6 +8,7 @@ import com.moziy.hollerback.util.ViewUtil;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,17 +138,23 @@ public class CenterLockHorizontalScrollview extends HorizontalScrollView {
 		if (view != null) {
 			LogUtil.i("View Left: " + view.getLeft() + " view right: "
 					+ view.getRight());
-//			int scrollX = (view.getLeft() - (screenWidth / 2))
-//					+ (view.getWidth() / 2);
-//			// this.smoothScrollTo(scrollX, 0);
-//			this.setScrollX(scrollX);
-//			prevIndex = index;
+			// int scrollX = (view.getLeft() - (screenWidth / 2))
+			// + (view.getWidth() / 2);
+			// // this.smoothScrollTo(scrollX, 0);
+			// this.setScrollX(scrollX);
+			// prevIndex = index;
 			LogUtil.i("View is not null!!!");
 			int scrollX = ((imageWidth * index) - (screenWidth / 2))
 					+ ((imageWidth * (index + 1)) / 2);
 			// this.smoothScrollTo(scrollX, 0);
 			LogUtil.i("View set scrollx " + scrollX);
-			this.setScrollX(scrollX);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+				this.setScrollX(scrollX);
+			} else {
+				this.scrollTo(scrollX, 0);
+			}
+
 			prevIndex = index;
 		} else {
 

@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 
+import com.crittercism.app.Crittercism;
 import com.google.android.gcm.GCMRegistrar;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
@@ -39,6 +40,12 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
+
+		if (AppEnvironment.getInstance().LOG_CRASHES) {
+			Crittercism.init(getApplicationContext(),
+					AppEnvironment.getInstance().CRITTERCISM_ID);
+		}
+
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.hollerback_main);
 
