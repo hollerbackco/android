@@ -27,9 +27,9 @@ public class HollerbackAsyncClient {
 		if (sInstance == null) {
 			sInstance = new HollerbackAsyncClient();
 			setHeaders();
-			
-			//set timeout at 60 seconds
-			//client.setTimeout(60);
+
+			// set timeout at 60 seconds
+			client.setTimeout(60000);
 		}
 		return sInstance;
 	}
