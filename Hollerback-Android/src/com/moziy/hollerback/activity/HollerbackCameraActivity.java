@@ -18,6 +18,7 @@ import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnInfoListener;
 import android.media.MediaRecorder.OutputFormat;
 import android.media.ThumbnailUtils;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -474,7 +475,9 @@ public class HollerbackCameraActivity extends Activity {
 		LogUtil.i("Record size: " + prof.videoFrameWidth + " "
 				+ prof.videoFrameHeight);
 
-		recorder.setOrientationHint(270);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){			
+			recorder.setOrientationHint(270);
+		}
 
 		// Step 4: Set output file
 		recorder.setOutputFile(getNewFileName());
