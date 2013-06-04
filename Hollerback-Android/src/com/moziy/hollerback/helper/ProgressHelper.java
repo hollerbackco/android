@@ -22,17 +22,18 @@ public class ProgressHelper {
 	public void startIndeterminateSpinner() {
 		mProgressText.setText("");
 		mParent.setVisibility(View.VISIBLE);
+		mProgressSpinner.setVisibility(View.VISIBLE);
 
 	}
 
-	public void startUpdateProgress(int text) {
+	public void startUpdateProgress(String text) {
 		mParent.setVisibility(View.VISIBLE);
 		mProgressSpinner.setVisibility(View.INVISIBLE);
 		mProgressText.setVisibility(View.VISIBLE);
-		mProgressText.setText(String.valueOf(text));
+		mProgressText.setText(text);
 	}
-	
-	public void hideLoader(){
+
+	public void hideLoader() {
 		mParent.setVisibility(View.GONE);
 	}
 

@@ -636,8 +636,8 @@ public class HollerbackCameraActivity extends Activity {
 					uploadedAmount += amount;
 					LogUtil.i("Upload: " + uploadedAmount + "/" + total);
 
-					mProgressHelper
-							.startUpdateProgress((int) (uploadedAmount * 100 / total));
+					mProgressHelper.startUpdateProgress(Integer
+							.toString((int) (uploadedAmount * 100 / total)));
 				}
 			});
 

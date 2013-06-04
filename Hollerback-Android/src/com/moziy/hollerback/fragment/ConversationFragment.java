@@ -34,6 +34,7 @@ import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
+import com.moziy.hollerback.helper.ProgressHelper;
 import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.model.ConversationModel;
 import com.moziy.hollerback.model.VideoModel;
@@ -65,7 +66,6 @@ public class ConversationFragment extends BaseFragment {
 
 	// Video Playback Stuff
 	private VideoView mVideoView;
-	private TextView mProgressText;
 
 	private S3RequestHelper mS3RequestHelper;
 
@@ -88,6 +88,8 @@ public class ConversationFragment extends BaseFragment {
 	private ArrayList<VideoModel> mVideos;
 
 	boolean playStartInitialized;
+
+	ProgressHelper mProgressHelper;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -231,6 +233,9 @@ public class ConversationFragment extends BaseFragment {
 
 		mPlayBtn = (ImageButton) view.findViewById(R.id.ib_play_btn);
 
+		mProgressHelper = new ProgressHelper(
+				view.findViewById(R.id.rl_progress));
+
 		mVideoGallery = (CenterLockHorizontalScrollview) view
 				.findViewById(R.id.hlz_video_gallery);
 
@@ -244,7 +249,6 @@ public class ConversationFragment extends BaseFragment {
 
 		// mVideoGallery.setOnItemClickListener(mListener);
 		// mVideoGallery.setOnScrollListener(mOnScrollListener);
-		mProgressText = (TextView) view.findViewById(R.id.tv_progress);
 
 		mReplyBtn = (Button) view.findViewById(R.id.btn_video_reply);
 
@@ -291,7 +295,7 @@ public class ConversationFragment extends BaseFragment {
 			mS3RequestHelper.downloadS3(
 					AppEnvironment.getInstance().PICTURE_BUCKET,
 					model.getFileName());
-			mProgressText.setVisibility(View.VISIBLE);
+			mProgressHelper.startIndeterminateSpinner();
 			if (!model.isRead()) {
 				model.setRead(true);
 			}
@@ -412,16 +416,23 @@ public class ConversationFragment extends BaseFragment {
 
 		@Override
 		public void onProgress(long amount, long total) {
-			String percent = Long.toString((amount * 100 / total));
-			if (!percent.equals(mProgressText.getText().toString())) {
-				mProgressText.setText(percent);
-			}
+			final String percent = Long.toString((amount * 100 / total));
+			ConversationFragment.this.getActivity().runOnUiThread(
+					new Runnable() {
+						public void run() {
+							mProgressHelper.startUpdateProgress(percent);
+						}
+					});
 		}
 
 		@Override
 		public void onComplete() {
-			mProgressText.setText("");
-			mProgressText.setVisibility(View.GONE);
+			ConversationFragment.this.getActivity().runOnUiThread(
+					new Runnable() {
+						public void run() {
+							mProgressHelper.hideLoader();
+						}
+					});
 
 		}
 	};
