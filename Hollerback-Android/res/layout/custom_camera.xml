@@ -87,4 +87,6 @@
             android:visibility="gone" />
     </RelativeLayout>
 
+    <include layout="@layout/progress_spinner" />
+
 </RelativeLayout>

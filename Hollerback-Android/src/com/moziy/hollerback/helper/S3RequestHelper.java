@@ -12,9 +12,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.http.HttpRequest;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ProgressEvent;
+import com.amazonaws.services.s3.model.ProgressListener;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -67,6 +70,8 @@ public class S3RequestHelper {
 
 		video.setFileName(videoName);
 		video.setFilePath(FileUtil.getLocalFile(videoName));
+
+		contentLength = FileUtil.getFileSize(videoName);
 		video.conversationId = conversationId;
 		thumb.setFileName(imageName);
 		thumb.setFilePath(FileUtil.getLocalFile(imageName));
@@ -123,8 +128,20 @@ public class S3RequestHelper {
 						thumbRequestParam.getFileName(), new java.io.File(
 								thumbRequestParam.getFilePath()));
 
+				videoUploadRequest.setProgressListener(new ProgressListener() {
+
+					@Override
+					public void progressChanged(ProgressEvent arg0) {
+						if (mOnProgressListener != null) {
+							mOnProgressListener.onProgress(
+									arg0.getBytesTransfered(), contentLength);
+						}
+					}
+				});
+
 				s3Client.putObject(thumbUploadRequest);
 				s3Client.putObject(videoUploadRequest);
+
 			} catch (Exception exception) {
 
 				result.setErrorMessage(exception.getMessage());
@@ -177,71 +194,6 @@ public class S3RequestHelper {
 
 			// new S3GeneratePresignedUrlTask()
 			// .execute(new S3UploadParams[] { result.getS3UploadParams() });
-		}
-	}
-
-	private class S3GeneratePresignedUrlTask extends
-			AsyncTask<S3UploadParams, Void, S3TaskResult> {
-
-		protected S3TaskResult doInBackground(S3UploadParams... videos) {
-
-			S3TaskResult result = new S3TaskResult();
-
-			if (videos == null || videos.length != 1) {
-				return null;
-			}
-
-			S3UploadParams uploadParams = videos[0];
-
-			try {
-				// Ensure that the image will be treated as such.
-				ResponseHeaderOverrides override = new ResponseHeaderOverrides();
-				override.setContentType("image/jpeg");
-
-				// Generate the presigned URL.
-
-				// Added an hour's worth of milliseconds to the current time.
-				Date expirationDate = new Date(
-						System.currentTimeMillis() + 3600000);
-				GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(
-						AppEnvironment.getInstance().PICTURE_BUCKET,
-						uploadParams.getFileName());
-				urlRequest.setExpiration(expirationDate);
-				urlRequest.setResponseHeaders(override);
-
-				URL url = s3Client.generatePresignedUrl(urlRequest);
-
-				result.setUri(Uri.parse(url.toURI().toString()));
-
-				// updateTextView.obtainMessage(VIDEO_SENT).sendToTarget();
-
-			} catch (Exception exception) {
-
-				result.setErrorMessage(exception.getMessage());
-			}
-
-			return result;
-		}
-
-		protected void onPostExecute(S3TaskResult result) {
-
-			if (result.getErrorMessage() != null) {
-
-				// displayErrorAlert("There was a failure",
-				// result.getErrorMessage());
-			} else if (result.getUri() != null) {
-
-				// Display in Browser.
-				// startActivity(new Intent(Intent.ACTION_VIEW,
-				// result.getUri()));
-
-				Log.i("Upload", "Uploaded to: " + result.getUri().toString());
-				// Toast.makeText(getApplicationContext(),
-				// "Uploaded successfully", 2000).show();
-
-				// TestPostTask task = new TestPostTask();
-				// task.execute(new String[] { result.getUri().toString() });
-			}
 		}
 	}
 

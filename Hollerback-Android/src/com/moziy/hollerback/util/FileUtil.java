@@ -130,6 +130,11 @@ public class FileUtil {
 		return path;
 	}
 
+	public static long getFileSize(String fileKey) {
+		File file = new File(getLocalFile(fileKey));
+		return file.length();
+	}
+
 	public static String generateRandomHexName() {
 		Random m = new Random();
 		String hexString = Integer.toHexString(m.nextInt(256)).toUpperCase(

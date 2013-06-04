@@ -3,12 +3,14 @@ package com.moziy.hollerback.activity;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
@@ -26,6 +28,7 @@ import android.provider.MediaStore.Video.Thumbnails;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -45,11 +48,14 @@ import com.moziy.hollerback.communication.IABIntent;
 import com.moziy.hollerback.communication.IABroadcastManager;
 import com.moziy.hollerback.debug.LogUtil;
 import com.moziy.hollerback.fragment.ConversationListFragment;
+import com.moziy.hollerback.helper.ProgressHelper;
 import com.moziy.hollerback.helper.S3RequestHelper;
 import com.moziy.hollerback.util.CameraUtil;
 import com.moziy.hollerback.util.FileUtil;
 import com.moziy.hollerback.util.ImageUtil;
+import com.moziy.hollerback.util.ViewUtil;
 import com.moziy.hollerbacky.connection.HBRequestManager;
+import com.moziy.hollerbacky.connection.RequestCallbacks.OnProgressListener;
 import com.moziy.hollerbacky.connection.RequestCallbacks.OnS3UploadListener;
 
 public class HollerbackCameraActivity extends Activity {
@@ -95,6 +101,8 @@ public class HollerbackCameraActivity extends Activity {
 
 	public static HollerbackCameraActivity sInstance;
 
+	ProgressHelper mProgressHelper;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -105,12 +113,23 @@ public class HollerbackCameraActivity extends Activity {
 
 		sInstance = this;
 
-		dialog = new ProgressDialog(HollerbackCameraActivity.this);
-		dialog.setMessage("Uploading");
+		dialog = new Dialog(HollerbackCameraActivity.this);
+		View view = LayoutInflater.from(this).inflate(
+				R.layout.progress_spinner, null);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		mProgressHelper = new ProgressHelper(view);
+		dialog.setContentView(view);
+		dialog.getWindow().setBackgroundDrawable(
+				new ColorDrawable(android.graphics.Color.TRANSPARENT));
+		int dimen = (int) ViewUtil.convertDpToPixel(80, this);
+		dialog.getWindow().setLayout(dimen, dimen);
+
 		dialog.setCancelable(false);
 
 		handler = new Handler();
 		mS3RequestHelper = new S3RequestHelper();
+
+		mS3RequestHelper.registerOnProgressListener(mOnProgressListener);
 
 		mTopView = findViewById(R.id.top_bar);
 		mBottomView = findViewById(R.id.bottom_bar);
@@ -177,6 +196,7 @@ public class HollerbackCameraActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				dialog.show();
+				startIndeterminateSpinner();
 				if (mConversationId == null) {
 					HBRequestManager
 							.postConversations(TempMemoryStore.invitedUsers);
@@ -212,7 +232,7 @@ public class HollerbackCameraActivity extends Activity {
 		super.onStop();
 	}
 
-	ProgressDialog dialog;
+	Dialog dialog;
 
 	Handler mLoadingHandler = new Handler() {
 
@@ -264,6 +284,11 @@ public class HollerbackCameraActivity extends Activity {
 
 		}
 	};
+
+	public void startIndeterminateSpinner() {
+		mPreviewPlayBtn.setVisibility(View.GONE);
+		mProgressHelper.startIndeterminateSpinner();
+	}
 
 	Runnable timeTask = new Runnable() {
 
@@ -475,7 +500,7 @@ public class HollerbackCameraActivity extends Activity {
 		LogUtil.i("Record size: " + prof.videoFrameWidth + " "
 				+ prof.videoFrameHeight);
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){			
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			recorder.setOrientationHint(270);
 		}
 
@@ -512,6 +537,7 @@ public class HollerbackCameraActivity extends Activity {
 		camera.release();
 		camera = null;
 		inPreview = false;
+		mOnProgressListener = null;
 		super.onDestroy();
 	}
 
@@ -596,6 +622,37 @@ public class HollerbackCameraActivity extends Activity {
 			}
 
 		}
+	};
+
+	long uploadedAmount;
+
+	OnProgressListener mOnProgressListener = new OnProgressListener() {
+
+		@Override
+		public void onProgress(final long amount, final long total) {
+
+			runOnUiThread(new Runnable() {
+				public void run() {
+					uploadedAmount += amount;
+					LogUtil.i("Upload: " + uploadedAmount + "/" + total);
+
+					mProgressHelper
+							.startUpdateProgress((int) (uploadedAmount * 100 / total));
+				}
+			});
+
+		}
+
+		@Override
+		public void onComplete() {
+			runOnUiThread(new Runnable() {
+				public void run() {
+					mProgressHelper.hideLoader();
+				}
+			});
+
+		}
+
 	};
 
 }
