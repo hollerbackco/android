@@ -1,12 +1,14 @@
 package com.moziy.hollerback.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 
 import com.crittercism.app.Crittercism;
+import com.flurry.android.FlurryAgent;
 import com.google.android.gcm.GCMRegistrar;
 import com.moziy.hollerback.R;
 import com.moziy.hollerback.cache.memory.TempMemoryStore;
@@ -17,7 +19,9 @@ import com.moziy.hollerback.fragment.ConversationFragment;
 import com.moziy.hollerback.fragment.ConversationListFragment;
 import com.moziy.hollerback.helper.CustomActionBarHelper;
 import com.moziy.hollerback.model.SortedArray;
+import com.moziy.hollerback.util.AnalyticsUtil;
 import com.moziy.hollerback.util.AppEnvironment;
+import com.moziy.hollerback.util.FlurryC;
 import com.moziy.hollerback.util.HollerbackAppState;
 
 /**
@@ -63,6 +67,22 @@ public class HollerbackBaseActivity extends HollerbackBaseFragmentActivity {
 
 		initFragment();
 		LogUtil.i("Completed BaseActivity");
+
+		FlurryAgent
+				.onStartSession(this, AppEnvironment.getInstance().FLURRY_ID);
+
+		FlurryAgent.logEvent(FlurryC.EVENT_STARTSESSION, AnalyticsUtil.getMap(
+				FlurryC.PARAM_MODELNAME, AnalyticsUtil.getDeviceName(),
+				FlurryC.PARAM_OS_VERISON,
+				Integer.toString(Build.VERSION.SDK_INT)));
+
+	}
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		FlurryAgent.onEndSession(this);
+		super.onStop();
 	}
 
 	public static CustomActionBarHelper getCustomActionBar() {

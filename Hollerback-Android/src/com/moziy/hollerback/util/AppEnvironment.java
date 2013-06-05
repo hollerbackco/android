@@ -42,6 +42,8 @@ public class AppEnvironment {
 
 	public static final String CRITTERCISM_ID = "51a94f4d1386206f31000002";
 
+	public static String FLURRY_ID;
+
 	public static AppEnvironment getInstance() {
 		if (sInstance == null) {
 			sInstance = new AppEnvironment();
@@ -59,6 +61,7 @@ public class AppEnvironment {
 			FORCE_PHONE_NUMBER_CHECK = false;
 			GOOGLE_PROJECT_NUMBER = "69406303235";
 			LOG_CRASHES = false;
+			FLURRY_ID = "FWC2TWGDJDYV7YR5SC8P";
 			break;
 		case ENV_PRODUCTION:
 			LogUtil.d("Setting Production Environment");
@@ -66,6 +69,7 @@ public class AppEnvironment {
 			FORCE_PHONE_NUMBER_CHECK = true;
 			GOOGLE_PROJECT_NUMBER = "69406303235";
 			LOG_CRASHES = true;
+			FLURRY_ID = "FWC2TWGDJDYV7YR5SC8P";
 			break;
 		}
 	}
