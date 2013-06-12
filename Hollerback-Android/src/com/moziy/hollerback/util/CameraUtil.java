@@ -35,7 +35,8 @@ public class CameraUtil {
 		return (result);
 	}
 
-	public static void setFrontFacingParams(MediaRecorder recorder) {
+	public static void setFrontFacingParams(MediaRecorder recorder, int width,
+			int height) {
 
 		recorder.setOutputFormat(VIDEO_OUTPUT_FORMAT);
 		recorder.setVideoEncoder(VIDEO_OUTPUT_ENCODER);
@@ -43,7 +44,8 @@ public class CameraUtil {
 		recorder.setAudioEncodingBitRate(AUDIO_ENCODING_BIT_RATE);
 		recorder.setVideoEncodingBitRate(VIDEO_ENCODING_RATE);
 		recorder.setAudioEncoder(AUDIO_ENCODER);
-		recorder.setVideoSize(480, 320);
+
+		recorder.setVideoSize(width, height);
 	}
 
 }

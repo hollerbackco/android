@@ -103,6 +103,8 @@ public class HollerbackCameraActivity extends Activity {
 
 	ProgressHelper mProgressHelper;
 
+	int mBestCameraWidth, mBestCameraHeight;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -490,7 +492,8 @@ public class HollerbackCameraActivity extends Activity {
 
 		// Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
 
-		CameraUtil.setFrontFacingParams(recorder);
+		CameraUtil.setFrontFacingParams(recorder, mBestCameraWidth,
+				mBestCameraHeight);
 
 		targetExtension = FileUtil.getFileFormat(OutputFormat.MPEG_4);
 
@@ -571,6 +574,9 @@ public class HollerbackCameraActivity extends Activity {
 					(int) targetPreviewWidth, (int) targetPreviewHeight,
 					parameters);
 			LogUtil.i("Best size: " + size.width + " " + size.height);
+
+			mBestCameraWidth = size.width;
+			mBestCameraHeight = size.height;
 
 			if (size != null) {
 				parameters.setPreviewSize(size.width, size.height);
