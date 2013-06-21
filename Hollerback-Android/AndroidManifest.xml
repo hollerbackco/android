@@ -30,9 +30,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Crittercism -->
-    <uses-permission android:name="android.permission.READ_LOGS"/>
-    <uses-permission android:name="android.permission.GET_TASKS"/>
-    
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
     <!-- App receives GCM messages. -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
@@ -89,6 +89,9 @@
         </receiver>
 
         <service android:name=".GCMIntentService" />
+        <service
+            android:name="com.moziy.hollerback.service.HollerbackVideoService"
+            android:exported="false" />
     </application>
 
 </manifest>
