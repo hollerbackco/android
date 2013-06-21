@@ -21,3 +21,6 @@ Libraries:
 - ActiveAndroid
 - JakeWharton/LRUDiskCache
 - LoopJ/AsyncHttpLibrary
+
+Fix for FFMPEG SegFaults
+Run FFMPEG in a new process by intent calling to a service (due this for less important thread)
